@@ -1,7 +1,7 @@
-import { useKeycloak } from '@react-keycloak/web';
-import { useEffect } from 'react';
-import { Outlet, useNavigate } from 'react-router-dom';
-import Header from './Header';
+import { useKeycloak } from "@react-keycloak/web";
+import { useEffect } from "react";
+import { Outlet, useNavigate } from "react-router-dom";
+import Header from "./Header";
 
 const Layout = () => {
     return (
@@ -21,11 +21,11 @@ const ProtectedRoute = ({ children }: { children: React.ReactNode }) => {
 
     useEffect(() => {
         if (!isLoggedIn) {
-            alert('You need to login to access this page');
+            alert("You need to login to access this page");
             keycloak.login();
         } else {
-            alert('You are logged in');
-            navigate('/');
+            alert("You are logged in");
+            navigate("/");
         }
     }, [isLoggedIn]);
 

@@ -1,5 +1,5 @@
 import Card from '../components/Card';
-import tukeLogoImg from '../assets/tuke-logo.png';
+import etdImg from '../assets/etd.png';
 
 const CategoryPage = () => {
     return (
@@ -8,17 +8,17 @@ const CategoryPage = () => {
                 <Card
                     title='etd'
                     description='evidencia záverečných prác'
-                    logo={<img src={tukeLogoImg} alt='TUKE' style={{ maxWidth: '40px' }} />}
+                    logo={<img src={etdImg} alt='TUKE' style={{ maxWidth: '100px' }} />}
                 />
                 <Card
                     title='etd'
                     description='evidencia záverečných prác'
-                    logo={<img src={tukeLogoImg} alt='TUKE' style={{ maxWidth: '40px' }} />}
+                    logo={<img src={etdImg} alt='TUKE' style={{ maxWidth: '100px' }} />}
                 />
                 <Card
                     title='etd'
                     description='evidencia záverečných prác'
-                    logo={<img src={tukeLogoImg} alt='TUKE' style={{ maxWidth: '40px' }} />}
+                    logo={<img src={etdImg} alt='TUKE' style={{ maxWidth: '100px' }} />}
                 />
             </div>
         </div>
