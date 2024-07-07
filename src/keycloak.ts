@@ -1,4 +1,4 @@
-import Keycloak from 'keycloak-js';
+import Keycloak, { KeycloakInitOptions } from "keycloak-js";
 
 const keycloak = new Keycloak({
     url: import.meta.env.VITE_KEYCLOAK_URL,
@@ -6,4 +6,10 @@ const keycloak = new Keycloak({
     clientId: import.meta.env.VITE_KEYCLOAK_CLIENT_ID,
 });
 
-export { keycloak };
+const keycloakInitConfig: KeycloakInitOptions = {
+    onLoad: "login-required",
+    checkLoginIframe: false,
+    scope: "employee_info",
+};
+
+export { keycloak, keycloakInitConfig };

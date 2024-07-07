@@ -1,13 +1,12 @@
-import { ReactKeycloakProvider } from '@react-keycloak/web';
-import { RouterProvider } from 'react-router-dom';
-import { keycloak } from './keycloak';
-import { router } from './routes';
+import { RouterProvider } from "react-router-dom";
+import KeycloakProvider from "./components/KeycloakProvider";
+import { router } from "./routes";
 
 const App = () => {
     return (
-        <ReactKeycloakProvider authClient={keycloak}>
+        <KeycloakProvider>
             <RouterProvider router={router} />
-        </ReactKeycloakProvider>
+        </KeycloakProvider>
     );
 };
 
