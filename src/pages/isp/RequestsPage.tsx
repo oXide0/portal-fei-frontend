@@ -1,8 +1,11 @@
+import { useAppSelector } from "../../hooks";
 import { RequestResponse } from "../../types/isp/Request";
 import { useNavigate } from "react-router-dom";
 
 const RequestsPage = () => {
     const navigate = useNavigate();
+    const userRole = useAppSelector((state) => state.user.role);
+    const isStudent = userRole === "S";
 
     const handleDelete = (requestId: string) => {
         if (window.confirm("Are you sure you want to delete this request?")) {
@@ -11,24 +14,31 @@ const RequestsPage = () => {
         }
     };
 
+    const handleStatusChange = (requestId: string, newStatus: string) => {
+        console.log(`Request ${requestId} status changed to ${newStatus}`);
+        // Logic to update the status (e.g., call to API to update the status)
+    };
+
     return (
         <div className="p-4">
             <div className="flex justify-between pb-4">
                 <h1 className="text-3xl font-bold mb-4">Requests</h1>
-                <div className="flex justify-between mb-4">
-                    <button
-                        onClick={() => navigate("/create-request")}
-                        className="bg-green-500 text-white px-4 py-2 rounded hover:bg-green-600"
-                    >
-                        Create Request
-                    </button>
-                </div>
+
+                {isStudent && (
+                    <div className="flex justify-between mb-4">
+                        <button
+                            onClick={() => navigate("/create-request")}
+                            className="bg-green-500 text-white px-4 py-2 rounded hover:bg-green-600"
+                        >
+                            Create Request
+                        </button>
+                    </div>
+                )}
             </div>
             <div className="overflow-x-auto">
                 <table className="min-w-full bg-white border border-gray-200">
                     <thead className="bg-gray-100">
                         <tr>
-                            <th className="py-2 px-4 border">Request ID</th>
                             <th className="py-2 px-4 border">Student Name</th>
                             <th className="py-2 px-4 border">Study Program</th>
                             <th className="py-2 px-4 border">Degree</th>
@@ -44,9 +54,6 @@ const RequestsPage = () => {
                         {sampleRequests.map((request) => (
                             <tr key={request.requestId} className="border">
                                 <td className="py-2 px-4 border">
-                                    {request.requestId}
-                                </td>
-                                <td className="py-2 px-4 border">
                                     {request.studentName}{" "}
                                     {request.studentSurname}
                                 </td>
@@ -60,7 +67,33 @@ const RequestsPage = () => {
                                     {request.studyYear}
                                 </td>
                                 <td className="py-2 px-4 border">
-                                    {request.requestStatus}
+                                    {isStudent ? (
+                                        request.requestStatus
+                                    ) : (
+                                        <select
+                                            className="border border-gray-300 rounded px-2 py-1"
+                                            value={request.requestStatus}
+                                            onChange={(e) =>
+                                                handleStatusChange(
+                                                    request.requestId,
+                                                    e.target.value
+                                                )
+                                            }
+                                        >
+                                            <option value="Approved">
+                                                Approved
+                                            </option>
+                                            <option value="Declined">
+                                                Declined
+                                            </option>
+                                            <option value="Pending">
+                                                Pending
+                                            </option>
+                                            <option value="Returned">
+                                                Returned
+                                            </option>
+                                        </select>
+                                    )}
                                 </td>
                                 <td className="py-2 px-4 border">
                                     {request.purpose}
@@ -80,26 +113,39 @@ const RequestsPage = () => {
                                         "No attachment"
                                     )}
                                 </td>
-                                <td className="py-2 px-4 border space-x-2">
-                                    <button
-                                        onClick={() =>
-                                            navigate(
-                                                `/edit-request/${request.requestId}`
-                                            )
-                                        }
-                                        className="bg-yellow-400 text-white px-2 py-1 rounded hover:bg-yellow-500"
-                                    >
-                                        Edit
-                                    </button>
-                                    <button
-                                        onClick={() =>
-                                            handleDelete(request.requestId)
-                                        }
-                                        className="bg-red-500 text-white px-2 py-1 rounded hover:bg-red-600"
-                                    >
-                                        Delete
-                                    </button>
-                                </td>
+                                {isStudent ? (
+                                    <td className="py-2 px-4 border space-x-2">
+                                        <button
+                                            onClick={() =>
+                                                navigate(
+                                                    `/edit-request/${request.requestId}`
+                                                )
+                                            }
+                                            className="bg-yellow-400 text-white px-2 py-1 rounded hover:bg-yellow-500"
+                                        >
+                                            Edit
+                                        </button>
+                                        <button
+                                            onClick={() =>
+                                                handleDelete(request.requestId)
+                                            }
+                                            className="bg-red-500 text-white px-2 py-1 rounded hover:bg-red-600"
+                                        >
+                                            Delete
+                                        </button>
+                                    </td>
+                                ) : (
+                                    <td className="py-2 px-4 border space-x-2 text-center">
+                                        <button
+                                            onClick={() =>
+                                                navigate("/subjects-table")
+                                            }
+                                            className="bg-blue-500 text-white px-2 py-1 rounded hover:bg-blue-600"
+                                        >
+                                            View Subjects
+                                        </button>
+                                    </td>
+                                )}
                             </tr>
                         ))}
                     </tbody>
