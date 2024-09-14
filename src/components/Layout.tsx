@@ -7,7 +7,9 @@ const Layout = () => {
     return (
         <ProtectedRoute>
             <Header />
-            <Outlet />
+            <div className="pt-7">
+                <Outlet />
+            </div>
         </ProtectedRoute>
     );
 };
@@ -17,7 +19,7 @@ export default Layout;
 const ProtectedRoute = ({ children }: { children: React.ReactNode }) => {
     const { keycloak } = useKeycloak();
     const isAuthenticated = keycloak.authenticated;
-
+    console.log(keycloak);
     useEffect(() => {
         if (!isAuthenticated) {
             keycloak.login({ redirectUri: window.location.origin });
