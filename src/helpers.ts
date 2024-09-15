@@ -22,16 +22,16 @@ export const parseIdToken = (idToken: string) => {
 };
 
 export const prettifyRequestStatus = (status: RequestStatus): string => {
-    if (status === "Approved") {
+    if (status === "APPROVED") {
         return "Schválené";
     }
-    if (status === "Declined") {
+    if (status === "DECLINED") {
         return "Zamietnuté";
     }
-    if (status === "Pending") {
+    if (status === "PENDING") {
         return "Čaká na schválenie";
     }
-    if (status === "Returned") {
+    if (status === "RETURNED") {
         return "Vrátené";
     }
 
@@ -39,13 +39,13 @@ export const prettifyRequestStatus = (status: RequestStatus): string => {
 };
 
 export const prettifyTableStatus = (status: TableStatus): string => {
-    if (status === "Approved") {
+    if (status === "APPROVED") {
         return "Schválené";
     }
-    if (status === "Declined") {
+    if (status === "DECLINED") {
         return "Zamietnuté";
     }
-    if (status === "Pending") {
+    if (status === "PENDING") {
         return "Čaká na schválenie";
     }
 

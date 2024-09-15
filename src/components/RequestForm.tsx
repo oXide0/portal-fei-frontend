@@ -1,45 +1,53 @@
+import { useEffect } from "react";
 import { useForm, SubmitHandler } from "react-hook-form";
-import { CreateRequestBody as IFormInput } from "../types/isp/Request";
 
 interface RequestFormProps {
     title: string;
+    initialValues?: IFormInput;
     onSubmit: (data: IFormInput) => void;
 }
 
-const RequestForm = ({ title, onSubmit }: RequestFormProps) => {
+export interface IFormInput {
+    studentName: string;
+    studentSurname: string;
+    studyProgram: string;
+    studyDegree: string;
+    studyYear: number;
+    purpose: string;
+    reason: string;
+    attachment: string | null;
+}
+
+const RequestForm = ({ title, initialValues, onSubmit }: RequestFormProps) => {
     const {
         register,
         handleSubmit,
+        setValue,
         formState: { errors },
-    } = useForm<IFormInput>();
+    } = useForm<IFormInput>({
+        defaultValues: initialValues,
+    });
 
     const onSubmitData: SubmitHandler<IFormInput> = (data) => {
         console.log(data);
         onSubmit(data);
     };
 
+    useEffect(() => {
+        if (initialValues) {
+            Object.keys(initialValues).forEach((key) => {
+                setValue(
+                    key as keyof IFormInput,
+                    initialValues[key as keyof IFormInput]
+                );
+            });
+        }
+    }, [initialValues, setValue]);
+
     return (
         <div className="max-w-4xl my-0 mx-auto p-6">
             <h1 className="text-3xl font-bold mb-6">{title}</h1>
             <form onSubmit={handleSubmit(onSubmitData)} className="space-y-4">
-                <div>
-                    <label className="block text-sm font-medium mb-1">
-                        User ID
-                    </label>
-                    <input
-                        type="text"
-                        {...register("userId", {
-                            required: "User ID is required",
-                        })}
-                        className="w-full px-3 py-2 border border-gray-300 rounded"
-                    />
-                    {errors.userId && (
-                        <p className="text-red-500 text-sm">
-                            {errors.userId.message}
-                        </p>
-                    )}
-                </div>
-
                 <div>
                     <label className="block text-sm font-medium mb-1">
                         Student Name
@@ -98,13 +106,20 @@ const RequestForm = ({ title, onSubmit }: RequestFormProps) => {
                     <label className="block text-sm font-medium mb-1">
                         Study Degree
                     </label>
-                    <input
-                        type="text"
+                    <select
+                        defaultValue=""
                         {...register("studyDegree", {
                             required: "Study Degree is required",
                         })}
                         className="w-full px-3 py-2 border border-gray-300 rounded"
-                    />
+                    >
+                        <option value="" disabled>
+                            Select Study Degree
+                        </option>
+                        <option value="Bc.">Bc.</option>
+                        <option value="Ing.">Ing.</option>
+                        <option value="Doc.">Doc.</option>
+                    </select>
                     {errors.studyDegree && (
                         <p className="text-red-500 text-sm">
                             {errors.studyDegree.message}

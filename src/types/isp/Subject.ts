@@ -1,14 +1,16 @@
+export type SubjectStatus = "APPROVED" | "DECLINED" | "PENDING";
+
 export interface SubjectInfo {
     readonly subjectId: string;
     readonly userId: string;
     readonly tableId: string;
-    readonly subjectStatus: string;
+    readonly subjectStatus: SubjectStatus;
     readonly name: string;
 }
 
 export interface EvaluateSubject {
     readonly subjectId: string;
-    readonly subjectStatus: string;
+    readonly subjectStatus: SubjectStatus;
 }
 
 export interface CreateSubjectResponse {
@@ -16,12 +18,12 @@ export interface CreateSubjectResponse {
     readonly userId: string;
     readonly tableId: string;
     readonly name: string;
-    readonly subjectStatus: string;
+    readonly subjectStatus: SubjectStatus;
 }
 
 export interface CreateSubjectBody {
-    readonly userId: string;
+    readonly userID: string;
     readonly tableId: string;
     readonly name: string;
-    readonly subjectStatus: string;
+    readonly subjectStatus: SubjectStatus;
 }

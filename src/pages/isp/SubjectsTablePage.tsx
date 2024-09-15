@@ -1,27 +1,36 @@
-import { useNavigate } from "react-router-dom";
-import { TableResponse } from "../../types/isp/Table";
-import { useAppDispatch, useAppSelector } from "../../hooks";
 import { useState } from "react";
+import LoadingSpinner from "../../components/LoadingSpinner";
 import { prettifyTableStatus } from "../../helpers";
-
-type TableStatus = "Approved" | "Declined" | "Pending";
+import { useAppSelector } from "../../hooks/redux-hooks";
+import { useRequiredParam } from "../../hooks/useRequiredParam";
+import {
+    useAddSubjectForTableMutation,
+    useDeleteSubjectForTableMutation,
+} from "../../services/isp/subject";
+import {
+    useEvaluateTableMutation,
+    useGetTableQuery,
+} from "../../services/isp/table";
+import { SubjectStatus } from "../../types/isp/Subject";
+import { TableStatus } from "../../types/isp/Table";
 
 const SubjectsTablePage = () => {
+    const tableId = useRequiredParam("tableId");
     const userRole = useAppSelector((state) => state.user.role);
     const isStudent = userRole === "S";
-
-    const [subjects, setSubjects] = useState(sampleTableResponse.subjects);
-    const [tableStatus, setTableStatus] = useState<TableStatus>(
-        sampleTableResponse.tableStatus
-    );
     const [isModalOpen, setIsModalOpen] = useState(false);
 
-    const handleDeleteSubject = (subjectId: string) => {
+    const { data, isLoading, refetch } = useGetTableQuery(tableId);
+    const [evaluateTable] = useEvaluateTableMutation();
+    const [addSubject] = useAddSubjectForTableMutation();
+    const [deleteSubject] = useDeleteSubjectForTableMutation();
+
+    if (isLoading || !data) return <LoadingSpinner />;
+
+    const handleDeleteSubject = async (subjectId: string) => {
         if (window.confirm("Are you sure you want to delete this subject?")) {
-            // Logic to delete the subject (e.g., call to API to delete)
-            setSubjects(
-                subjects.filter((subject) => subject.subjectId !== subjectId)
-            );
+            await deleteSubject(subjectId);
+            refetch();
         }
     };
 
@@ -30,18 +39,15 @@ const SubjectsTablePage = () => {
         newStatus: string
     ) => {
         // Logic to change subject status (e.g., call to API to update status)
-        setSubjects(
-            subjects.map((subject) =>
-                subject.subjectId === subjectId
-                    ? { ...subject, subjectStatus: newStatus }
-                    : subject
-            )
-        );
+        // Assuming you have a mutation for updating subject status
     };
 
-    const handleChangeTableStatus = (newStatus: TableStatus) => {
-        // Logic to change table status (e.g., call to API to update status)
-        setTableStatus(newStatus);
+    const handleChangeTableStatus = async (newStatus: TableStatus) => {
+        await evaluateTable({
+            tableId,
+            tableStatus: newStatus,
+            userId: "b8743d15-cd36-4293-b21a-89b4fe45051d",
+        });
     };
 
     return (
@@ -49,31 +55,30 @@ const SubjectsTablePage = () => {
             <h1 className="text-3xl font-bold mb-4">Tabuľka Predmetov</h1>
 
             <div className="mb-6">
-                <h2 className="text-xl font-semibold">Informácie o Tabuľke</h2>
-                <p>
-                    <strong>Status Tabuľky:</strong>{" "}
-                    <span
-                        className={`${
-                            tableStatus === "Approved"
+                <div className="flex gap-2">
+                    <h2 className="text-xl font-semibold">Status Tabuľky:</h2>
+                    <h2
+                        className={`text-xl font-semibold ${
+                            data.tableStatus === "APPROVED"
                                 ? "text-green-500"
-                                : tableStatus === "Declined"
+                                : data.tableStatus === "DECLINED"
                                 ? "text-red-500"
                                 : "text-yellow-500"
                         }`}
                     >
-                        {prettifyTableStatus(tableStatus)}
-                    </span>
-                </p>
+                        {prettifyTableStatus(data.tableStatus)}
+                    </h2>
+                </div>
                 {!isStudent && (
                     <div className="mt-4">
                         <button
-                            onClick={() => handleChangeTableStatus("Approved")}
+                            onClick={() => handleChangeTableStatus("APPROVED")}
                             className="bg-green-500 text-white px-4 py-2 rounded hover:bg-green-600"
                         >
                             Schváliť Tabuľku
                         </button>
                         <button
-                            onClick={() => handleChangeTableStatus("Declined")}
+                            onClick={() => handleChangeTableStatus("DECLINED")}
                             className="bg-red-500 text-white px-4 py-2 rounded hover:bg-red-600 ml-2"
                         >
                             Zamietnuť Tabuľku
@@ -105,7 +110,7 @@ const SubjectsTablePage = () => {
                         </tr>
                     </thead>
                     <tbody>
-                        {subjects.map((subject) => (
+                        {data.subjects.map((subject) => (
                             <tr key={subject.subjectId} className="border">
                                 <td className="py-2 px-4 border">
                                     {subject.name}
@@ -157,6 +162,15 @@ const SubjectsTablePage = () => {
             </div>
             <AddSubjectModal
                 isOpen={isModalOpen}
+                onSubmit={async (subjectName, subjectStatus) => {
+                    await addSubject({
+                        name: subjectName,
+                        tableId,
+                        userID: "b8743d15-cd36-4293-b21a-89b4fe45051d",
+                        subjectStatus,
+                    });
+                    refetch();
+                }}
                 onClose={() => setIsModalOpen(false)}
             />
         </div>
@@ -165,21 +179,25 @@ const SubjectsTablePage = () => {
 
 export default SubjectsTablePage;
 
+interface AddSubjectModalProps {
+    isOpen: boolean;
+    onClose: () => void;
+    onSubmit: (subjectName: string, subjectStatus: SubjectStatus) => void;
+}
+
 const AddSubjectModal = ({
     isOpen,
     onClose,
-}: {
-    isOpen: boolean;
-    onClose: () => void;
-}) => {
+    onSubmit,
+}: AddSubjectModalProps) => {
     const [subjectName, setSubjectName] = useState("");
-    const [subjectStatus, setSubjectStatus] = useState("Pending");
+    const [subjectStatus, setSubjectStatus] =
+        useState<SubjectStatus>("PENDING");
 
     const handleSubmit = (e: React.FormEvent) => {
         e.preventDefault();
-        // Dispatch the action to add the subject
-
-        onClose(); // Close the modal after submission
+        onSubmit(subjectName, subjectStatus);
+        onClose();
     };
 
     return (
@@ -220,7 +238,9 @@ const AddSubjectModal = ({
                                     id="subjectStatus"
                                     value={subjectStatus}
                                     onChange={(e) =>
-                                        setSubjectStatus(e.target.value)
+                                        setSubjectStatus(
+                                            e.target.value as SubjectStatus
+                                        )
                                     }
                                     className="border border-gray-300 rounded px-3 py-2 w-full"
                                 >
@@ -250,34 +270,4 @@ const AddSubjectModal = ({
             )}
         </>
     );
-};
-
-const sampleTableResponse: TableResponse = {
-    tableId: "table1",
-    userId: "user1",
-    requestId: "request1",
-    tableStatus: "Approved",
-    subjects: [
-        {
-            subjectId: "sub1",
-            userId: "user1",
-            tableId: "table1",
-            subjectStatus: "Completed",
-            name: "Mathematics",
-        },
-        {
-            subjectId: "sub2",
-            userId: "user1",
-            tableId: "table1",
-            subjectStatus: "Pending",
-            name: "Physics",
-        },
-        {
-            subjectId: "sub3",
-            userId: "user1",
-            tableId: "table1",
-            subjectStatus: "In Progress",
-            name: "Chemistry",
-        },
-    ],
 };

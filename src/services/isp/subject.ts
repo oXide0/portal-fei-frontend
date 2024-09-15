@@ -13,6 +13,7 @@ export const subjectApi = ispApi.injectEndpoints({
                 method: "PATCH",
                 body,
             }),
+            invalidatesTags: ["Subject"],
         }),
         addSubjectForTable: builder.mutation<
             CreateSubjectResponse,
@@ -23,12 +24,14 @@ export const subjectApi = ispApi.injectEndpoints({
                 method: "POST",
                 body,
             }),
+            invalidatesTags: ["Subject"],
         }),
         deleteSubjectForTable: builder.mutation<void, string>({
             query: (subjectId) => ({
                 url: `subjects/${subjectId}`,
                 method: "DELETE",
             }),
+            invalidatesTags: ["Subject"],
         }),
     }),
 });

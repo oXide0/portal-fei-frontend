@@ -1,7 +1,13 @@
 import { useNavigate } from "react-router-dom";
+import LoadingSpinner from "../../components/LoadingSpinner";
 import { prettifyRequestStatus } from "../../helpers";
-import { useAppSelector } from "../../hooks";
-import { RequestResponse } from "../../types/isp/Request";
+import { useAppSelector } from "../../hooks/redux-hooks";
+import {
+    useDeleteRequestMutation,
+    useEvaluateRequestMutation,
+    useGetAllRequestsQuery,
+} from "../../services/isp/request";
+import { RequestStatus } from "../../types/isp/Request";
 
 const RequestsPage = () => {
     const navigate = useNavigate();
@@ -9,17 +15,27 @@ const RequestsPage = () => {
     const isClerk = userRole === "N";
     const isStudent = userRole === "S";
 
-    const handleDelete = (requestId: string) => {
+    const { data, isLoading, refetch } = useGetAllRequestsQuery();
+    const [evaluateRequest] = useEvaluateRequestMutation();
+    const [deleteRequest] = useDeleteRequestMutation();
+
+    const handleDelete = async (requestId: string) => {
         if (window.confirm("Are you sure you want to delete this request?")) {
-            console.log(`Request ${requestId} deleted`);
-            // Logic to remove the request (e.g., call to API to delete)
+            await deleteRequest(requestId);
+            refetch();
         }
     };
 
-    const handleStatusChange = (requestId: string, newStatus: string) => {
-        console.log(`Request ${requestId} status changed to ${newStatus}`);
-        // Logic to update the status (e.g., call to API to update the status)
+    const handleStatusChange = async (
+        requestId: string,
+        newStatus: RequestStatus
+    ) => {
+        console.log(requestId, newStatus);
+        await evaluateRequest({ requestId, evaluationStatus: newStatus });
+        refetch();
     };
+
+    if (!data || isLoading) return <LoadingSpinner />;
 
     return (
         <div className="p-4">
@@ -29,7 +45,7 @@ const RequestsPage = () => {
                 {isStudent && (
                     <div className="flex justify-between mb-4">
                         <button
-                            onClick={() => navigate("/create-request")}
+                            onClick={() => navigate("/isp/create-request")}
                             className="bg-green-500 text-white px-4 py-2 rounded hover:bg-green-600"
                         >
                             Vytvoriť žiadosť
@@ -55,7 +71,7 @@ const RequestsPage = () => {
                         </tr>
                     </thead>
                     <tbody>
-                        {sampleRequests.map((request) => (
+                        {data.map((request) => (
                             <tr key={request.requestId} className="border">
                                 <td className="py-2 px-4 border">
                                     {request.studentName}{" "}
@@ -78,20 +94,21 @@ const RequestsPage = () => {
                                             onChange={(e) =>
                                                 handleStatusChange(
                                                     request.requestId,
-                                                    e.target.value
+                                                    e.target
+                                                        .value as RequestStatus
                                                 )
                                             }
                                         >
-                                            <option value="Approved">
+                                            <option value="APPROVED">
                                                 Schválené
                                             </option>
-                                            <option value="Declined">
+                                            <option value="DECLINED">
                                                 Zamietnuté
                                             </option>
-                                            <option value="Pending">
+                                            <option value="PENDING">
                                                 Čakajúce
                                             </option>
-                                            <option value="Returned">
+                                            <option value="RETURNED">
                                                 Vrátené
                                             </option>
                                         </select>
@@ -120,11 +137,11 @@ const RequestsPage = () => {
                                     )}
                                 </td>
                                 {isStudent ? (
-                                    <td className="py-2 px-4 border space-x-2">
+                                    <td className="py-2 px-4 border space-x-2 min-w-96">
                                         <button
                                             onClick={() =>
                                                 navigate(
-                                                    `/edit-request/${request.requestId}`
+                                                    `/isp/edit-request/${request.requestId}`
                                                 )
                                             }
                                             className="bg-yellow-400 text-white px-2 py-1 rounded hover:bg-yellow-500"
@@ -142,22 +159,22 @@ const RequestsPage = () => {
                                         <button
                                             onClick={() =>
                                                 navigate(
-                                                    `/subjects-table/${request.tableId}`
+                                                    `/isp/subjects-table/${request.tableId}`
                                                 )
                                             }
                                             className={`px-2 py-1 rounded text-white ${
                                                 request.requestStatus ===
-                                                "Approved"
+                                                "APPROVED"
                                                     ? "bg-blue-500 hover:bg-blue-600"
                                                     : "bg-gray-400 cursor-not-allowed"
                                             }`}
                                             disabled={
                                                 request.requestStatus !==
-                                                "Approved"
+                                                "APPROVED"
                                             }
                                             title={
                                                 request.requestStatus !==
-                                                "Approved"
+                                                "APPROVED"
                                                     ? "Žiadosť nemá stav 'schválená'."
                                                     : ""
                                             }
@@ -170,22 +187,22 @@ const RequestsPage = () => {
                                         <button
                                             onClick={() =>
                                                 navigate(
-                                                    `/subjects-table/${request.tableId}`
+                                                    `/isp/subjects-table/${request.tableId}`
                                                 )
                                             }
                                             className={`px-2 py-1 rounded text-white ${
                                                 request.requestStatus ===
-                                                "Approved"
+                                                "APPROVED"
                                                     ? "bg-blue-500 hover:bg-blue-600"
                                                     : "bg-gray-400 cursor-not-allowed"
                                             }`}
                                             disabled={
                                                 request.requestStatus !==
-                                                "Approved"
+                                                "APPROVED"
                                             }
                                             title={
                                                 request.requestStatus !==
-                                                "Approved"
+                                                "APPROVED"
                                                     ? "Žiadosť nemá stav 'schválená'."
                                                     : ""
                                             }
@@ -204,34 +221,3 @@ const RequestsPage = () => {
 };
 
 export default RequestsPage;
-
-const sampleRequests: RequestResponse[] = [
-    {
-        requestId: "1",
-        userId: "U01",
-        studentName: "John",
-        studentSurname: "Doe",
-        studyProgram: "Computer Science",
-        studyDegree: "Bachelor",
-        studyYear: 3,
-        requestStatus: "Pending",
-        purpose: "Internship",
-        reason: "Gaining experience",
-        attachment: "resume.pdf",
-        tableId: "1",
-    },
-    {
-        requestId: "2",
-        userId: "U02",
-        studentName: "Jane",
-        studentSurname: "Smith",
-        studyProgram: "Business Administration",
-        studyDegree: "Master",
-        studyYear: 2,
-        requestStatus: "Approved",
-        purpose: "Scholarship",
-        reason: "Financial support",
-        attachment: null,
-        tableId: "2",
-    },
-];

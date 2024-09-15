@@ -1,4 +1,4 @@
-export type RequestStatus = "Approved" | "Declined" | "Pending" | "Returned";
+export type RequestStatus = "APPROVED" | "DECLINED" | "PENDING" | "RETURNED";
 
 export interface RequestResponse {
     readonly requestId: string;
@@ -24,9 +24,14 @@ export interface CreateRequestBody {
     studyYear: number;
     purpose: string;
     reason: string;
-    attachment: File | null;
+    attachment: string | null;
 }
 
 export interface UpdateRequestBody extends Partial<CreateRequestBody> {
     requestId: string;
+}
+
+export interface EvaluateRequestBody {
+    requestId: string;
+    evaluationStatus: RequestStatus;
 }

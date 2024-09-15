@@ -18,7 +18,7 @@ const CategoryPage = () => {
                             style={{ maxWidth: "100px" }}
                         />
                     }
-                    onClick={() => navigate("/requests")}
+                    onClick={() => navigate("/isp/requests")}
                 />
             </div>
         </div>

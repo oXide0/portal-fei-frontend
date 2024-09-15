@@ -9,6 +9,7 @@ export const tableApi = ispApi.injectEndpoints({
     endpoints: (builder) => ({
         getTable: builder.query<TableResponse, string>({
             query: (tableId) => `tables/${tableId}`,
+            providesTags: ["Table"],
         }),
         evaluateTable: builder.mutation<TableStatus, EvaluateTableBody>({
             query: (body) => ({
@@ -16,6 +17,7 @@ export const tableApi = ispApi.injectEndpoints({
                 method: "PATCH",
                 body,
             }),
+            invalidatesTags: ["Table"],
         }),
     }),
 });

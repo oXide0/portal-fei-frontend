@@ -16,19 +16,19 @@ export const router = createBrowserRouter([
                 Component: CategoryPage,
             },
             {
-                path: "requests",
+                path: "isp/requests",
                 Component: RequestsPage,
             },
             {
-                path: "create-request",
+                path: "isp/create-request",
                 Component: CreateRequestPage,
             },
             {
-                path: "edit-request/:requestId",
+                path: "isp/edit-request/:requestId",
                 Component: EditRequestPage,
             },
             {
-                path: "subjects-table/:tableId",
+                path: "isp/subjects-table/:tableId",
                 Component: SubjectsTablePage,
             },
         ],
