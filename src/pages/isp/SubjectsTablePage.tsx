@@ -16,8 +16,8 @@ import { TableStatus } from "../../types/isp/Table";
 
 const SubjectsTablePage = () => {
     const tableId = useRequiredParam("tableId");
-    const userRole = useAppSelector((state) => state.user.role);
-    const isStudent = userRole === "S";
+    const { id: userId, role } = useAppSelector((state) => state.user);
+    const isStudent = role === "S";
     const [isModalOpen, setIsModalOpen] = useState(false);
 
     const { data, isLoading, refetch } = useGetTableQuery(tableId);
@@ -43,10 +43,15 @@ const SubjectsTablePage = () => {
     };
 
     const handleChangeTableStatus = async (newStatus: TableStatus) => {
+        if (!userId) {
+            alert("User id not found");
+            return;
+        }
+
         await evaluateTable({
             tableId,
             tableStatus: newStatus,
-            userId: "b8743d15-cd36-4293-b21a-89b4fe45051d",
+            userId: userId,
         });
     };
 
@@ -163,10 +168,15 @@ const SubjectsTablePage = () => {
             <AddSubjectModal
                 isOpen={isModalOpen}
                 onSubmit={async (subjectName, subjectStatus) => {
+                    if (!userId) {
+                        alert("User id not found");
+                        return;
+                    }
+
                     await addSubject({
                         name: subjectName,
                         tableId,
-                        userID: "b8743d15-cd36-4293-b21a-89b4fe45051d",
+                        userID: userId,
                         subjectStatus,
                     });
                     refetch();

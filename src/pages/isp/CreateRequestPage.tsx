@@ -1,14 +1,20 @@
 import { useNavigate } from "react-router-dom";
 import RequestForm, { IFormInput } from "../../components/RequestForm";
 import { useCreateRequestMutation } from "../../services/isp/request";
+import { useAppSelector } from "../../hooks/redux-hooks";
 
 const CreateRequestPage = () => {
     const navigate = useNavigate();
+    const userId = useAppSelector((state) => state.user.id);
     const [createRequest] = useCreateRequestMutation();
 
     const onSubmit = async (data: IFormInput) => {
+        if (!userId) {
+            alert("User id not found");
+            return;
+        }
         await createRequest({
-            userId: "b8743d15-cd36-4293-b21a-89b4fe45051d",
+            userId: userId,
             studentName: data.studentName,
             studentSurname: data.studentSurname,
             studyProgram: data.studyProgram,

@@ -6,13 +6,14 @@ import {
     useGetRequestByIdQuery,
     useUpdateRequestMutation,
 } from "../../services/isp/request";
-import { useEffect } from "react";
+import { useAppSelector } from "../../hooks/redux-hooks";
 
 const EditRequestPage = () => {
     const requestId = useRequiredParam("requestId");
+    const userId = useAppSelector((state) => state.user.id);
     const navigate = useNavigate();
     const { data } = useGetRequestByIdQuery(requestId);
-    const [updateRequest, { isSuccess }] = useUpdateRequestMutation();
+    const [updateRequest] = useUpdateRequestMutation();
 
     const onSubmit = async (data: IFormInput) => {
         if (!requestId) {
@@ -20,9 +21,14 @@ const EditRequestPage = () => {
             return;
         }
 
+        if (!userId) {
+            alert("User id not found");
+            return;
+        }
+
         await updateRequest({
             requestId: requestId,
-            userId: "b8743d15-cd36-4293-b21a-89b4fe45051d",
+            userId: userId,
             studentName: data.studentName,
             studentSurname: data.studentSurname,
             studyProgram: data.studyProgram,
@@ -32,13 +38,8 @@ const EditRequestPage = () => {
             reason: data.reason,
             attachment: "",
         });
+        navigate("/isp/requests");
     };
-
-    useEffect(() => {
-        if (isSuccess) {
-            navigate("/isp/requests");
-        }
-    }, [isSuccess]);
 
     if (!data) return <LoadingSpinner />;
     return (

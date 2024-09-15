@@ -1,7 +1,7 @@
 import { useKeycloak } from "@react-keycloak/web";
 import { useEffect } from "react";
 import { Outlet } from "react-router-dom";
-import { setRole, setToken } from "../features/userSlice";
+import { setId, setRole, setToken } from "../features/userSlice";
 import { parseIdToken } from "../helpers";
 import { useAppDispatch } from "../hooks/redux-hooks";
 import Header from "./Header";
@@ -31,6 +31,7 @@ const ProtectedRoute = ({ children }: { children: React.ReactNode }) => {
         }
         if (keycloak.idToken) {
             const parsedToken = parseIdToken(keycloak.idToken);
+            dispatch(setId(parsedToken.sub));
             dispatch(setToken(keycloak.idToken));
             dispatch(setRole(parsedToken.employee_type));
         }

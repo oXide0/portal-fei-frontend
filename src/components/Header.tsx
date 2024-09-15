@@ -1,10 +1,12 @@
 import { UserCircleIcon } from "@heroicons/react/24/solid";
 import { useKeycloak } from "@react-keycloak/web";
 import { useState } from "react";
+import { useNavigate } from "react-router-dom";
 import tukeLogoImg from "../assets/tuke-logo.png";
-import tukeImg from "../assets/tuke.png";
+import tukeImg from "../assets/tuke-2.png";
 
 const Header = () => {
+    const navigate = useNavigate();
     const { keycloak } = useKeycloak();
     const [dropdownOpen, setDropdownOpen] = useState(false);
 
@@ -13,18 +15,20 @@ const Header = () => {
             className="flex justify-between items-center px-8 py-3.5 max-sm:px-2"
             style={{ background: "#22262e" }}
         >
-            <img
-                src={tukeImg}
-                alt="TUKE"
-                style={{ maxWidth: "307px" }}
-                className="w-full h-auto hidden sm:inline"
-            />
-            <img
-                src={tukeLogoImg}
-                alt="TUKE"
-                style={{ maxWidth: "40px" }}
-                className="sm:hidden"
-            />
+            <button onClick={() => navigate("/")}>
+                <img
+                    src={tukeImg}
+                    alt="TUKE"
+                    style={{ maxWidth: "307px" }}
+                    className="w-full h-auto hidden sm:inline"
+                />
+                <img
+                    src={tukeLogoImg}
+                    alt="TUKE"
+                    style={{ maxWidth: "40px" }}
+                    className="sm:hidden"
+                />
+            </button>
             <div className="relative">
                 <UserCircleIcon
                     className="text-white w-10 cursor-pointer"
