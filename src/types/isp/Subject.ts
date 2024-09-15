@@ -22,7 +22,7 @@ export interface CreateSubjectResponse {
 }
 
 export interface CreateSubjectBody {
-    readonly userID: string;
+    readonly userId: string;
     readonly tableId: string;
     readonly name: string;
     readonly subjectStatus: SubjectStatus;

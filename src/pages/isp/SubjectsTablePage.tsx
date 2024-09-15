@@ -176,7 +176,7 @@ const SubjectsTablePage = () => {
                     await addSubject({
                         name: subjectName,
                         tableId,
-                        userID: userId,
+                        userId: userId,
                         subjectStatus,
                     });
                     refetch();

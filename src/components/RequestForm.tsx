@@ -50,12 +50,12 @@ const RequestForm = ({ title, initialValues, onSubmit }: RequestFormProps) => {
             <form onSubmit={handleSubmit(onSubmitData)} className="space-y-4">
                 <div>
                     <label className="block text-sm font-medium mb-1">
-                        Student Name
+                        Meno študenta
                     </label>
                     <input
                         type="text"
                         {...register("studentName", {
-                            required: "Student Name is required",
+                            required: "Meno študenta je povinné",
                         })}
                         className="w-full px-3 py-2 border border-gray-300 rounded"
                     />
@@ -68,12 +68,12 @@ const RequestForm = ({ title, initialValues, onSubmit }: RequestFormProps) => {
 
                 <div>
                     <label className="block text-sm font-medium mb-1">
-                        Student Surname
+                        Priezvisko študenta
                     </label>
                     <input
                         type="text"
                         {...register("studentSurname", {
-                            required: "Student Surname is required",
+                            required: "Priezvisko študenta je povinné",
                         })}
                         className="w-full px-3 py-2 border border-gray-300 rounded"
                     />
@@ -86,12 +86,12 @@ const RequestForm = ({ title, initialValues, onSubmit }: RequestFormProps) => {
 
                 <div>
                     <label className="block text-sm font-medium mb-1">
-                        Study Program
+                        Študijný program
                     </label>
                     <input
                         type="text"
                         {...register("studyProgram", {
-                            required: "Study Program is required",
+                            required: "Študijný program je povinný",
                         })}
                         className="w-full px-3 py-2 border border-gray-300 rounded"
                     />
@@ -104,17 +104,17 @@ const RequestForm = ({ title, initialValues, onSubmit }: RequestFormProps) => {
 
                 <div>
                     <label className="block text-sm font-medium mb-1">
-                        Study Degree
+                        Študijný stupeň
                     </label>
                     <select
                         defaultValue=""
                         {...register("studyDegree", {
-                            required: "Study Degree is required",
+                            required: "Študijný stupeň je povinný",
                         })}
                         className="w-full px-3 py-2 border border-gray-300 rounded"
                     >
                         <option value="" disabled>
-                            Select Study Degree
+                            Vyberte študijný stupeň
                         </option>
                         <option value="Bc.">Bc.</option>
                         <option value="Ing.">Ing.</option>
@@ -129,12 +129,12 @@ const RequestForm = ({ title, initialValues, onSubmit }: RequestFormProps) => {
 
                 <div>
                     <label className="block text-sm font-medium mb-1">
-                        Study Year
+                        Rok štúdia
                     </label>
                     <input
                         type="number"
                         {...register("studyYear", {
-                            required: "Study Year is required",
+                            required: "Rok štúdia je povinný",
                             min: 1,
                             max: 6,
                         })}
@@ -149,12 +149,12 @@ const RequestForm = ({ title, initialValues, onSubmit }: RequestFormProps) => {
 
                 <div>
                     <label className="block text-sm font-medium mb-1">
-                        Purpose
+                        Účel
                     </label>
                     <input
                         type="text"
                         {...register("purpose", {
-                            required: "Purpose is required",
+                            required: "Účel je povinný",
                         })}
                         className="w-full px-3 py-2 border border-gray-300 rounded"
                     />
@@ -167,11 +167,11 @@ const RequestForm = ({ title, initialValues, onSubmit }: RequestFormProps) => {
 
                 <div>
                     <label className="block text-sm font-medium mb-1">
-                        Reason
+                        Dôvod
                     </label>
                     <textarea
                         {...register("reason", {
-                            required: "Reason is required",
+                            required: "Dôvod je povinný",
                         })}
                         className="w-full px-3 py-2 border border-gray-300 rounded"
                     ></textarea>
@@ -184,7 +184,7 @@ const RequestForm = ({ title, initialValues, onSubmit }: RequestFormProps) => {
 
                 <div>
                     <label className="block text-sm font-medium mb-1">
-                        Attachment (optional)
+                        Príloha (nepovinné)
                     </label>
                     <input
                         type="file"
@@ -197,7 +197,7 @@ const RequestForm = ({ title, initialValues, onSubmit }: RequestFormProps) => {
                     type="submit"
                     className="w-full bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600"
                 >
-                    Submit
+                    Odoslať
                 </button>
             </form>
         </div>
