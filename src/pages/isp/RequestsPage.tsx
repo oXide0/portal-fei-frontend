@@ -1,3 +1,4 @@
+import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import LoadingSpinner from "../../components/LoadingSpinner";
 import { prettifyRequestStatus } from "../../helpers";
@@ -6,16 +7,24 @@ import {
     useDeleteRequestMutation,
     useEvaluateRequestMutation,
     useGetAllRequestsQuery,
+    useGetRequestsByUserIdQuery,
 } from "../../services/isp/request";
-import { RequestStatus } from "../../types/isp/Request";
+import { RequestResponse, RequestStatus } from "../../types/isp/Request";
 
 const RequestsPage = () => {
     const navigate = useNavigate();
-    const userRole = useAppSelector((state) => state.user.role);
-    const isClerk = userRole === "N";
-    const isStudent = userRole === "S";
+    const [requests, setRequests] = useState<RequestResponse[]>([]);
+    const { role, id: userId } = useAppSelector((state) => state.user);
+    const isClerk = role === "N";
+    const isStudent = role === "S";
 
-    const { data, isLoading, refetch } = useGetAllRequestsQuery();
+    const { data, refetch } = useGetAllRequestsQuery(undefined, {
+        skip: isStudent,
+    });
+    const { data: userRequests, refetch: refetchUserRequests } =
+        useGetRequestsByUserIdQuery(userId!, {
+            skip: !isStudent || !userId,
+        });
     const [evaluateRequest] = useEvaluateRequestMutation();
     const [deleteRequest] = useDeleteRequestMutation();
 
@@ -30,17 +39,33 @@ const RequestsPage = () => {
         requestId: string,
         newStatus: RequestStatus
     ) => {
-        console.log(requestId, newStatus);
         await evaluateRequest({ requestId, evaluationStatus: newStatus });
         refetch();
     };
 
-    if (!data || isLoading) return <LoadingSpinner />;
+    useEffect(() => {
+        if (userRequests && isStudent) {
+            setRequests(userRequests);
+        }
+        if (data && isClerk) {
+            setRequests(data);
+        }
+    }, [data, userRequests]);
+
+    useEffect(() => {
+        if (userId && isStudent) {
+            refetchUserRequests();
+        }
+    }, [userId, refetchUserRequests]);
+
+    if (!requests) return <LoadingSpinner />;
 
     return (
         <div className="p-4">
             <div className="flex justify-between pb-4">
-                <h1 className="text-3xl font-bold mb-4">Žiadosti</h1>
+                <h1 className="text-3xl font-bold mb-4">
+                    {isStudent ? "Moje Žiadosti" : "Žiadosti"}
+                </h1>
 
                 {isStudent && (
                     <div className="flex justify-between mb-4">
@@ -71,7 +96,7 @@ const RequestsPage = () => {
                         </tr>
                     </thead>
                     <tbody>
-                        {data.map((request) => (
+                        {requests.map((request) => (
                             <tr key={request.requestId} className="border">
                                 <td className="py-2 px-4 border">
                                     {request.studentName}{" "}
@@ -138,24 +163,31 @@ const RequestsPage = () => {
                                 </td>
                                 {isStudent ? (
                                     <td className="py-2 px-4 border space-x-2 min-w-96">
-                                        <button
-                                            onClick={() =>
-                                                navigate(
-                                                    `/isp/edit-request/${request.requestId}`
-                                                )
-                                            }
-                                            className="bg-yellow-400 text-white px-2 py-1 rounded hover:bg-yellow-500"
-                                        >
-                                            Upraviť
-                                        </button>
-                                        <button
-                                            onClick={() =>
-                                                handleDelete(request.requestId)
-                                            }
-                                            className="bg-red-500 text-white px-2 py-1 rounded hover:bg-red-600"
-                                        >
-                                            Odstrániť
-                                        </button>
+                                        {request.requestStatus !==
+                                            "APPROVED" && (
+                                            <>
+                                                <button
+                                                    onClick={() =>
+                                                        navigate(
+                                                            `/isp/edit-request/${request.requestId}`
+                                                        )
+                                                    }
+                                                    className="bg-yellow-400 text-white px-2 py-1 rounded hover:bg-yellow-500"
+                                                >
+                                                    Upraviť
+                                                </button>
+                                                <button
+                                                    onClick={() =>
+                                                        handleDelete(
+                                                            request.requestId
+                                                        )
+                                                    }
+                                                    className="bg-red-500 text-white px-2 py-1 rounded hover:bg-red-600"
+                                                >
+                                                    Odstrániť
+                                                </button>
+                                            </>
+                                        )}
                                         <button
                                             onClick={() =>
                                                 navigate(

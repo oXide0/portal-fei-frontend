@@ -13,6 +13,10 @@ export const requestApi = ispApi.injectEndpoints({
             query: () => "requests",
             providesTags: ["Request"],
         }),
+        getRequestsByUserId: builder.query<Array<RequestResponse>, string>({
+            query: (userId) => `requests/user/${userId}`,
+            providesTags: ["Request"],
+        }),
         getRequestById: builder.query<RequestResponse, string>({
             query: (requestId) => `requests/${requestId}`,
             providesTags: ["Request"],
@@ -53,6 +57,7 @@ export const requestApi = ispApi.injectEndpoints({
 export const {
     useGetAllRequestsQuery,
     useGetRequestByIdQuery,
+    useGetRequestsByUserIdQuery,
     useCreateRequestMutation,
     useUpdateRequestMutation,
     useEvaluateRequestMutation,
