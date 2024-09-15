@@ -28,7 +28,7 @@ export const router = createBrowserRouter([
                 Component: EditRequestPage,
             },
             {
-                path: "subjects-table",
+                path: "subjects-table/:tableId",
                 Component: SubjectsTablePage,
             },
         ],

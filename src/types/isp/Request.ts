@@ -10,6 +10,7 @@ export interface RequestResponse {
     readonly purpose: string;
     readonly reason: string;
     readonly attachment: string | null;
+    readonly tableId: string;
 }
 
 export interface CreateRequestBody {
@@ -22,4 +23,8 @@ export interface CreateRequestBody {
     purpose: string;
     reason: string;
     attachment: File | null;
+}
+
+export interface UpdateRequestBody extends Partial<CreateRequestBody> {
+    requestId: string;
 }

@@ -1,6 +1,6 @@
 import { configureStore } from "@reduxjs/toolkit";
-import { ispApi } from "../services/isp";
 import userReducer from "../features/userSlice";
+import { ispApi } from "../services/isp/api";
 
 export const store = configureStore({
     reducer: {

@@ -138,7 +138,9 @@ const RequestsPage = () => {
                                     <td className="py-2 px-4 border space-x-2 text-center">
                                         <button
                                             onClick={() =>
-                                                navigate("/subjects-table")
+                                                navigate(
+                                                    `/subjects-table/${request.tableId}`
+                                                )
                                             }
                                             className="bg-blue-500 text-white px-2 py-1 rounded hover:bg-blue-600"
                                         >
@@ -170,6 +172,7 @@ const sampleRequests: RequestResponse[] = [
         purpose: "Internship",
         reason: "Gaining experience",
         attachment: "resume.pdf",
+        tableId: "1",
     },
     {
         requestId: "2",
@@ -183,5 +186,6 @@ const sampleRequests: RequestResponse[] = [
         purpose: "Scholarship",
         reason: "Financial support",
         attachment: null,
+        tableId: "2",
     },
 ];
