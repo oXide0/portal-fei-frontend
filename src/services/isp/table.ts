@@ -19,3 +19,5 @@ export const tableApi = ispApi.injectEndpoints({
         }),
     }),
 });
+
+export const { useGetTableQuery, useEvaluateTableMutation } = tableApi;

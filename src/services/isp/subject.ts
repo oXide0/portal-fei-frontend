@@ -32,3 +32,9 @@ export const subjectApi = ispApi.injectEndpoints({
         }),
     }),
 });
+
+export const {
+    useAddSubjectForTableMutation,
+    useDeleteSubjectForTableMutation,
+    useEvaluateSubjectMutation,
+} = subjectApi;

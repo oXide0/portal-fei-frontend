@@ -1,10 +1,12 @@
+import { useNavigate } from "react-router-dom";
+import { prettifyRequestStatus } from "../../helpers";
 import { useAppSelector } from "../../hooks";
 import { RequestResponse } from "../../types/isp/Request";
-import { useNavigate } from "react-router-dom";
 
 const RequestsPage = () => {
     const navigate = useNavigate();
     const userRole = useAppSelector((state) => state.user.role);
+    const isClerk = userRole === "N";
     const isStudent = userRole === "S";
 
     const handleDelete = (requestId: string) => {
@@ -22,7 +24,7 @@ const RequestsPage = () => {
     return (
         <div className="p-4">
             <div className="flex justify-between pb-4">
-                <h1 className="text-3xl font-bold mb-4">Requests</h1>
+                <h1 className="text-3xl font-bold mb-4">Žiadosti</h1>
 
                 {isStudent && (
                     <div className="flex justify-between mb-4">
@@ -30,7 +32,7 @@ const RequestsPage = () => {
                             onClick={() => navigate("/create-request")}
                             className="bg-green-500 text-white px-4 py-2 rounded hover:bg-green-600"
                         >
-                            Create Request
+                            Vytvoriť žiadosť
                         </button>
                     </div>
                 )}
@@ -39,15 +41,17 @@ const RequestsPage = () => {
                 <table className="min-w-full bg-white border border-gray-200">
                     <thead className="bg-gray-100">
                         <tr>
-                            <th className="py-2 px-4 border">Student Name</th>
-                            <th className="py-2 px-4 border">Study Program</th>
-                            <th className="py-2 px-4 border">Degree</th>
-                            <th className="py-2 px-4 border">Year</th>
-                            <th className="py-2 px-4 border">Status</th>
-                            <th className="py-2 px-4 border">Purpose</th>
-                            <th className="py-2 px-4 border">Reason</th>
-                            <th className="py-2 px-4 border">Attachment</th>
-                            <th className="py-2 px-4 border">Actions</th>
+                            <th className="py-2 px-4 border">Meno študenta</th>
+                            <th className="py-2 px-4 border">
+                                Študijný program
+                            </th>
+                            <th className="py-2 px-4 border">Titul</th>
+                            <th className="py-2 px-4 border">Rok</th>
+                            <th className="py-2 px-4 border">Stav</th>
+                            <th className="py-2 px-4 border">Účel</th>
+                            <th className="py-2 px-4 border">Dôvod</th>
+                            <th className="py-2 px-4 border">Príloha</th>
+                            <th className="py-2 px-4 border">Akcie</th>
                         </tr>
                     </thead>
                     <tbody>
@@ -67,9 +71,7 @@ const RequestsPage = () => {
                                     {request.studyYear}
                                 </td>
                                 <td className="py-2 px-4 border">
-                                    {isStudent ? (
-                                        request.requestStatus
-                                    ) : (
+                                    {isClerk ? (
                                         <select
                                             className="border border-gray-300 rounded px-2 py-1"
                                             value={request.requestStatus}
@@ -81,18 +83,22 @@ const RequestsPage = () => {
                                             }
                                         >
                                             <option value="Approved">
-                                                Approved
+                                                Schválené
                                             </option>
                                             <option value="Declined">
-                                                Declined
+                                                Zamietnuté
                                             </option>
                                             <option value="Pending">
-                                                Pending
+                                                Čakajúce
                                             </option>
                                             <option value="Returned">
-                                                Returned
+                                                Vrátené
                                             </option>
                                         </select>
+                                    ) : (
+                                        prettifyRequestStatus(
+                                            request.requestStatus
+                                        )
                                     )}
                                 </td>
                                 <td className="py-2 px-4 border">
@@ -110,7 +116,7 @@ const RequestsPage = () => {
                                             {request.attachment}
                                         </a>
                                     ) : (
-                                        "No attachment"
+                                        "Žiadna príloha"
                                     )}
                                 </td>
                                 {isStudent ? (
@@ -123,7 +129,7 @@ const RequestsPage = () => {
                                             }
                                             className="bg-yellow-400 text-white px-2 py-1 rounded hover:bg-yellow-500"
                                         >
-                                            Edit
+                                            Upraviť
                                         </button>
                                         <button
                                             onClick={() =>
@@ -131,7 +137,32 @@ const RequestsPage = () => {
                                             }
                                             className="bg-red-500 text-white px-2 py-1 rounded hover:bg-red-600"
                                         >
-                                            Delete
+                                            Odstrániť
+                                        </button>
+                                        <button
+                                            onClick={() =>
+                                                navigate(
+                                                    `/subjects-table/${request.tableId}`
+                                                )
+                                            }
+                                            className={`px-2 py-1 rounded text-white ${
+                                                request.requestStatus ===
+                                                "Approved"
+                                                    ? "bg-blue-500 hover:bg-blue-600"
+                                                    : "bg-gray-400 cursor-not-allowed"
+                                            }`}
+                                            disabled={
+                                                request.requestStatus !==
+                                                "Approved"
+                                            }
+                                            title={
+                                                request.requestStatus !==
+                                                "Approved"
+                                                    ? "Žiadosť nemá stav 'schválená'."
+                                                    : ""
+                                            }
+                                        >
+                                            Zobraziť predmety
                                         </button>
                                     </td>
                                 ) : (
@@ -142,9 +173,24 @@ const RequestsPage = () => {
                                                     `/subjects-table/${request.tableId}`
                                                 )
                                             }
-                                            className="bg-blue-500 text-white px-2 py-1 rounded hover:bg-blue-600"
+                                            className={`px-2 py-1 rounded text-white ${
+                                                request.requestStatus ===
+                                                "Approved"
+                                                    ? "bg-blue-500 hover:bg-blue-600"
+                                                    : "bg-gray-400 cursor-not-allowed"
+                                            }`}
+                                            disabled={
+                                                request.requestStatus !==
+                                                "Approved"
+                                            }
+                                            title={
+                                                request.requestStatus !==
+                                                "Approved"
+                                                    ? "Žiadosť nemá stav 'schválená'."
+                                                    : ""
+                                            }
                                         >
-                                            View Subjects
+                                            Zobraziť predmety
                                         </button>
                                     </td>
                                 )}

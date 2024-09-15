@@ -1,3 +1,5 @@
+export type RequestStatus = "Approved" | "Declined" | "Pending" | "Returned";
+
 export interface RequestResponse {
     readonly requestId: string;
     readonly userId: string;
@@ -6,7 +8,7 @@ export interface RequestResponse {
     readonly studyProgram: string;
     readonly studyDegree: string;
     readonly studyYear: number;
-    readonly requestStatus: "Approved" | "Declined" | "Pending" | "Returned";
+    readonly requestStatus: RequestStatus;
     readonly purpose: string;
     readonly reason: string;
     readonly attachment: string | null;

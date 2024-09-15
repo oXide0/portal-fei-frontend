@@ -2,6 +2,7 @@ import { useNavigate } from "react-router-dom";
 import { TableResponse } from "../../types/isp/Table";
 import { useAppDispatch, useAppSelector } from "../../hooks";
 import { useState } from "react";
+import { prettifyTableStatus } from "../../helpers";
 
 type TableStatus = "Approved" | "Declined" | "Pending";
 
@@ -45,21 +46,12 @@ const SubjectsTablePage = () => {
 
     return (
         <div className="p-4">
-            <h1 className="text-3xl font-bold mb-4">Subjects Table</h1>
+            <h1 className="text-3xl font-bold mb-4">Tabuľka Predmetov</h1>
 
             <div className="mb-6">
-                <h2 className="text-xl font-semibold">Table Information</h2>
-                <p className="mt-2">
-                    <strong>Table ID:</strong> {sampleTableResponse.tableId}
-                </p>
+                <h2 className="text-xl font-semibold">Informácie o Tabuľke</h2>
                 <p>
-                    <strong>User ID:</strong> {sampleTableResponse.userId}
-                </p>
-                <p>
-                    <strong>Request ID:</strong> {sampleTableResponse.requestId}
-                </p>
-                <p>
-                    <strong>Table Status:</strong>{" "}
+                    <strong>Status Tabuľky:</strong>{" "}
                     <span
                         className={`${
                             tableStatus === "Approved"
@@ -69,7 +61,7 @@ const SubjectsTablePage = () => {
                                 : "text-yellow-500"
                         }`}
                     >
-                        {tableStatus}
+                        {prettifyTableStatus(tableStatus)}
                     </span>
                 </p>
                 {!isStudent && (
@@ -78,19 +70,13 @@ const SubjectsTablePage = () => {
                             onClick={() => handleChangeTableStatus("Approved")}
                             className="bg-green-500 text-white px-4 py-2 rounded hover:bg-green-600"
                         >
-                            Approve Table
+                            Schváliť Tabuľku
                         </button>
                         <button
                             onClick={() => handleChangeTableStatus("Declined")}
                             className="bg-red-500 text-white px-4 py-2 rounded hover:bg-red-600 ml-2"
                         >
-                            Decline Table
-                        </button>
-                        <button
-                            onClick={() => handleChangeTableStatus("Pending")}
-                            className="bg-yellow-500 text-white px-4 py-2 rounded hover:bg-yellow-600 ml-2"
-                        >
-                            Set to Pending
+                            Zamietnuť Tabuľku
                         </button>
                     </div>
                 )}
@@ -102,7 +88,7 @@ const SubjectsTablePage = () => {
                         onClick={() => setIsModalOpen(true)}
                         className="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600"
                     >
-                        Add Subject
+                        Pridať Predmet
                     </button>
                 </div>
             )}
@@ -111,10 +97,10 @@ const SubjectsTablePage = () => {
                 <table className="min-w-full bg-white border border-gray-200">
                     <thead className="bg-gray-100">
                         <tr>
-                            <th className="py-2 px-4 border">Subject Name</th>
+                            <th className="py-2 px-4 border">Názov Predmetu</th>
                             <th className="py-2 px-4 border">Status</th>
                             {!isStudent && (
-                                <th className="py-2 px-4 border">Actions</th>
+                                <th className="py-2 px-4 border">Akcie</th>
                             )}
                         </tr>
                     </thead>
@@ -138,14 +124,14 @@ const SubjectsTablePage = () => {
                                             }
                                             className="bg-gray-100 border border-gray-300 rounded px-2 py-1"
                                         >
-                                            <option value="Approved">
-                                                Approved
+                                            <option value="Schválené">
+                                                Schválené
                                             </option>
-                                            <option value="Pending">
-                                                Pending
+                                            <option value="Čaká na schválenie">
+                                                Čaká na schválenie
                                             </option>
-                                            <option value="Declined">
-                                                Declined
+                                            <option value="Zamietnuté">
+                                                Zamietnuté
                                             </option>
                                         </select>
                                     )}
@@ -160,7 +146,7 @@ const SubjectsTablePage = () => {
                                             }
                                             className="bg-red-500 text-white px-2 py-1 rounded hover:bg-red-600"
                                         >
-                                            Delete
+                                            Vymazať
                                         </button>
                                     </td>
                                 )}
@@ -188,8 +174,6 @@ const AddSubjectModal = ({
 }) => {
     const [subjectName, setSubjectName] = useState("");
     const [subjectStatus, setSubjectStatus] = useState("Pending");
-    const navigate = useNavigate();
-    const dispatch = useAppDispatch(); // Assuming you use Redux for state management
 
     const handleSubmit = (e: React.FormEvent) => {
         e.preventDefault();

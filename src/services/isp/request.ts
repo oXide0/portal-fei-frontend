@@ -32,3 +32,10 @@ export const requestApi = ispApi.injectEndpoints({
         }),
     }),
 });
+
+export const {
+    useGetAllRequestsQuery,
+    useCreateRequestMutation,
+    useUpdateRequestMutation,
+    useDeleteRequestMutation,
+} = requestApi;
