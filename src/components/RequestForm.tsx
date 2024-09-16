@@ -30,7 +30,6 @@ const RequestForm = ({ title, initialValues, onSubmit }: RequestFormProps) => {
     });
 
     const onSubmitData: SubmitHandler<IFormInput> = (data) => {
-        console.log(data);
         onSubmit(data);
     };
 
@@ -185,10 +184,10 @@ const RequestForm = ({ title, initialValues, onSubmit }: RequestFormProps) => {
 
                 <div>
                     <label className="block text-sm font-medium mb-1">
-                        Príloha (nepovinné)
+                        Odkaz na prílohu (nepovinné)
                     </label>
                     <input
-                        type="file"
+                        type="url"
                         {...register("attachment")}
                         className="w-full px-3 py-2 border border-gray-300 rounded"
                     />

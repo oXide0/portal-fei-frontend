@@ -1,6 +1,6 @@
 import { useKeycloak } from "@react-keycloak/web";
 import { useEffect } from "react";
-import { Outlet } from "react-router-dom";
+import { Outlet, useNavigate } from "react-router-dom";
 import { setId, setRole, setToken } from "../features/userSlice";
 import { parseIdToken } from "../helpers";
 import { useAppDispatch } from "../hooks/redux-hooks";
@@ -21,6 +21,7 @@ export default Layout;
 
 const ProtectedRoute = ({ children }: { children: React.ReactNode }) => {
     const dispatch = useAppDispatch();
+    const navigate = useNavigate();
     const { keycloak } = useKeycloak();
     const isAuthenticated = keycloak.authenticated;
     console.log(keycloak);
@@ -28,6 +29,7 @@ const ProtectedRoute = ({ children }: { children: React.ReactNode }) => {
     useEffect(() => {
         if (!isAuthenticated) {
             keycloak.login({ redirectUri: window.location.origin });
+            navigate("/");
         }
         if (keycloak.idToken) {
             const parsedToken = parseIdToken(keycloak.idToken);
@@ -35,7 +37,7 @@ const ProtectedRoute = ({ children }: { children: React.ReactNode }) => {
             dispatch(setToken(keycloak.idToken));
             dispatch(setRole(parsedToken.employee_type));
         }
-    }, [isAuthenticated]);
+    }, [isAuthenticated, keycloak]);
 
     return isAuthenticated ? children : null;
 };

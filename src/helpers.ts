@@ -1,4 +1,5 @@
 import { RequestStatus } from "./types/isp/Request";
+import { SubjectStatus } from "./types/isp/Subject";
 import { TableStatus } from "./types/isp/Table";
 
 export const parseIdToken = (idToken: string) => {
@@ -39,6 +40,20 @@ export const prettifyRequestStatus = (status: RequestStatus): string => {
 };
 
 export const prettifyTableStatus = (status: TableStatus): string => {
+    if (status === "APPROVED") {
+        return "Schválené";
+    }
+    if (status === "DECLINED") {
+        return "Zamietnuté";
+    }
+    if (status === "PENDING") {
+        return "Čaká na schválenie";
+    }
+
+    throw new Error(`Unhandled status: ${status}`);
+};
+
+export const prettifySubjectStatus = (status: SubjectStatus): string => {
     if (status === "APPROVED") {
         return "Schválené";
     }

@@ -1,11 +1,14 @@
 import { useState } from "react";
+import Breadcrumbs from "../../components/Breadcrumbs";
+import Button from "../../components/Button";
 import LoadingSpinner from "../../components/LoadingSpinner";
-import { prettifyTableStatus } from "../../helpers";
+import { prettifySubjectStatus, prettifyTableStatus } from "../../helpers";
 import { useAppSelector } from "../../hooks/redux-hooks";
 import { useRequiredParam } from "../../hooks/useRequiredParam";
 import {
     useAddSubjectForTableMutation,
     useDeleteSubjectForTableMutation,
+    useEvaluateSubjectMutation,
 } from "../../services/isp/subject";
 import {
     useEvaluateTableMutation,
@@ -13,8 +16,6 @@ import {
 } from "../../services/isp/table";
 import { SubjectStatus } from "../../types/isp/Subject";
 import { TableStatus } from "../../types/isp/Table";
-import Button from "../../components/Button";
-import Breadcrumbs from "../../components/Breadcrumbs";
 
 const SubjectsTablePage = () => {
     const tableId = useRequiredParam("tableId");
@@ -24,6 +25,7 @@ const SubjectsTablePage = () => {
 
     const { data, isLoading, refetch } = useGetTableQuery(tableId);
     const [evaluateTable] = useEvaluateTableMutation();
+    const [evaluateSubject] = useEvaluateSubjectMutation();
     const [addSubject] = useAddSubjectForTableMutation();
     const [deleteSubject] = useDeleteSubjectForTableMutation();
 
@@ -36,12 +38,12 @@ const SubjectsTablePage = () => {
         }
     };
 
-    const handleChangeSubjectStatus = (
+    const handleChangeSubjectStatus = async (
         subjectId: string,
-        newStatus: string
+        newStatus: SubjectStatus
     ) => {
-        // Logic to change subject status (e.g., call to API to update status)
-        // Assuming you have a mutation for updating subject status
+        await evaluateSubject({ subjectId, subjectStatus: newStatus });
+        refetch();
     };
 
     const handleChangeTableStatus = async (newStatus: TableStatus) => {
@@ -112,12 +114,12 @@ const SubjectsTablePage = () => {
                 </div>
             )}
 
-            <div className="overflow-x-auto">
+            <div className="overflow-x-auto max-w-5xl">
                 <table className="min-w-full bg-white border border-gray-200">
                     <thead className="bg-gray-100">
                         <tr>
                             <th className="py-2 px-4 border">Názov Predmetu</th>
-                            <th className="py-2 px-4 border">Status</th>
+                            <th className="py-2 px-4 border">Stav</th>
                             {!isStudent && (
                                 <th className="py-2 px-4 border">Akcie</th>
                             )}
@@ -131,25 +133,28 @@ const SubjectsTablePage = () => {
                                 </td>
                                 <td className="py-2 px-4 border">
                                     {isStudent ? (
-                                        subject.subjectStatus
+                                        prettifySubjectStatus(
+                                            subject.subjectStatus
+                                        )
                                     ) : (
                                         <select
                                             value={subject.subjectStatus}
                                             onChange={(e) =>
                                                 handleChangeSubjectStatus(
                                                     subject.subjectId,
-                                                    e.target.value
+                                                    e.target
+                                                        .value as SubjectStatus
                                                 )
                                             }
                                             className="bg-gray-100 border border-gray-300 rounded px-2 py-1"
                                         >
-                                            <option value="Schválené">
+                                            <option value="APPROVED">
                                                 Schválené
                                             </option>
-                                            <option value="Čaká na schválenie">
+                                            <option value="PENDING">
                                                 Čaká na schválenie
                                             </option>
-                                            <option value="Zamietnuté">
+                                            <option value="DECLINED">
                                                 Zamietnuté
                                             </option>
                                         </select>

@@ -36,7 +36,7 @@ const EditRequestPage = () => {
             studyYear: data.studyYear,
             purpose: data.purpose,
             reason: data.reason,
-            attachment: "",
+            attachment: data.attachment,
         });
         navigate("/isp/requests");
     };
