@@ -6,9 +6,9 @@ import { useGetRequestByIdQuery, useUpdateRequestMutation } from '../../services
 import { useAppSelector } from '../../hooks/redux-hooks';
 
 const EditRequestPage = () => {
+    const navigate = useNavigate();
     const requestId = useRequiredParam('requestId');
     const userId = useAppSelector((state) => state.user.id);
-    const navigate = useNavigate();
     const { data } = useGetRequestByIdQuery(requestId);
     const [updateRequest] = useUpdateRequestMutation();
 
@@ -23,23 +23,27 @@ const EditRequestPage = () => {
             return;
         }
 
-        await updateRequest({
-            requestId: requestId,
-            userId: userId,
-            studentName: data.studentName,
-            studentSurname: data.studentSurname,
-            studyProgram: data.studyProgram,
-            studyDegree: data.studyDegree,
-            studyYear: data.studyYear,
-            purpose: data.purpose,
-            reason: data.reason,
-            attachment: data.attachment,
-        });
+        try {
+            await updateRequest({
+                requestId: requestId,
+                userId: userId,
+                studentName: data.studentName,
+                studentSurname: data.studentSurname,
+                studyProgram: data.studyProgram,
+                studyDegree: data.studyDegree,
+                studyYear: data.studyYear,
+                purpose: data.purpose,
+                reason: data.reason,
+                attachment: data.attachment,
+            });
+        } catch (error) {
+            alert('Failed to update request');
+        }
         navigate('/isp/requests');
     };
 
     if (!data) return <LoadingSpinner />;
-    return <RequestForm title="Edit Request" initialValues={data} onSubmit={onSubmit} />;
+    return <RequestForm title="Upraviť žiadosť" initialValues={data} onSubmit={onSubmit} />;
 };
 
 export default EditRequestPage;

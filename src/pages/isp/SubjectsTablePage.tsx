@@ -16,17 +16,15 @@ import { TableStatus } from '../../types/isp/Table';
 
 const SubjectsTablePage = () => {
     const tableId = useRequiredParam('tableId');
+    const [isModalOpen, setIsModalOpen] = useState(false);
     const { id: userId, role } = useAppSelector((state) => state.user);
     const isStudent = role === 'S';
-    const [isModalOpen, setIsModalOpen] = useState(false);
 
     const { data, isLoading, refetch } = useGetTableQuery(tableId);
     const [evaluateTable] = useEvaluateTableMutation();
     const [evaluateSubject] = useEvaluateSubjectMutation();
     const [addSubject] = useAddSubjectForTableMutation();
     const [deleteSubject] = useDeleteSubjectForTableMutation();
-
-    if (isLoading || !data) return <LoadingSpinner />;
 
     const handleDeleteSubject = async (subjectId: string) => {
         if (window.confirm('Are you sure you want to delete this subject?')) {
@@ -36,7 +34,11 @@ const SubjectsTablePage = () => {
     };
 
     const handleChangeSubjectStatus = async (subjectId: string, newStatus: SubjectStatus) => {
-        await evaluateSubject({ subjectId, subjectStatus: newStatus });
+        try {
+            await evaluateSubject({ subjectId, subjectStatus: newStatus });
+        } catch (error) {
+            alert('Failed to update subject status');
+        }
         refetch();
     };
 
@@ -46,12 +48,18 @@ const SubjectsTablePage = () => {
             return;
         }
 
-        await evaluateTable({
-            tableId,
-            tableStatus: newStatus,
-            userId: userId,
-        });
+        try {
+            await evaluateTable({
+                tableId,
+                tableStatus: newStatus,
+                userId: userId,
+            });
+        } catch (error) {
+            alert('Failed to update table status');
+        }
     };
+
+    if (isLoading || !data) return <LoadingSpinner />;
 
     return (
         <div className="p-4">

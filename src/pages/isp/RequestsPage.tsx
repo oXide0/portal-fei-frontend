@@ -16,7 +16,7 @@ import Breadcrumbs from '../../components/Breadcrumbs';
 
 const RequestsPage = () => {
     const navigate = useNavigate();
-    const [requests, setRequests] = useState<RequestResponse[]>([]);
+    const [requests, setRequests] = useState<RequestResponse[]>();
     const { role, id: userId } = useAppSelector((state) => state.user);
     const isClerk = role === 'N';
     const isStudent = role === 'S';
@@ -24,7 +24,7 @@ const RequestsPage = () => {
     const { data, refetch } = useGetAllRequestsQuery(undefined, {
         skip: isStudent,
     });
-    const { data: userRequests, refetch: refetchUserRequests } = useGetRequestsByUserIdQuery(userId!, {
+    const { data: userRequests } = useGetRequestsByUserIdQuery(userId!, {
         skip: !isStudent || !userId,
     });
     const [evaluateRequest] = useEvaluateRequestMutation();
@@ -38,24 +38,22 @@ const RequestsPage = () => {
     };
 
     const handleStatusChange = async (requestId: string, newStatus: RequestStatus) => {
-        await evaluateRequest({ requestId, evaluationStatus: newStatus });
+        try {
+            await evaluateRequest({ requestId, evaluationStatus: newStatus });
+        } catch (error) {
+            alert('Failed to update request status');
+        }
         refetch();
     };
 
     useEffect(() => {
         if (userRequests && isStudent) {
-            setRequests(userRequests);
+            setRequests(userRequests ?? []);
         }
         if (data && isClerk) {
-            setRequests(data);
+            setRequests(data ?? []);
         }
     }, [data, userRequests]);
-
-    useEffect(() => {
-        if (userId && isStudent) {
-            refetchUserRequests();
-        }
-    }, [userId, refetchUserRequests]);
 
     if (!requests) return <LoadingSpinner />;
 
