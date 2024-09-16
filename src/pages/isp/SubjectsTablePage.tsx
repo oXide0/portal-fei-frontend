@@ -13,6 +13,8 @@ import {
 } from "../../services/isp/table";
 import { SubjectStatus } from "../../types/isp/Subject";
 import { TableStatus } from "../../types/isp/Table";
+import Button from "../../components/Button";
+import Breadcrumbs from "../../components/Breadcrumbs";
 
 const SubjectsTablePage = () => {
     const tableId = useRequiredParam("tableId");
@@ -57,6 +59,16 @@ const SubjectsTablePage = () => {
 
     return (
         <div className="p-4">
+            <Breadcrumbs
+                links={[
+                    { name: "Kategórie", path: "/" },
+                    { name: "ISP Žiadosti", path: "/isp/requests" },
+                    {
+                        name: "Tabuľka Predmetov",
+                        path: "/isp/subjects-table/:tableId",
+                    },
+                ]}
+            />
             <h1 className="text-3xl font-bold mb-4">Tabuľka Predmetov</h1>
 
             <div className="mb-6">
@@ -75,31 +87,28 @@ const SubjectsTablePage = () => {
                     </h2>
                 </div>
                 {!isStudent && (
-                    <div className="mt-4">
-                        <button
+                    <div className="mt-4 flex gap-3">
+                        <Button
+                            className="bg-green-600 hover:bg-green-700"
                             onClick={() => handleChangeTableStatus("APPROVED")}
-                            className="bg-green-500 text-white px-4 py-2 rounded hover:bg-green-600"
                         >
                             Schváliť Tabuľku
-                        </button>
-                        <button
+                        </Button>
+                        <Button
+                            className="bg-red-500 hover:bg-red-600"
                             onClick={() => handleChangeTableStatus("DECLINED")}
-                            className="bg-red-500 text-white px-4 py-2 rounded hover:bg-red-600 ml-2"
                         >
                             Zamietnuť Tabuľku
-                        </button>
+                        </Button>
                     </div>
                 )}
             </div>
 
             {!isStudent && (
                 <div className="mb-4">
-                    <button
-                        onClick={() => setIsModalOpen(true)}
-                        className="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600"
-                    >
+                    <Button onClick={() => setIsModalOpen(true)}>
                         Pridať Predmet
-                    </button>
+                    </Button>
                 </div>
             )}
 
@@ -147,17 +156,17 @@ const SubjectsTablePage = () => {
                                     )}
                                 </td>
                                 {!isStudent && (
-                                    <td className="py-2 px-4 border space-x-2">
-                                        <button
+                                    <td className="py-2 px-4 border space-x-2 text-center">
+                                        <Button
+                                            variant="transparent"
                                             onClick={() =>
                                                 handleDeleteSubject(
                                                     subject.subjectId
                                                 )
                                             }
-                                            className="bg-red-500 text-white px-2 py-1 rounded hover:bg-red-600"
                                         >
                                             Vymazať
-                                        </button>
+                                        </Button>
                                     </td>
                                 )}
                             </tr>
@@ -216,7 +225,7 @@ const AddSubjectModal = ({
                 <div className="fixed inset-0 bg-gray-500 bg-opacity-75 flex justify-center items-center z-50 w-">
                     <div className="bg-white p-6 rounded shadow-lg max-w-md mx-auto w-96">
                         <h2 className="text-2xl font-semibold mb-4">
-                            Add New Subject
+                            Pridať nový predmet
                         </h2>
                         <form onSubmit={handleSubmit}>
                             <div className="mb-4">
@@ -224,7 +233,7 @@ const AddSubjectModal = ({
                                     className="block text-gray-700 text-sm font-bold mb-2"
                                     htmlFor="subjectName"
                                 >
-                                    Subject Name
+                                    Názov predmetu
                                 </label>
                                 <input
                                     id="subjectName"
@@ -242,7 +251,7 @@ const AddSubjectModal = ({
                                     className="block text-gray-700 text-sm font-bold mb-2"
                                     htmlFor="subjectStatus"
                                 >
-                                    Status
+                                    Stav
                                 </label>
                                 <select
                                     id="subjectStatus"
@@ -254,25 +263,20 @@ const AddSubjectModal = ({
                                     }
                                     className="border border-gray-300 rounded px-3 py-2 w-full"
                                 >
-                                    <option value="Pending">Pending</option>
-                                    <option value="Approved">Approved</option>
-                                    <option value="Declined">Declined</option>
+                                    <option value="Pending">Čakajúci</option>
+                                    <option value="Approved">Schválený</option>
+                                    <option value="Declined">Zamietnutý</option>
                                 </select>
                             </div>
                             <div className="flex justify-end space-x-2">
-                                <button
+                                <Button
+                                    variant="ghost"
                                     type="button"
                                     onClick={onClose}
-                                    className="bg-gray-500 text-white px-4 py-2 rounded hover:bg-gray-600"
                                 >
-                                    Cancel
-                                </button>
-                                <button
-                                    type="submit"
-                                    className="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600"
-                                >
-                                    Add Subject
-                                </button>
+                                    Zrušiť
+                                </Button>
+                                <Button type="submit">Pridať predmet</Button>
                             </div>
                         </form>
                     </div>

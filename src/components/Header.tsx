@@ -2,8 +2,8 @@ import { UserCircleIcon } from "@heroicons/react/24/solid";
 import { useKeycloak } from "@react-keycloak/web";
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
-import tukeLogoImg from "../assets/tuke-logo.png";
 import tukeImg from "../assets/tuke-2.png";
+import tukeLogoImg from "../assets/tuke-logo.png";
 
 const Header = () => {
     const navigate = useNavigate();

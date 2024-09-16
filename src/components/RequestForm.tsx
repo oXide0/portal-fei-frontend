@@ -1,5 +1,6 @@
 import { useEffect } from "react";
 import { useForm, SubmitHandler } from "react-hook-form";
+import Button from "./Button";
 
 interface RequestFormProps {
     title: string;
@@ -193,12 +194,11 @@ const RequestForm = ({ title, initialValues, onSubmit }: RequestFormProps) => {
                     />
                 </div>
 
-                <button
-                    type="submit"
-                    className="w-full bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600"
-                >
-                    Odoslať
-                </button>
+                <div>
+                    <Button type="submit" className="w-full">
+                        Odoslať
+                    </Button>
+                </div>
             </form>
         </div>
     );

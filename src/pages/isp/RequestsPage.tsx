@@ -10,6 +10,9 @@ import {
     useGetRequestsByUserIdQuery,
 } from "../../services/isp/request";
 import { RequestResponse, RequestStatus } from "../../types/isp/Request";
+import Button from "../../components/Button";
+import { TrashIcon, PencilIcon } from "@heroicons/react/24/solid";
+import Breadcrumbs from "../../components/Breadcrumbs";
 
 const RequestsPage = () => {
     const navigate = useNavigate();
@@ -62,6 +65,12 @@ const RequestsPage = () => {
 
     return (
         <div className="p-4">
+            <Breadcrumbs
+                links={[
+                    { name: "Kategórie", path: "/" },
+                    { name: "ISP Žiadosti", path: "/isp/requests" },
+                ]}
+            />
             <div className="flex justify-between pb-4">
                 <h1 className="text-3xl font-bold mb-4">
                     {isStudent ? "Moje Žiadosti" : "Žiadosti"}
@@ -69,12 +78,9 @@ const RequestsPage = () => {
 
                 {isStudent && (
                     <div className="flex justify-between mb-4">
-                        <button
-                            onClick={() => navigate("/isp/create-request")}
-                            className="bg-green-500 text-white px-4 py-2 rounded hover:bg-green-600"
-                        >
+                        <Button onClick={() => navigate("/isp/create-request")}>
                             Vytvoriť žiadosť
-                        </button>
+                        </Button>
                     </div>
                 )}
             </div>
@@ -162,44 +168,43 @@ const RequestsPage = () => {
                                     )}
                                 </td>
                                 {isStudent ? (
-                                    <td className="py-2 px-4 border space-x-2 min-w-96">
+                                    <td className="py-2 px-4 border space-x-2 min-w-96 flex items-center">
                                         {request.requestStatus !==
                                             "APPROVED" && (
                                             <>
-                                                <button
+                                                <Button
+                                                    variant="ghost"
                                                     onClick={() =>
                                                         navigate(
                                                             `/isp/edit-request/${request.requestId}`
                                                         )
                                                     }
-                                                    className="bg-yellow-400 text-white px-2 py-1 rounded hover:bg-yellow-500"
+                                                    startIcon={
+                                                        <PencilIcon className="h-4 w-4 mr-1" />
+                                                    }
                                                 >
                                                     Upraviť
-                                                </button>
-                                                <button
+                                                </Button>
+                                                <Button
                                                     onClick={() =>
                                                         handleDelete(
                                                             request.requestId
                                                         )
                                                     }
-                                                    className="bg-red-500 text-white px-2 py-1 rounded hover:bg-red-600"
+                                                    startIcon={
+                                                        <TrashIcon className="h-4 w-4 mr-1" />
+                                                    }
                                                 >
                                                     Odstrániť
-                                                </button>
+                                                </Button>
                                             </>
                                         )}
-                                        <button
+                                        <Button
                                             onClick={() =>
                                                 navigate(
                                                     `/isp/subjects-table/${request.tableId}`
                                                 )
                                             }
-                                            className={`px-2 py-1 rounded text-white ${
-                                                request.requestStatus ===
-                                                "APPROVED"
-                                                    ? "bg-blue-500 hover:bg-blue-600"
-                                                    : "bg-gray-400 cursor-not-allowed"
-                                            }`}
                                             disabled={
                                                 request.requestStatus !==
                                                 "APPROVED"
@@ -212,22 +217,16 @@ const RequestsPage = () => {
                                             }
                                         >
                                             Zobraziť predmety
-                                        </button>
+                                        </Button>
                                     </td>
                                 ) : (
                                     <td className="py-2 px-4 border space-x-2 text-center">
-                                        <button
+                                        <Button
                                             onClick={() =>
                                                 navigate(
                                                     `/isp/subjects-table/${request.tableId}`
                                                 )
                                             }
-                                            className={`px-2 py-1 rounded text-white ${
-                                                request.requestStatus ===
-                                                "APPROVED"
-                                                    ? "bg-blue-500 hover:bg-blue-600"
-                                                    : "bg-gray-400 cursor-not-allowed"
-                                            }`}
                                             disabled={
                                                 request.requestStatus !==
                                                 "APPROVED"
@@ -240,7 +239,7 @@ const RequestsPage = () => {
                                             }
                                         >
                                             Zobraziť predmety
-                                        </button>
+                                        </Button>
                                     </td>
                                 )}
                             </tr>
