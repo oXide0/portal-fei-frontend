@@ -1,26 +1,23 @@
-import { useState } from "react";
-import Breadcrumbs from "../../components/Breadcrumbs";
-import Button from "../../components/Button";
-import LoadingSpinner from "../../components/LoadingSpinner";
-import { prettifySubjectStatus, prettifyTableStatus } from "../../helpers";
-import { useAppSelector } from "../../hooks/redux-hooks";
-import { useRequiredParam } from "../../hooks/useRequiredParam";
+import { useState } from 'react';
+import Breadcrumbs from '../../components/Breadcrumbs';
+import Button from '../../components/Button';
+import LoadingSpinner from '../../components/LoadingSpinner';
+import { prettifySubjectStatus, prettifyTableStatus } from '../../helpers';
+import { useAppSelector } from '../../hooks/redux-hooks';
+import { useRequiredParam } from '../../hooks/useRequiredParam';
 import {
     useAddSubjectForTableMutation,
     useDeleteSubjectForTableMutation,
     useEvaluateSubjectMutation,
-} from "../../services/isp/subject";
-import {
-    useEvaluateTableMutation,
-    useGetTableQuery,
-} from "../../services/isp/table";
-import { SubjectStatus } from "../../types/isp/Subject";
-import { TableStatus } from "../../types/isp/Table";
+} from '../../services/isp/subject';
+import { useEvaluateTableMutation, useGetTableQuery } from '../../services/isp/table';
+import { SubjectStatus } from '../../types/isp/Subject';
+import { TableStatus } from '../../types/isp/Table';
 
 const SubjectsTablePage = () => {
-    const tableId = useRequiredParam("tableId");
+    const tableId = useRequiredParam('tableId');
     const { id: userId, role } = useAppSelector((state) => state.user);
-    const isStudent = role === "S";
+    const isStudent = role === 'S';
     const [isModalOpen, setIsModalOpen] = useState(false);
 
     const { data, isLoading, refetch } = useGetTableQuery(tableId);
@@ -32,23 +29,20 @@ const SubjectsTablePage = () => {
     if (isLoading || !data) return <LoadingSpinner />;
 
     const handleDeleteSubject = async (subjectId: string) => {
-        if (window.confirm("Are you sure you want to delete this subject?")) {
+        if (window.confirm('Are you sure you want to delete this subject?')) {
             await deleteSubject(subjectId);
             refetch();
         }
     };
 
-    const handleChangeSubjectStatus = async (
-        subjectId: string,
-        newStatus: SubjectStatus
-    ) => {
+    const handleChangeSubjectStatus = async (subjectId: string, newStatus: SubjectStatus) => {
         await evaluateSubject({ subjectId, subjectStatus: newStatus });
         refetch();
     };
 
     const handleChangeTableStatus = async (newStatus: TableStatus) => {
         if (!userId) {
-            alert("User id not found");
+            alert('User id not found');
             return;
         }
 
@@ -63,11 +57,11 @@ const SubjectsTablePage = () => {
         <div className="p-4">
             <Breadcrumbs
                 links={[
-                    { name: "Kategórie", path: "/" },
-                    { name: "ISP Žiadosti", path: "/isp/requests" },
+                    { name: 'Kategórie', path: '/' },
+                    { name: 'ISP Žiadosti', path: '/isp/requests' },
                     {
-                        name: "Tabuľka Predmetov",
-                        path: "/isp/subjects-table/:tableId",
+                        name: 'Tabuľka Predmetov',
+                        path: '/isp/subjects-table/:tableId',
                     },
                 ]}
             />
@@ -78,11 +72,11 @@ const SubjectsTablePage = () => {
                     <h2 className="text-xl font-semibold">Status Tabuľky:</h2>
                     <h2
                         className={`text-xl font-semibold ${
-                            data.tableStatus === "APPROVED"
-                                ? "text-green-500"
-                                : data.tableStatus === "DECLINED"
-                                ? "text-red-500"
-                                : "text-yellow-500"
+                            data.tableStatus === 'APPROVED'
+                                ? 'text-green-500'
+                                : data.tableStatus === 'DECLINED'
+                                  ? 'text-red-500'
+                                  : 'text-yellow-500'
                         }`}
                     >
                         {prettifyTableStatus(data.tableStatus)}
@@ -92,13 +86,13 @@ const SubjectsTablePage = () => {
                     <div className="mt-4 flex gap-3">
                         <Button
                             className="bg-green-600 hover:bg-green-700"
-                            onClick={() => handleChangeTableStatus("APPROVED")}
+                            onClick={() => handleChangeTableStatus('APPROVED')}
                         >
                             Schváliť Tabuľku
                         </Button>
                         <Button
                             className="bg-red-500 hover:bg-red-600"
-                            onClick={() => handleChangeTableStatus("DECLINED")}
+                            onClick={() => handleChangeTableStatus('DECLINED')}
                         >
                             Zamietnuť Tabuľku
                         </Button>
@@ -108,9 +102,7 @@ const SubjectsTablePage = () => {
 
             {!isStudent && (
                 <div className="mb-4">
-                    <Button onClick={() => setIsModalOpen(true)}>
-                        Pridať Predmet
-                    </Button>
+                    <Button onClick={() => setIsModalOpen(true)}>Pridať Predmet</Button>
                 </div>
             )}
 
@@ -120,43 +112,30 @@ const SubjectsTablePage = () => {
                         <tr>
                             <th className="py-2 px-4 border">Názov Predmetu</th>
                             <th className="py-2 px-4 border">Stav</th>
-                            {!isStudent && (
-                                <th className="py-2 px-4 border">Akcie</th>
-                            )}
+                            {!isStudent && <th className="py-2 px-4 border">Akcie</th>}
                         </tr>
                     </thead>
                     <tbody>
                         {data.subjects.map((subject) => (
                             <tr key={subject.subjectId} className="border">
-                                <td className="py-2 px-4 border">
-                                    {subject.name}
-                                </td>
+                                <td className="py-2 px-4 border">{subject.name}</td>
                                 <td className="py-2 px-4 border">
                                     {isStudent ? (
-                                        prettifySubjectStatus(
-                                            subject.subjectStatus
-                                        )
+                                        prettifySubjectStatus(subject.subjectStatus)
                                     ) : (
                                         <select
                                             value={subject.subjectStatus}
                                             onChange={(e) =>
                                                 handleChangeSubjectStatus(
                                                     subject.subjectId,
-                                                    e.target
-                                                        .value as SubjectStatus
+                                                    e.target.value as SubjectStatus,
                                                 )
                                             }
                                             className="bg-gray-100 border border-gray-300 rounded px-2 py-1"
                                         >
-                                            <option value="APPROVED">
-                                                Schválené
-                                            </option>
-                                            <option value="PENDING">
-                                                Čaká na schválenie
-                                            </option>
-                                            <option value="DECLINED">
-                                                Zamietnuté
-                                            </option>
+                                            <option value="APPROVED">Schválené</option>
+                                            <option value="PENDING">Čaká na schválenie</option>
+                                            <option value="DECLINED">Zamietnuté</option>
                                         </select>
                                     )}
                                 </td>
@@ -164,11 +143,7 @@ const SubjectsTablePage = () => {
                                     <td className="py-2 px-4 border space-x-2 text-center">
                                         <Button
                                             variant="transparent"
-                                            onClick={() =>
-                                                handleDeleteSubject(
-                                                    subject.subjectId
-                                                )
-                                            }
+                                            onClick={() => handleDeleteSubject(subject.subjectId)}
                                         >
                                             Vymazať
                                         </Button>
@@ -183,7 +158,7 @@ const SubjectsTablePage = () => {
                 isOpen={isModalOpen}
                 onSubmit={async (subjectName, subjectStatus) => {
                     if (!userId) {
-                        alert("User id not found");
+                        alert('User id not found');
                         return;
                     }
 
@@ -209,14 +184,9 @@ interface AddSubjectModalProps {
     onSubmit: (subjectName: string, subjectStatus: SubjectStatus) => void;
 }
 
-const AddSubjectModal = ({
-    isOpen,
-    onClose,
-    onSubmit,
-}: AddSubjectModalProps) => {
-    const [subjectName, setSubjectName] = useState("");
-    const [subjectStatus, setSubjectStatus] =
-        useState<SubjectStatus>("PENDING");
+const AddSubjectModal = ({ isOpen, onClose, onSubmit }: AddSubjectModalProps) => {
+    const [subjectName, setSubjectName] = useState('');
+    const [subjectStatus, setSubjectStatus] = useState<SubjectStatus>('PENDING');
 
     const handleSubmit = (e: React.FormEvent) => {
         e.preventDefault();
@@ -229,43 +199,29 @@ const AddSubjectModal = ({
             {isOpen && (
                 <div className="fixed inset-0 bg-gray-500 bg-opacity-75 flex justify-center items-center z-50 w-">
                     <div className="bg-white p-6 rounded shadow-lg max-w-md mx-auto w-96">
-                        <h2 className="text-2xl font-semibold mb-4">
-                            Pridať nový predmet
-                        </h2>
+                        <h2 className="text-2xl font-semibold mb-4">Pridať nový predmet</h2>
                         <form onSubmit={handleSubmit}>
                             <div className="mb-4">
-                                <label
-                                    className="block text-gray-700 text-sm font-bold mb-2"
-                                    htmlFor="subjectName"
-                                >
+                                <label className="block text-gray-700 text-sm font-bold mb-2" htmlFor="subjectName">
                                     Názov predmetu
                                 </label>
                                 <input
                                     id="subjectName"
                                     type="text"
                                     value={subjectName}
-                                    onChange={(e) =>
-                                        setSubjectName(e.target.value)
-                                    }
+                                    onChange={(e) => setSubjectName(e.target.value)}
                                     required
                                     className="border border-gray-300 rounded px-3 py-2 w-full"
                                 />
                             </div>
                             <div className="mb-4">
-                                <label
-                                    className="block text-gray-700 text-sm font-bold mb-2"
-                                    htmlFor="subjectStatus"
-                                >
+                                <label className="block text-gray-700 text-sm font-bold mb-2" htmlFor="subjectStatus">
                                     Stav
                                 </label>
                                 <select
                                     id="subjectStatus"
                                     value={subjectStatus}
-                                    onChange={(e) =>
-                                        setSubjectStatus(
-                                            e.target.value as SubjectStatus
-                                        )
-                                    }
+                                    onChange={(e) => setSubjectStatus(e.target.value as SubjectStatus)}
                                     className="border border-gray-300 rounded px-3 py-2 w-full"
                                 >
                                     <option value="Pending">Čakajúci</option>
@@ -274,11 +230,7 @@ const AddSubjectModal = ({
                                 </select>
                             </div>
                             <div className="flex justify-end space-x-2">
-                                <Button
-                                    variant="ghost"
-                                    type="button"
-                                    onClick={onClose}
-                                >
+                                <Button variant="ghost" type="button" onClick={onClose}>
                                     Zrušiť
                                 </Button>
                                 <Button type="submit">Pridať predmet</Button>

@@ -1,4 +1,4 @@
-export type SubjectStatus = "APPROVED" | "DECLINED" | "PENDING";
+export type SubjectStatus = 'APPROVED' | 'DECLINED' | 'PENDING';
 
 export interface SubjectInfo {
     readonly subjectId: string;

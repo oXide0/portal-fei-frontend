@@ -1,6 +1,6 @@
-import Card from "../components/Card";
-import etdImg from "../assets/etd.png";
-import { useNavigate } from "react-router-dom";
+import Card from '../components/Card';
+import etdImg from '../assets/etd.png';
+import { useNavigate } from 'react-router-dom';
 
 const CategoryPage = () => {
     const navigate = useNavigate();
@@ -11,14 +11,8 @@ const CategoryPage = () => {
                 <Card
                     title="isp"
                     description="individuálny študijný program"
-                    logo={
-                        <img
-                            src={etdImg}
-                            alt="TUKE"
-                            style={{ maxWidth: "100px" }}
-                        />
-                    }
-                    onClick={() => navigate("/isp/requests")}
+                    logo={<img src={etdImg} alt="TUKE" style={{ maxWidth: '100px' }} />}
+                    onClick={() => navigate('/isp/requests')}
                 />
             </div>
         </div>

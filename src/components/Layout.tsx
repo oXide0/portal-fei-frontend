@@ -1,10 +1,10 @@
-import { useKeycloak } from "@react-keycloak/web";
-import { useEffect } from "react";
-import { Outlet, useNavigate } from "react-router-dom";
-import { setId, setRole, setToken } from "../features/userSlice";
-import { parseIdToken } from "../helpers";
-import { useAppDispatch } from "../hooks/redux-hooks";
-import Header from "./Header";
+import { useKeycloak } from '@react-keycloak/web';
+import { useEffect } from 'react';
+import { Outlet, useNavigate } from 'react-router-dom';
+import { setId, setRole, setToken } from '../features/userSlice';
+import { parseIdToken } from '../helpers';
+import { useAppDispatch } from '../hooks/redux-hooks';
+import Header from './Header';
 
 const Layout = () => {
     return (
@@ -29,7 +29,7 @@ const ProtectedRoute = ({ children }: { children: React.ReactNode }) => {
     useEffect(() => {
         if (!isAuthenticated) {
             keycloak.login({ redirectUri: window.location.origin });
-            navigate("/");
+            navigate('/');
         }
         if (keycloak.idToken) {
             const parsedToken = parseIdToken(keycloak.idToken);

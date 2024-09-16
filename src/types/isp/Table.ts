@@ -1,6 +1,6 @@
-import { SubjectInfo } from "./Subject";
+import { SubjectInfo } from './Subject';
 
-export type TableStatus = "APPROVED" | "DECLINED" | "PENDING";
+export type TableStatus = 'APPROVED' | 'DECLINED' | 'PENDING';
 
 export interface TableResponse {
     readonly tableId: string;

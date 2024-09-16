@@ -1,7 +1,7 @@
-import { useNavigate } from "react-router-dom";
-import RequestForm, { IFormInput } from "../../components/RequestForm";
-import { useCreateRequestMutation } from "../../services/isp/request";
-import { useAppSelector } from "../../hooks/redux-hooks";
+import { useNavigate } from 'react-router-dom';
+import RequestForm, { IFormInput } from '../../components/RequestForm';
+import { useCreateRequestMutation } from '../../services/isp/request';
+import { useAppSelector } from '../../hooks/redux-hooks';
 
 const CreateRequestPage = () => {
     const navigate = useNavigate();
@@ -10,7 +10,7 @@ const CreateRequestPage = () => {
 
     const onSubmit = async (data: IFormInput) => {
         if (!userId) {
-            alert("User id not found");
+            alert('User id not found');
             return;
         }
         await createRequest({
@@ -24,7 +24,7 @@ const CreateRequestPage = () => {
             reason: data.reason,
             attachment: data.attachment,
         });
-        navigate("/isp/requests");
+        navigate('/isp/requests');
     };
 
     return <RequestForm title="Create Request" onSubmit={onSubmit} />;

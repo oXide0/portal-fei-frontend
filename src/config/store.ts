@@ -1,14 +1,13 @@
-import { configureStore } from "@reduxjs/toolkit";
-import userReducer from "../features/userSlice";
-import { ispApi } from "../services/isp/api";
+import { configureStore } from '@reduxjs/toolkit';
+import userReducer from '../features/userSlice';
+import { ispApi } from '../services/isp/api';
 
 export const store = configureStore({
     reducer: {
         user: userReducer,
         [ispApi.reducerPath]: ispApi.reducer,
     },
-    middleware: (getDefaultMiddleware) =>
-        getDefaultMiddleware().concat(ispApi.middleware),
+    middleware: (getDefaultMiddleware) => getDefaultMiddleware().concat(ispApi.middleware),
 });
 
 export type RootState = ReturnType<typeof store.getState>;

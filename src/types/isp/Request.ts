@@ -1,4 +1,4 @@
-export type RequestStatus = "APPROVED" | "DECLINED" | "PENDING" | "RETURNED";
+export type RequestStatus = 'APPROVED' | 'DECLINED' | 'PENDING' | 'RETURNED';
 
 export interface RequestResponse {
     readonly requestId: string;
