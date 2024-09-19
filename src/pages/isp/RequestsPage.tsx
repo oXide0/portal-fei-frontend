@@ -1,7 +1,10 @@
+import { PencilIcon, TrashIcon } from '@heroicons/react/24/solid';
 import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
+import Breadcrumbs from '../../components/Breadcrumbs';
+import Button from '../../components/Button';
 import LoadingSpinner from '../../components/LoadingSpinner';
-import { prettifyRequestStatus } from '../../helpers';
+import { getAvailableRequestStatusOptions, prettifyRequestStatus } from '../../helpers';
 import { useAppSelector } from '../../hooks/redux-hooks';
 import {
     useDeleteRequestMutation,
@@ -10,9 +13,6 @@ import {
     useGetRequestsByUserIdQuery,
 } from '../../services/isp/request';
 import { RequestResponse, RequestStatus } from '../../types/isp/Request';
-import Button from '../../components/Button';
-import { TrashIcon, PencilIcon } from '@heroicons/react/24/solid';
-import Breadcrumbs from '../../components/Breadcrumbs';
 
 const RequestsPage = () => {
     const navigate = useNavigate();
@@ -100,18 +100,28 @@ const RequestsPage = () => {
                                 <td className="py-2 px-4 border">{request.studyYear}</td>
                                 <td className="py-2 px-4 border">
                                     {isClerk ? (
-                                        <select
-                                            className="border border-gray-300 rounded px-2 py-1"
-                                            value={request.requestStatus}
-                                            onChange={(e) =>
-                                                handleStatusChange(request.requestId, e.target.value as RequestStatus)
-                                            }
-                                        >
-                                            <option value="APPROVED">Schválené</option>
-                                            <option value="DECLINED">Zamietnuté</option>
-                                            <option value="PENDING">Čakajúce</option>
-                                            <option value="RETURNED">Vrátené</option>
-                                        </select>
+                                        request.requestStatus === 'PENDING' ? (
+                                            <select
+                                                className="border border-gray-300 rounded px-2 py-1"
+                                                value={request.requestStatus}
+                                                onChange={(e) =>
+                                                    handleStatusChange(
+                                                        request.requestId,
+                                                        e.target.value as RequestStatus,
+                                                    )
+                                                }
+                                            >
+                                                {getAvailableRequestStatusOptions(request.requestStatus).map(
+                                                    (status) => (
+                                                        <option key={status} value={status}>
+                                                            {prettifyRequestStatus(status)}
+                                                        </option>
+                                                    ),
+                                                )}
+                                            </select>
+                                        ) : (
+                                            prettifyRequestStatus(request.requestStatus)
+                                        )
                                     ) : (
                                         prettifyRequestStatus(request.requestStatus)
                                     )}

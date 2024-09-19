@@ -66,3 +66,28 @@ export const prettifySubjectStatus = (status: SubjectStatus): string => {
 
     throw new Error(`Unhandled status: ${status}`);
 };
+
+export const getAvailableRequestStatusOptions = (currentStatus: RequestStatus): RequestStatus[] => {
+    switch (currentStatus) {
+        case 'PENDING':
+            return ['PENDING', 'APPROVED', 'DECLINED', 'RETURNED'];
+        case 'APPROVED':
+        case 'DECLINED':
+        case 'RETURNED':
+            return [];
+        default:
+            return [];
+    }
+};
+
+export const getAvailableSubjectStatusOptions = (currentStatus: SubjectStatus): SubjectStatus[] => {
+    switch (currentStatus) {
+        case 'PENDING':
+            return ['PENDING', 'APPROVED', 'DECLINED'];
+        case 'APPROVED':
+        case 'DECLINED':
+            return [];
+        default:
+            return [];
+    }
+};
