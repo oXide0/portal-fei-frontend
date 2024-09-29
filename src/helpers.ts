@@ -35,6 +35,9 @@ export const prettifyRequestStatus = (status: RequestStatus): string => {
     if (status === 'RETURNED') {
         return 'Vrátené';
     }
+    if (status === 'APPROVED_BY_REFERENT') {
+        return 'Schválené referentkou';
+    }
 
     throw new Error(`Unhandled status: ${status}`);
 };
@@ -70,7 +73,9 @@ export const prettifySubjectStatus = (status: SubjectStatus): string => {
 export const getAvailableRequestStatusOptions = (currentStatus: RequestStatus): RequestStatus[] => {
     switch (currentStatus) {
         case 'PENDING':
-            return ['PENDING', 'APPROVED', 'DECLINED', 'RETURNED'];
+            return ['APPROVED_BY_REFERENT', 'RETURNED', 'PENDING'];
+        case 'APPROVED_BY_REFERENT':
+            return ['APPROVED_BY_REFERENT', 'APPROVED', 'DECLINED'];
         case 'APPROVED':
         case 'DECLINED':
         case 'RETURNED':

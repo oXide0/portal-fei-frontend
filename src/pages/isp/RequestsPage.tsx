@@ -102,7 +102,8 @@ const RequestsPage = () => {
                                 <td className="py-2 px-4 border">{request.studyYear}</td>
                                 <td className="py-2 px-4 border">
                                     {isClerk ? (
-                                        request.requestStatus === 'PENDING' ? (
+                                        request.requestStatus === 'PENDING' ||
+                                        request.requestStatus === 'APPROVED_BY_REFERENT' ? (
                                             <select
                                                 className="border border-gray-300 rounded px-2 py-1"
                                                 value={request.requestStatus}
@@ -122,10 +123,10 @@ const RequestsPage = () => {
                                                 )}
                                             </select>
                                         ) : (
-                                            prettifyRequestStatus(request.requestStatus)
+                                            <p className="font-bold">{prettifyRequestStatus(request.requestStatus)}</p>
                                         )
                                     ) : (
-                                        prettifyRequestStatus(request.requestStatus)
+                                        <p className="font-bold">{prettifyRequestStatus(request.requestStatus)}</p>
                                     )}
                                 </td>
                                 <td className="py-2 px-4 border">{request.purpose}</td>

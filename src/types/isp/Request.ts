@@ -1,4 +1,4 @@
-export type RequestStatus = 'APPROVED' | 'DECLINED' | 'PENDING' | 'RETURNED';
+export type RequestStatus = 'APPROVED' | 'APPROVED_BY_REFERENT' | 'DECLINED' | 'PENDING' | 'RETURNED';
 
 export interface RequestResponse {
     readonly requestId: string;
@@ -13,22 +13,6 @@ export interface RequestResponse {
     readonly reason: string;
     readonly attachmentPath: string | null;
     readonly tableId: string;
-}
-
-export interface CreateRequestBody {
-    userId: string;
-    studentName: string;
-    studentSurname: string;
-    studyProgram: string;
-    studyDegree: string;
-    studyYear: number;
-    purpose: string;
-    reason: string;
-    attachment: FormData | null;
-}
-
-export interface UpdateRequestBody extends Partial<CreateRequestBody> {
-    requestId: string;
 }
 
 export interface EvaluateRequestBody {

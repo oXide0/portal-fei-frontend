@@ -129,7 +129,7 @@ const SubjectsTablePage = () => {
                                 <td className="py-2 px-4 border">{subject.name}</td>
                                 <td className="py-2 px-4 border">
                                     {isStudent ? (
-                                        prettifySubjectStatus(subject.subjectStatus)
+                                        <p className="font-bold">{prettifySubjectStatus(subject.subjectStatus)}</p>
                                     ) : subject.subjectStatus === 'PENDING' ? (
                                         <select
                                             value={subject.subjectStatus}
@@ -148,7 +148,7 @@ const SubjectsTablePage = () => {
                                             ))}
                                         </select>
                                     ) : (
-                                        prettifySubjectStatus(subject.subjectStatus)
+                                        <p className="font-bold">{prettifySubjectStatus(subject.subjectStatus)}</p>
                                     )}
                                 </td>
                                 {!isStudent && (
