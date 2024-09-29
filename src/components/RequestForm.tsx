@@ -1,4 +1,4 @@
-import { useEffect } from 'react';
+import { useEffect, useState } from 'react';
 import { useForm, SubmitHandler } from 'react-hook-form';
 import Button from './Button';
 
@@ -16,10 +16,12 @@ export interface IFormInput {
     studyYear: number;
     purpose: string;
     reason: string;
-    attachment: string | null;
+    attachment?: File | null;
+    attachmentPath?: string | null;
 }
 
 const RequestForm = ({ title, initialValues, onSubmit }: RequestFormProps) => {
+    const [attachment, setAttachment] = useState<File | null>(null);
     const {
         register,
         handleSubmit,
@@ -30,7 +32,7 @@ const RequestForm = ({ title, initialValues, onSubmit }: RequestFormProps) => {
     });
 
     const onSubmitData: SubmitHandler<IFormInput> = (data) => {
-        onSubmit(data);
+        onSubmit({ ...data, attachment });
     };
 
     useEffect(() => {
@@ -39,7 +41,7 @@ const RequestForm = ({ title, initialValues, onSubmit }: RequestFormProps) => {
                 setValue(key as keyof IFormInput, initialValues[key as keyof IFormInput]);
             });
         }
-    }, [initialValues, setValue]);
+    }, [initialValues]);
 
     return (
         <div className="max-w-4xl my-0 mx-auto p-6">
@@ -71,13 +73,27 @@ const RequestForm = ({ title, initialValues, onSubmit }: RequestFormProps) => {
 
                 <div>
                     <label className="block text-sm font-medium mb-1">Študijný program</label>
-                    <input
-                        type="text"
+                    <select
                         {...register('studyProgram', {
                             required: 'Študijný program je povinný',
                         })}
                         className="w-full px-3 py-2 border border-gray-300 rounded"
-                    />
+                    >
+                        <option value="">-- Vyberte program --</option>
+                        <option value="Informatika">Informatika</option>
+                        <option value="Aplikovaná elektrotechnika">Aplikovaná elektrotechnika</option>
+                        <option value="Automobilová elektronika">Automobilová elektronika</option>
+                        <option value="Elektroenergetika">Elektroenergetika</option>
+                        <option value="Fyzikálne inžinierstvo progresívnych materiálov">
+                            Fyzikálne inžinierstvo progresívnych materiálov
+                        </option>
+                        <option value="Hospodárska informatika">Hospodárska informatika</option>
+                        <option value="Inteligentné systémy">Inteligentné systémy</option>
+                        <option value="Počítačové modelovanie">Počítačové modelovanie</option>
+                        <option value="Počítačové siete">Počítačové siete</option>
+                        <option value="Priemyselná elektrotechnika">Priemyselná elektrotechnika</option>
+                        <option value="Kyberbezpečnosť">Kyberbezpečnosť</option>
+                    </select>
                     {errors.studyProgram && <p className="text-red-500 text-sm">{errors.studyProgram.message}</p>}
                 </div>
 
@@ -139,12 +155,32 @@ const RequestForm = ({ title, initialValues, onSubmit }: RequestFormProps) => {
 
                 <div>
                     <label className="block text-sm font-medium mb-1">Odkaz na prílohu (nepovinné)</label>
+                    {initialValues?.attachmentPath && (
+                        <div className="mb-2">
+                            <a
+                                href={initialValues.attachmentPath}
+                                target="_blank"
+                                rel="noopener noreferrer"
+                                className="text-blue-500"
+                            >
+                                Zobraziť existujúcu prílohu
+                            </a>
+                        </div>
+                    )}
                     <input
-                        type="url"
-                        {...register('attachment')}
+                        type="file"
+                        accept=".pdf, .doc, .docx, .txt"
                         className="w-full px-3 py-2 border border-gray-300 rounded"
+                        onChange={(event) => {
+                            const files = event.target.files;
+                            if (files && files.length > 0) {
+                                setAttachment(files[0]);
+                            }
+                        }}
                     />
                 </div>
+
+                {errors.attachment && <p className="text-red-500 text-sm">{errors.attachment.message}</p>}
 
                 <div>
                     <Button type="submit" className="w-full">

@@ -1,6 +1,7 @@
 import { PencilIcon, TrashIcon } from '@heroicons/react/24/solid';
 import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
+import Attachment from '../../components/Attachment';
 import Breadcrumbs from '../../components/Breadcrumbs';
 import Button from '../../components/Button';
 import LoadingSpinner from '../../components/LoadingSpinner';
@@ -27,6 +28,7 @@ const RequestsPage = () => {
     const { data: userRequests } = useGetRequestsByUserIdQuery(userId!, {
         skip: !isStudent || !userId,
     });
+
     const [evaluateRequest] = useEvaluateRequestMutation();
     const [deleteRequest] = useDeleteRequestMutation();
 
@@ -128,15 +130,8 @@ const RequestsPage = () => {
                                 </td>
                                 <td className="py-2 px-4 border">{request.purpose}</td>
                                 <td className="py-2 px-4 border">{request.reason}</td>
-                                <td className="py-2 px-4 border">
-                                    {request.attachment ? (
-                                        <a href={request.attachment} className="text-blue-500 underline">
-                                            {request.attachment}
-                                        </a>
-                                    ) : (
-                                        'Žiadna príloha'
-                                    )}
-                                </td>
+                                <Attachment attachmentPath={request.attachmentPath} />
+
                                 {isStudent ? (
                                     <td className="py-2 px-4 border space-x-2 min-w-96 flex justify-center">
                                         {request.requestStatus !== 'APPROVED' && (

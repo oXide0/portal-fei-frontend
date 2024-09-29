@@ -11,7 +11,7 @@ export interface RequestResponse {
     readonly requestStatus: RequestStatus;
     readonly purpose: string;
     readonly reason: string;
-    readonly attachment: string | null;
+    readonly attachmentPath: string | null;
     readonly tableId: string;
 }
 
@@ -24,7 +24,7 @@ export interface CreateRequestBody {
     studyYear: number;
     purpose: string;
     reason: string;
-    attachment: string | null;
+    attachment: FormData | null;
 }
 
 export interface UpdateRequestBody extends Partial<CreateRequestBody> {

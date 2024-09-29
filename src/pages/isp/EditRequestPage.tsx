@@ -4,6 +4,7 @@ import RequestForm, { IFormInput } from '../../components/RequestForm';
 import { useRequiredParam } from '../../hooks/useRequiredParam';
 import { useGetRequestByIdQuery, useUpdateRequestMutation } from '../../services/isp/request';
 import { useAppSelector } from '../../hooks/redux-hooks';
+import Breadcrumbs from '../../components/Breadcrumbs';
 
 const EditRequestPage = () => {
     const navigate = useNavigate();
@@ -23,19 +24,22 @@ const EditRequestPage = () => {
             return;
         }
 
+        const formData = new FormData();
+        formData.append('requestId', requestId);
+        formData.append('userId', userId);
+        formData.append('studentName', data.studentName);
+        formData.append('studentSurname', data.studentSurname);
+        formData.append('studyProgram', data.studyProgram);
+        formData.append('studyDegree', data.studyDegree);
+        formData.append('studyYear', data.studyYear.toString());
+        formData.append('purpose', data.purpose);
+        formData.append('reason', data.reason);
+        if (data.attachment) {
+            formData.append('attachment', data.attachment);
+        }
+
         try {
-            await updateRequest({
-                requestId: requestId,
-                userId: userId,
-                studentName: data.studentName,
-                studentSurname: data.studentSurname,
-                studyProgram: data.studyProgram,
-                studyDegree: data.studyDegree,
-                studyYear: data.studyYear,
-                purpose: data.purpose,
-                reason: data.reason,
-                attachment: data.attachment,
-            });
+            await updateRequest(formData);
         } catch (error) {
             alert('Failed to update request');
         }
@@ -43,7 +47,18 @@ const EditRequestPage = () => {
     };
 
     if (!data) return <LoadingSpinner />;
-    return <RequestForm title="Upraviť žiadosť" initialValues={data} onSubmit={onSubmit} />;
+    return (
+        <div className="p-4">
+            <Breadcrumbs
+                links={[
+                    { name: 'Kategórie', path: '/' },
+                    { name: 'ISP Žiadosti', path: '/isp/requests' },
+                    { name: 'Upraviť žiadosť', path: `/isp/requests/${requestId}` },
+                ]}
+            />
+            <RequestForm title="Upraviť žiadosť" initialValues={data} onSubmit={onSubmit} />;
+        </div>
+    );
 };
 
 export default EditRequestPage;

@@ -1,10 +1,4 @@
-import {
-    CreateRequestBody,
-    EvaluateRequestBody,
-    RequestResponse,
-    RequestStatus,
-    UpdateRequestBody,
-} from '../../types/isp/Request';
+import { EvaluateRequestBody, RequestResponse, RequestStatus } from '../../types/isp/Request';
 import { ispApi } from './api';
 
 export const requestApi = ispApi.injectEndpoints({
@@ -21,19 +15,19 @@ export const requestApi = ispApi.injectEndpoints({
             query: (requestId) => `requests/${requestId}`,
             providesTags: ['Request'],
         }),
-        createRequest: builder.mutation<RequestResponse, CreateRequestBody>({
-            query: (body) => ({
+        createRequest: builder.mutation<RequestResponse, FormData>({
+            query: (formData) => ({
                 url: 'requests',
                 method: 'POST',
-                body,
+                body: formData,
             }),
             invalidatesTags: ['Request'],
         }),
-        updateRequest: builder.mutation<RequestResponse, UpdateRequestBody>({
-            query: (body) => ({
+        updateRequest: builder.mutation<RequestResponse, FormData>({
+            query: (formData) => ({
                 url: 'requests',
                 method: 'PATCH',
-                body,
+                body: formData,
             }),
             invalidatesTags: ['Request'],
         }),
@@ -51,6 +45,14 @@ export const requestApi = ispApi.injectEndpoints({
             }),
             invalidatesTags: ['Request'],
         }),
+        downloadFile: builder.query<Blob, string>({
+            query: (attachmentPath) => ({
+                url: `/attachment/download?path=${attachmentPath}`,
+                method: 'GET',
+                responseHandler: (response) => response.blob(),
+            }),
+            providesTags: ['Request'],
+        }),
     }),
 });
 
@@ -62,4 +64,6 @@ export const {
     useUpdateRequestMutation,
     useEvaluateRequestMutation,
     useDeleteRequestMutation,
+    useDownloadFileQuery,
+    useLazyDownloadFileQuery,
 } = requestApi;

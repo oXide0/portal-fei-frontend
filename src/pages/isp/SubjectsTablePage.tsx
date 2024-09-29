@@ -93,7 +93,7 @@ const SubjectsTablePage = () => {
                 {!isStudent && data.tableStatus === 'PENDING' && (
                     <div className="mt-4 flex gap-3">
                         <Button
-                            className="bg-green-500 hover:bg-green-700"
+                            className="bg-green-600 hover:bg-green-700"
                             onClick={() => handleChangeTableStatus('APPROVED')}
                         >
                             Schváliť Tabuľku
