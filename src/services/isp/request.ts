@@ -47,7 +47,7 @@ export const requestApi = ispApi.injectEndpoints({
         }),
         downloadFile: builder.query<Blob, string>({
             query: (attachmentPath) => ({
-                url: `/attachment/download?path=${attachmentPath}`,
+                url: `requests/attachment/download?path=${encodeURIComponent(attachmentPath)}`,
                 method: 'GET',
                 responseHandler: (response) => response.blob(),
             }),

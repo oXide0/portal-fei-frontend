@@ -130,7 +130,9 @@ const RequestsPage = () => {
                                 </td>
                                 <td className="py-2 px-4 border">{request.purpose}</td>
                                 <td className="py-2 px-4 border">{request.reason}</td>
-                                <Attachment attachmentPath={request.attachmentPath} />
+                                <td className="py-2 px-4 border">
+                                    <Attachment attachmentPath={request.attachmentPath} />
+                                </td>
 
                                 {isStudent ? (
                                     <td className="py-2 px-4 border space-x-2 min-w-96 flex justify-center">

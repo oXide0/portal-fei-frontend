@@ -7,7 +7,13 @@ export const store = configureStore({
         user: userReducer,
         [ispApi.reducerPath]: ispApi.reducer,
     },
-    middleware: (getDefaultMiddleware) => getDefaultMiddleware().concat(ispApi.middleware),
+    middleware: (getDefaultMiddleware) =>
+        getDefaultMiddleware({
+            serializableCheck: {
+                ignoredActions: ['ispApi/executeQuery/fulfilled'],
+                ignoredPaths: ['ispApi.queries'],
+            },
+        }).concat(ispApi.middleware),
 });
 
 export type RootState = ReturnType<typeof store.getState>;
