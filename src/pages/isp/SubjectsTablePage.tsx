@@ -17,7 +17,7 @@ import { TableStatus } from '../../types/isp/Table';
 const SubjectsTablePage = () => {
     const tableId = useRequiredParam('tableId');
     const [isModalOpen, setIsModalOpen] = useState(false);
-    const { id: userId, role } = useAppSelector((state) => state.user);
+    const { role } = useAppSelector((state) => state.user);
     const isStudent = role === 'S';
 
     const { data, isLoading, refetch } = useGetTableQuery(tableId);
@@ -43,16 +43,10 @@ const SubjectsTablePage = () => {
     };
 
     const handleChangeTableStatus = async (newStatus: TableStatus) => {
-        if (!userId) {
-            alert('User id not found');
-            return;
-        }
-
         try {
             await evaluateTable({
                 tableId,
                 tableStatus: newStatus,
-                userId: userId,
             });
         } catch (error) {
             alert('Failed to update table status');
@@ -93,7 +87,7 @@ const SubjectsTablePage = () => {
                 {!isStudent && data.tableStatus === 'PENDING' && (
                     <div className="mt-4 flex gap-3">
                         <Button
-                            className="bg-green-600 hover:bg-green-700"
+                            className="bg-green-500 hover:bg-green-600"
                             onClick={() => handleChangeTableStatus('APPROVED')}
                         >
                             Schváliť Tabuľku
@@ -168,17 +162,10 @@ const SubjectsTablePage = () => {
             </div>
             <AddSubjectModal
                 isOpen={isModalOpen}
-                onSubmit={async (subjectName, subjectStatus) => {
-                    if (!userId) {
-                        alert('User id not found');
-                        return;
-                    }
-
+                onSubmit={async (subjectName) => {
                     await addSubject({
                         name: subjectName,
                         tableId,
-                        userId: userId,
-                        subjectStatus,
                     });
                     refetch();
                 }}
@@ -193,19 +180,17 @@ export default SubjectsTablePage;
 interface AddSubjectModalProps {
     isOpen: boolean;
     onClose: () => void;
-    onSubmit: (subjectName: string, subjectStatus: SubjectStatus) => void;
+    onSubmit: (subjectName: string) => void;
 }
 
 const AddSubjectModal = ({ isOpen, onClose, onSubmit }: AddSubjectModalProps) => {
     const [subjectName, setSubjectName] = useState('');
-    const [subjectStatus, setSubjectStatus] = useState<SubjectStatus>('PENDING');
 
     const handleSubmit = (e: React.FormEvent) => {
         e.preventDefault();
-        onSubmit(subjectName, subjectStatus);
+        onSubmit(subjectName);
         onClose();
         setSubjectName('');
-        setSubjectStatus('PENDING');
     };
 
     return (
@@ -233,21 +218,6 @@ const AddSubjectModal = ({ isOpen, onClose, onSubmit }: AddSubjectModalProps) =>
                                     required
                                     className="border border-gray-300 rounded px-3 py-2 w-full"
                                 />
-                            </div>
-                            <div className="mb-4">
-                                <label className="block text-gray-700 text-sm font-bold mb-2" htmlFor="subjectStatus">
-                                    Stav
-                                </label>
-                                <select
-                                    id="subjectStatus"
-                                    value={subjectStatus}
-                                    onChange={(e) => setSubjectStatus(e.target.value as SubjectStatus)}
-                                    className="border border-gray-300 rounded px-3 py-2 w-full"
-                                >
-                                    <option value="PENDING">Čakajúci</option>
-                                    <option value="APPROVED">Schválený</option>
-                                    <option value="DECLINED">Zamietnutý</option>
-                                </select>
                             </div>
                             <div className="flex justify-end space-x-2">
                                 <Button variant="ghost" type="button" onClick={onClose}>

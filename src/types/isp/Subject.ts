@@ -22,8 +22,6 @@ export interface CreateSubjectResponse {
 }
 
 export interface CreateSubjectBody {
-    readonly userId: string;
     readonly tableId: string;
     readonly name: string;
-    readonly subjectStatus: SubjectStatus;
 }
