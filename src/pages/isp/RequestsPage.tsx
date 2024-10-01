@@ -156,8 +156,12 @@ const RequestsPage = () => {
                                         )}
                                         <Button
                                             onClick={() => navigate(`/isp/subjects-table/${request.tableId}`)}
-                                            disabled={request.requestStatus !== 'APPROVED'}
+                                            disabled={
+                                                request.requestStatus !== 'APPROVED_BY_REFERENT' &&
+                                                request.requestStatus !== 'APPROVED'
+                                            }
                                             title={
+                                                request.requestStatus !== 'APPROVED_BY_REFERENT' &&
                                                 request.requestStatus !== 'APPROVED'
                                                     ? "Žiadosť nemá stav 'schválená'."
                                                     : ''
@@ -170,8 +174,12 @@ const RequestsPage = () => {
                                     <td className="py-2 px-4 border space-x-2 text-center">
                                         <Button
                                             onClick={() => navigate(`/isp/subjects-table/${request.tableId}`)}
-                                            disabled={request.requestStatus !== 'APPROVED'}
+                                            disabled={
+                                                request.requestStatus !== 'APPROVED_BY_REFERENT' &&
+                                                request.requestStatus !== 'APPROVED'
+                                            }
                                             title={
+                                                request.requestStatus !== 'APPROVED_BY_REFERENT' &&
                                                 request.requestStatus !== 'APPROVED'
                                                     ? "Žiadosť nemá stav 'schválená'."
                                                     : ''

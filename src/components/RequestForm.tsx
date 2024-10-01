@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react';
-import { useForm, SubmitHandler } from 'react-hook-form';
+import { SubmitHandler, useForm } from 'react-hook-form';
 import Button from './Button';
 
 interface RequestFormProps {
@@ -26,10 +26,12 @@ const RequestForm = ({ title, initialValues, onSubmit }: RequestFormProps) => {
         register,
         handleSubmit,
         setValue,
+        watch,
         formState: { errors },
     } = useForm<IFormInput>({
         defaultValues: initialValues,
     });
+    const watchStudyDegree = watch('studyDegree');
 
     const onSubmitData: SubmitHandler<IFormInput> = (data) => {
         onSubmit({ ...data, attachment });
@@ -118,15 +120,39 @@ const RequestForm = ({ title, initialValues, onSubmit }: RequestFormProps) => {
 
                 <div>
                     <label className="block text-sm font-medium mb-1">Rok štúdia</label>
-                    <input
-                        type="number"
+                    <select
+                        defaultValue=""
                         {...register('studyYear', {
                             required: 'Rok štúdia je povinný',
-                            min: 1,
-                            max: 6,
                         })}
                         className="w-full px-3 py-2 border border-gray-300 rounded"
-                    />
+                    >
+                        <option value="" disabled>
+                            Vyberte rok štúdia
+                        </option>
+                        {watchStudyDegree === 'Bc.' && (
+                            <>
+                                <option value="1">1</option>
+                                <option value="2">2</option>
+                                <option value="3">3</option>
+                            </>
+                        )}
+                        {watchStudyDegree === 'Ing.' && (
+                            <>
+                                <option value="1">1</option>
+                                <option value="2">2</option>
+                            </>
+                        )}
+                        {watchStudyDegree === 'Doc.' && (
+                            <>
+                                <option value="1">1</option>
+                                <option value="2">2</option>
+                                <option value="3">3</option>
+                                <option value="4">4</option>
+                                <option value="5">5</option>
+                            </>
+                        )}
+                    </select>
                     {errors.studyYear && <p className="text-red-500 text-sm">{errors.studyYear.message}</p>}
                 </div>
 

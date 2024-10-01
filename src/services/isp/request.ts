@@ -1,4 +1,4 @@
-import { EvaluateRequestBody, RequestResponse, RequestStatus } from '../../types/isp/Request';
+import { EvaluateRequestBody, RequestResponse, UpdateRequestResponse, RequestStatus } from '../../types/isp/Request';
 import { ispApi } from './api';
 
 export const requestApi = ispApi.injectEndpoints({
@@ -23,7 +23,7 @@ export const requestApi = ispApi.injectEndpoints({
             }),
             invalidatesTags: ['Request'],
         }),
-        updateRequest: builder.mutation<RequestResponse, FormData>({
+        updateRequest: builder.mutation<UpdateRequestResponse, FormData>({
             query: (formData) => ({
                 url: 'requests',
                 method: 'PATCH',

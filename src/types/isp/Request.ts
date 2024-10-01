@@ -15,6 +15,10 @@ export interface RequestResponse {
     readonly tableId: string;
 }
 
+export interface UpdateRequestResponse {
+    requestStatus: RequestStatus;
+}
+
 export interface EvaluateRequestBody {
     requestId: string;
     evaluationStatus: RequestStatus;
