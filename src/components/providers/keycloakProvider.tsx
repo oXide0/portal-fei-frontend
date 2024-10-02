@@ -1,7 +1,7 @@
 import { AuthClientError, AuthClientEvent } from '@react-keycloak/core';
 import { ReactKeycloakProvider } from '@react-keycloak/web';
 import { useState } from 'react';
-import { keycloak, keycloakInitConfig } from '../config/keycloak';
+import { keycloak, keycloakInitConfig } from '../../config/keycloak';
 
 const KeycloakProvider = ({ children }: { children: React.ReactNode }) => {
     const [keycloakInitialized, setKeycloakInitialized] = useState(false);
@@ -19,4 +19,4 @@ const KeycloakProvider = ({ children }: { children: React.ReactNode }) => {
     );
 };
 
-export default KeycloakProvider;
+export { KeycloakProvider };

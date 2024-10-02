@@ -5,3 +5,9 @@
 .card:hover {
     box-shadow: 0 0 10px #000;
 }
+
+@layer base {
+    :root {
+        --radius: 0.5rem;
+    }
+}

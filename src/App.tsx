@@ -1,6 +1,6 @@
 import { Provider } from 'react-redux';
 import { RouterProvider } from 'react-router-dom';
-import KeycloakProvider from './components/KeycloakProvider';
+import { KeycloakProvider } from './components/providers/keycloakProvider';
 import { store } from './config/store';
 import { router } from './routes';
 

@@ -22,7 +22,13 @@
         "noUnusedLocals": true,
         "noUnusedParameters": true,
         "noImplicitAny": false,
-        "noFallthroughCasesInSwitch": true
+        "noFallthroughCasesInSwitch": true,
+
+        /* Directories */
+        "baseUrl": "src",
+        "paths": {
+            "@/*": ["./*"]
+        }
     },
     "include": ["src"]
 }

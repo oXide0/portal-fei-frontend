@@ -1,11 +1,11 @@
 import { useKeycloak } from '@react-keycloak/web';
 import { useEffect } from 'react';
-import { Outlet, useNavigate } from 'react-router-dom';
-import { setId, setRole, setToken } from '../features/userSlice';
-import { parseIdToken } from '../helpers';
-import { useAppDispatch, useAppSelector } from '../hooks/redux-hooks';
-import Header from './Header';
-import LoadingSpinner from './LoadingSpinner';
+import { Outlet } from 'react-router-dom';
+import { setId, setRole, setToken } from '../../features/userSlice';
+import { parseIdToken } from '../../helpers';
+import { useAppDispatch, useAppSelector } from '../../hooks/redux-hooks';
+import { Header } from '../header';
+import { Skeleton } from '../ui/skeleton';
 
 const Layout = () => {
     return (
@@ -18,12 +18,11 @@ const Layout = () => {
     );
 };
 
-export default Layout;
+export { Layout };
 
 const ProtectedRoute = ({ children }: { children: React.ReactNode }) => {
     const token = useAppSelector((state) => state.user.token);
     const dispatch = useAppDispatch();
-    const navigate = useNavigate();
     const { keycloak } = useKeycloak();
     const isAuthenticated = keycloak.authenticated;
     console.log(keycloak);
@@ -31,7 +30,6 @@ const ProtectedRoute = ({ children }: { children: React.ReactNode }) => {
     useEffect(() => {
         if (!isAuthenticated) {
             keycloak.login({ redirectUri: window.location.origin });
-            navigate('/');
         }
         if (keycloak.idToken) {
             const parsedToken = parseIdToken(keycloak.idToken);
@@ -41,6 +39,6 @@ const ProtectedRoute = ({ children }: { children: React.ReactNode }) => {
         }
     }, [isAuthenticated, keycloak]);
 
-    if (!token) return <LoadingSpinner />;
+    if (!token) return <Skeleton />;
     return isAuthenticated ? children : null;
 };
