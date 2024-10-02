@@ -1,7 +1,26 @@
+import {
+    Breadcrumb,
+    BreadcrumbItem,
+    BreadcrumbLink,
+    BreadcrumbList,
+    BreadcrumbPage,
+    BreadcrumbSeparator,
+} from '@/components/ui/breadcrumb';
+import { Button } from '@/components/ui/button';
+import { Input } from '@/components/ui/input';
+import {
+    Select,
+    SelectContent,
+    SelectGroup,
+    SelectItem,
+    SelectLabel,
+    SelectTrigger,
+    SelectValue,
+} from '@/components/ui/select';
+import { Skeleton } from '@/components/ui/skeleton';
+import { Table, TableBody, TableCaption, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import { useState } from 'react';
-import Breadcrumbs from '../../components/Breadcrumbs';
-import Button from '../../components/Button';
-import LoadingSpinner from '../../components/LoadingSpinner';
+import { Link } from 'react-router-dom';
 import { getAvailableSubjectStatusOptions, prettifySubjectStatus, prettifyTableStatus } from '../../helpers';
 import { useAppSelector } from '../../hooks/redux-hooks';
 import { useRequiredParam } from '../../hooks/useRequiredParam';
@@ -53,20 +72,29 @@ const SubjectsTablePage = () => {
         }
     };
 
-    if (isLoading || !data) return <LoadingSpinner />;
+    if (isLoading || !data) return <Skeleton />;
 
     return (
         <div className="p-4">
-            <Breadcrumbs
-                links={[
-                    { name: 'Kategórie', path: '/' },
-                    { name: 'ISP Žiadosti', path: '/isp/requests' },
-                    {
-                        name: 'Tabuľka Predmetov',
-                        path: '/isp/subjects-table/:tableId',
-                    },
-                ]}
-            />
+            <Breadcrumb style={{ paddingBottom: '20px' }}>
+                <BreadcrumbList>
+                    <BreadcrumbItem>
+                        <BreadcrumbLink asChild>
+                            <Link to="/">Kategórie</Link>
+                        </BreadcrumbLink>
+                    </BreadcrumbItem>
+                    <BreadcrumbSeparator />
+                    <BreadcrumbItem>
+                        <BreadcrumbLink asChild>
+                            <Link to="/isp/requests">ISP Žiadosti</Link>
+                        </BreadcrumbLink>
+                    </BreadcrumbItem>
+                    <BreadcrumbSeparator />
+                    <BreadcrumbItem>
+                        <BreadcrumbPage>Tabuľka Predmetov</BreadcrumbPage>
+                    </BreadcrumbItem>
+                </BreadcrumbList>
+            </Breadcrumb>
             <h1 className="text-3xl font-bold mb-4">Tabuľka Predmetov</h1>
 
             <div className="mb-6">
@@ -109,56 +137,60 @@ const SubjectsTablePage = () => {
             )}
 
             <div className="overflow-x-auto max-w-5xl">
-                <table className="min-w-full bg-white border border-gray-200">
-                    <thead className="bg-gray-100">
-                        <tr>
-                            <th className="py-2 px-4 border">Názov Predmetu</th>
-                            <th className="py-2 px-4 border">Stav</th>
-                            {!isStudent && <th className="py-2 px-4 border">Akcie</th>}
-                        </tr>
-                    </thead>
-                    <tbody>
+                <Table>
+                    <TableCaption>Tabuľka Predmetov</TableCaption>
+                    <TableHeader>
+                        <TableRow>
+                            <TableHead className="w-[200px]">Názov Predmetu</TableHead>
+                            <TableHead>Stav</TableHead>
+                            {!isStudent && <TableHead>Akcie</TableHead>}
+                        </TableRow>
+                    </TableHeader>
+                    <TableBody>
                         {data.subjects.map((subject) => (
-                            <tr key={subject.subjectId} className="border">
-                                <td className="py-2 px-4 border">{subject.name}</td>
-                                <td className="py-2 px-4 border">
+                            <TableRow key={subject.subjectId} className="border">
+                                <TableCell className="py-2 px-4 border">{subject.name}</TableCell>
+                                <TableCell className="py-2 px-4 border">
                                     {isStudent ? (
                                         <p className="font-bold">{prettifySubjectStatus(subject.subjectStatus)}</p>
                                     ) : subject.subjectStatus === 'PENDING' ? (
-                                        <select
-                                            value={subject.subjectStatus}
-                                            onChange={(e) =>
-                                                handleChangeSubjectStatus(
-                                                    subject.subjectId,
-                                                    e.target.value as SubjectStatus,
-                                                )
+                                        <Select
+                                            defaultValue={subject.subjectStatus}
+                                            onValueChange={(value) =>
+                                                handleChangeSubjectStatus(subject.subjectId, value as SubjectStatus)
                                             }
-                                            className="bg-gray-100 border border-gray-300 rounded px-2 py-1"
                                         >
-                                            {getAvailableSubjectStatusOptions(subject.subjectStatus).map((status) => (
-                                                <option key={status} value={status}>
-                                                    {prettifySubjectStatus(status)}
-                                                </option>
-                                            ))}
-                                        </select>
+                                            <SelectTrigger className="w-full px-3 py-2 border border-gray-300 rounded">
+                                                <SelectValue placeholder="-- Vyberte stav --" />
+                                            </SelectTrigger>
+                                            <SelectContent>
+                                                <SelectGroup>
+                                                    <SelectLabel>Stav</SelectLabel>
+                                                    {getAvailableSubjectStatusOptions(subject.subjectStatus).map(
+                                                        (status) => (
+                                                            <SelectItem key={status} value={status}>
+                                                                {prettifySubjectStatus(status)}
+                                                            </SelectItem>
+                                                        ),
+                                                    )}
+                                                </SelectGroup>
+                                            </SelectContent>
+                                        </Select>
                                     ) : (
                                         <p className="font-bold">{prettifySubjectStatus(subject.subjectStatus)}</p>
                                     )}
-                                </td>
+                                </TableCell>
                                 {!isStudent && (
-                                    <td className="py-2 px-4 border space-x-2 text-center">
-                                        <Button
-                                            variant="transparent"
-                                            onClick={() => handleDeleteSubject(subject.subjectId)}
-                                        >
+                                    <TableCell className="py-2 px-4 border space-x-2 text-center">
+                                        <Button variant="ghost" onClick={() => handleDeleteSubject(subject.subjectId)}>
                                             Vymazať
                                         </Button>
-                                    </td>
+                                    </TableCell>
                                 )}
-                            </tr>
+                            </TableRow>
                         ))}
-                    </tbody>
-                </table>
+                    </TableBody>
+                </Table>
             </div>
             <AddSubjectModal
                 isOpen={isModalOpen}
@@ -175,7 +207,7 @@ const SubjectsTablePage = () => {
     );
 };
 
-export default SubjectsTablePage;
+export { SubjectsTablePage };
 
 interface AddSubjectModalProps {
     isOpen: boolean;
@@ -210,7 +242,7 @@ const AddSubjectModal = ({ isOpen, onClose, onSubmit }: AddSubjectModalProps) =>
                                 <label className="block text-gray-700 text-sm font-bold mb-2" htmlFor="subjectName">
                                     Názov predmetu
                                 </label>
-                                <input
+                                <Input
                                     id="subjectName"
                                     type="text"
                                     value={subjectName}

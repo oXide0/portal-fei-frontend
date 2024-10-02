@@ -1,8 +1,8 @@
-import Card from '../components/Card';
+import { Card } from '../components/ui/card';
 import etdImg from '../assets/etd.png';
 import { useNavigate } from 'react-router-dom';
 
-const CategoryPage = () => {
+const CategoriesPage = () => {
     const navigate = useNavigate();
 
     return (
@@ -19,4 +19,4 @@ const CategoryPage = () => {
     );
 };
 
-export default CategoryPage;
+export { CategoriesPage };

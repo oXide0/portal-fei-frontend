@@ -1,6 +1,9 @@
+import { Input } from './ui/input';
+import { Select, SelectContent, SelectGroup, SelectItem, SelectLabel, SelectTrigger, SelectValue } from './ui/select';
 import { useEffect, useState } from 'react';
-import { SubmitHandler, useForm } from 'react-hook-form';
-import Button from './Button';
+import { Controller, SubmitHandler, useForm } from 'react-hook-form';
+import { Button } from './ui/button';
+import { Textarea } from './ui/textarea';
 
 interface RequestFormProps {
     title: string;
@@ -13,7 +16,7 @@ export interface IFormInput {
     studentSurname: string;
     studyProgram: string;
     studyDegree: string;
-    studyYear: number;
+    studyYear: string;
     purpose: string;
     reason: string;
     attachment?: File | null;
@@ -27,6 +30,7 @@ const RequestForm = ({ title, initialValues, onSubmit }: RequestFormProps) => {
         handleSubmit,
         setValue,
         watch,
+        control,
         formState: { errors },
     } = useForm<IFormInput>({
         defaultValues: initialValues,
@@ -51,7 +55,7 @@ const RequestForm = ({ title, initialValues, onSubmit }: RequestFormProps) => {
             <form onSubmit={handleSubmit(onSubmitData)} className="space-y-4">
                 <div>
                     <label className="block text-sm font-medium mb-1">Meno študenta</label>
-                    <input
+                    <Input
                         type="text"
                         {...register('studentName', {
                             required: 'Meno študenta je povinné',
@@ -60,10 +64,9 @@ const RequestForm = ({ title, initialValues, onSubmit }: RequestFormProps) => {
                     />
                     {errors.studentName && <p className="text-red-500 text-sm">{errors.studentName.message}</p>}
                 </div>
-
                 <div>
                     <label className="block text-sm font-medium mb-1">Priezvisko študenta</label>
-                    <input
+                    <Input
                         type="text"
                         {...register('studentSurname', {
                             required: 'Priezvisko študenta je povinné',
@@ -72,113 +75,133 @@ const RequestForm = ({ title, initialValues, onSubmit }: RequestFormProps) => {
                     />
                     {errors.studentSurname && <p className="text-red-500 text-sm">{errors.studentSurname.message}</p>}
                 </div>
-
                 <div>
                     <label className="block text-sm font-medium mb-1">Študijný program</label>
-                    <select
-                        {...register('studyProgram', {
-                            required: 'Študijný program je povinný',
-                        })}
-                        className="w-full px-3 py-2 border border-gray-300 rounded"
-                    >
-                        <option value="">-- Vyberte program --</option>
-                        <option value="Informatika">Informatika</option>
-                        <option value="Aplikovaná elektrotechnika">Aplikovaná elektrotechnika</option>
-                        <option value="Automobilová elektronika">Automobilová elektronika</option>
-                        <option value="Elektroenergetika">Elektroenergetika</option>
-                        <option value="Fyzikálne inžinierstvo progresívnych materiálov">
-                            Fyzikálne inžinierstvo progresívnych materiálov
-                        </option>
-                        <option value="Hospodárska informatika">Hospodárska informatika</option>
-                        <option value="Inteligentné systémy">Inteligentné systémy</option>
-                        <option value="Počítačové modelovanie">Počítačové modelovanie</option>
-                        <option value="Počítačové siete">Počítačové siete</option>
-                        <option value="Priemyselná elektrotechnika">Priemyselná elektrotechnika</option>
-                        <option value="Kyberbezpečnosť">Kyberbezpečnosť</option>
-                    </select>
+                    <Controller
+                        name="studyProgram"
+                        control={control}
+                        defaultValue=""
+                        rules={{ required: 'Študijný program je povinný' }}
+                        render={({ field }) => (
+                            <Select onValueChange={field.onChange} defaultValue={field.value}>
+                                <SelectTrigger className="w-full px-3 py-2 border border-gray-300 rounded">
+                                    <SelectValue placeholder="-- Vyberte program --" />
+                                </SelectTrigger>
+                                <SelectContent>
+                                    <SelectGroup>
+                                        <SelectLabel>Študijný program</SelectLabel>
+                                        <SelectItem value="Informatika">Informatika</SelectItem>
+                                        <SelectItem value="Aplikovaná elektrotechnika">
+                                            Aplikovaná elektrotechnika
+                                        </SelectItem>
+                                        <SelectItem value="Automobilová elektronika">
+                                            Automobilová elektronika
+                                        </SelectItem>
+                                        <SelectItem value="Elektroenergetika">Elektroenergetika</SelectItem>
+                                        <SelectItem value="Fyzikálne inžinierstvo progresívnych materiálov">
+                                            Fyzikálne inžinierstvo progresívnych materiálov
+                                        </SelectItem>
+                                        <SelectItem value="Hospodárska informatika">Hospodárska informatika</SelectItem>
+                                        <SelectItem value="Inteligentné systémy">Inteligentné systémy</SelectItem>
+                                        <SelectItem value="Počítačové modelovanie">Počítačové modelovanie</SelectItem>
+                                        <SelectItem value="Počítačové siete">Počítačové siete</SelectItem>
+                                        <SelectItem value="Priemyselná elektrotechnika">
+                                            Priemyselná elektrotechnika
+                                        </SelectItem>
+                                        <SelectItem value="Kyberbezpečnosť">Kyberbezpečnosť</SelectItem>
+                                    </SelectGroup>
+                                </SelectContent>
+                            </Select>
+                        )}
+                    />
                     {errors.studyProgram && <p className="text-red-500 text-sm">{errors.studyProgram.message}</p>}
                 </div>
-
                 <div>
                     <label className="block text-sm font-medium mb-1">Študijný stupeň</label>
-                    <select
+                    <Controller
+                        name="studyDegree"
+                        control={control}
                         defaultValue=""
-                        {...register('studyDegree', {
-                            required: 'Študijný stupeň je povinný',
-                        })}
-                        className="w-full px-3 py-2 border border-gray-300 rounded"
-                    >
-                        <option value="" disabled>
-                            Vyberte študijný stupeň
-                        </option>
-                        <option value="Bc.">Bc.</option>
-                        <option value="Ing.">Ing.</option>
-                        <option value="Doc.">Doc.</option>
-                    </select>
+                        rules={{ required: 'Študijný stupeň je povinný' }}
+                        render={({ field }) => (
+                            <Select onValueChange={field.onChange} defaultValue={field.value}>
+                                <SelectTrigger className="w-full px-3 py-2 border border-gray-300 rounded">
+                                    <SelectValue placeholder="Vyberte študijný stupeň" />
+                                </SelectTrigger>
+                                <SelectContent>
+                                    <SelectGroup>
+                                        <SelectLabel>Študijný stupeň</SelectLabel>
+                                        <SelectItem value="Bc.">Bc.</SelectItem>
+                                        <SelectItem value="Ing.">Ing.</SelectItem>
+                                        <SelectItem value="Doc.">Doc.</SelectItem>
+                                    </SelectGroup>
+                                </SelectContent>
+                            </Select>
+                        )}
+                    />
                     {errors.studyDegree && <p className="text-red-500 text-sm">{errors.studyDegree.message}</p>}
                 </div>
-
                 <div>
                     <label className="block text-sm font-medium mb-1">Rok štúdia</label>
-                    <select
+                    <Controller
+                        name="studyYear"
+                        control={control}
                         defaultValue=""
-                        {...register('studyYear', {
-                            required: 'Rok štúdia je povinný',
-                        })}
-                        className="w-full px-3 py-2 border border-gray-300 rounded"
-                    >
-                        <option value="" disabled>
-                            Vyberte rok štúdia
-                        </option>
-                        {watchStudyDegree === 'Bc.' && (
-                            <>
-                                <option value="1">1</option>
-                                <option value="2">2</option>
-                                <option value="3">3</option>
-                            </>
+                        rules={{ required: 'Rok štúdia je povinný' }}
+                        render={({ field }) => (
+                            <Select onValueChange={field.onChange} defaultValue={field.value}>
+                                <SelectTrigger className="w-full px-3 py-2 border border-gray-300 rounded">
+                                    <SelectValue placeholder="Vyberte rok štúdia" />
+                                </SelectTrigger>
+                                <SelectContent>
+                                    <SelectGroup>
+                                        <SelectLabel>Rok štúdia</SelectLabel>
+                                        {watchStudyDegree === 'Bc.' && (
+                                            <>
+                                                <SelectItem value="1">1</SelectItem>
+                                                <SelectItem value="2">2</SelectItem>
+                                                <SelectItem value="3">3</SelectItem>
+                                            </>
+                                        )}
+                                        {watchStudyDegree === 'Ing.' && (
+                                            <>
+                                                <SelectItem value="1">1</SelectItem>
+                                                <SelectItem value="2">2</SelectItem>
+                                            </>
+                                        )}
+                                        {watchStudyDegree === 'Doc.' && (
+                                            <>
+                                                <SelectItem value="1">1</SelectItem>
+                                                <SelectItem value="2">2</SelectItem>
+                                                <SelectItem value="3">3</SelectItem>
+                                                <SelectItem value="4">4</SelectItem>
+                                                <SelectItem value="5">5</SelectItem>
+                                            </>
+                                        )}
+                                    </SelectGroup>
+                                </SelectContent>
+                            </Select>
                         )}
-                        {watchStudyDegree === 'Ing.' && (
-                            <>
-                                <option value="1">1</option>
-                                <option value="2">2</option>
-                            </>
-                        )}
-                        {watchStudyDegree === 'Doc.' && (
-                            <>
-                                <option value="1">1</option>
-                                <option value="2">2</option>
-                                <option value="3">3</option>
-                                <option value="4">4</option>
-                                <option value="5">5</option>
-                            </>
-                        )}
-                    </select>
+                    />
                     {errors.studyYear && <p className="text-red-500 text-sm">{errors.studyYear.message}</p>}
                 </div>
-
                 <div>
                     <label className="block text-sm font-medium mb-1">Účel</label>
-                    <input
+                    <Input
                         type="text"
-                        {...register('purpose', {
-                            required: 'Účel je povinný',
-                        })}
+                        {...register('purpose', { required: 'Účel je povinný' })}
                         className="w-full px-3 py-2 border border-gray-300 rounded"
                     />
                     {errors.purpose && <p className="text-red-500 text-sm">{errors.purpose.message}</p>}
                 </div>
-
                 <div>
                     <label className="block text-sm font-medium mb-1">Dôvod</label>
-                    <textarea
-                        {...register('reason', {
-                            required: 'Dôvod je povinný',
-                        })}
+                    <Textarea
+                        {...register('reason', { required: 'Dôvod je povinný' })}
                         className="w-full px-3 py-2 border border-gray-300 rounded"
-                    ></textarea>
+                    />
                     {errors.reason && <p className="text-red-500 text-sm">{errors.reason.message}</p>}
                 </div>
-
                 <div>
                     <label className="block text-sm font-medium mb-1">Odkaz na prílohu (nepovinné)</label>
                     {initialValues?.attachmentPath && (
@@ -193,7 +216,7 @@ const RequestForm = ({ title, initialValues, onSubmit }: RequestFormProps) => {
                             </a>
                         </div>
                     )}
-                    <input
+                    <Input
                         type="file"
                         accept=".pdf, .doc, .docx, .txt"
                         className="w-full px-3 py-2 border border-gray-300 rounded"
@@ -205,9 +228,7 @@ const RequestForm = ({ title, initialValues, onSubmit }: RequestFormProps) => {
                         }}
                     />
                 </div>
-
                 {errors.attachment && <p className="text-red-500 text-sm">{errors.attachment.message}</p>}
-
                 <div>
                     <Button type="submit" className="w-full">
                         Odoslať
@@ -218,4 +239,4 @@ const RequestForm = ({ title, initialValues, onSubmit }: RequestFormProps) => {
     );
 };
 
-export default RequestForm;
+export { RequestForm };

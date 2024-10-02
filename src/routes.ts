@@ -1,10 +1,10 @@
 import { createBrowserRouter } from 'react-router-dom';
-import Layout from './components/Layout';
-import CategoryPage from './pages/CategoryPage';
-import CreateRequestPage from './pages/isp/CreateRequestPage';
-import EditRequestPage from './pages/isp/EditRequestPage';
-import RequestsPage from './pages/isp/RequestsPage';
-import SubjectsTablePage from './pages/isp/SubjectsTablePage';
+import { Layout } from './components/providers/layout';
+import { CategoriesPage } from './pages/categories';
+import { CreateRequestPage } from './pages/isp/createRequest';
+import { EditRequestPage } from './pages/isp/editRequest';
+import { RequestsPage } from './pages/isp/requests';
+import { SubjectsTablePage } from './pages/isp/subjectsTable';
 
 export const router = createBrowserRouter([
     {
@@ -13,7 +13,7 @@ export const router = createBrowserRouter([
         children: [
             {
                 index: true,
-                Component: CategoryPage,
+                Component: CategoriesPage,
             },
             {
                 path: 'isp/requests',

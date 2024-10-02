@@ -1,9 +1,9 @@
-import { UserCircleIcon } from '@heroicons/react/24/solid';
 import { useKeycloak } from '@react-keycloak/web';
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import tukeImg from '../assets/tuke-2.png';
 import tukeLogoImg from '../assets/tuke-logo.png';
+import { CircleUserRound } from 'lucide-react';
 
 const Header = () => {
     const navigate = useNavigate();
@@ -22,8 +22,9 @@ const Header = () => {
                 <img src={tukeLogoImg} alt="TUKE" style={{ maxWidth: '40px' }} className="sm:hidden" />
             </button>
             <div className="relative">
-                <UserCircleIcon
-                    className="text-white w-10 cursor-pointer"
+                <CircleUserRound
+                    size="35px"
+                    className="text-white cursor-pointer"
                     onClick={() => setDropdownOpen(!dropdownOpen)}
                 />
                 {dropdownOpen && (
@@ -44,4 +45,4 @@ const Header = () => {
     );
 };
 
-export default Header;
+export { Header };

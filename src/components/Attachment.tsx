@@ -1,5 +1,5 @@
 import { useLazyDownloadFileQuery } from '../services/isp/request';
-import { ArrowDownTrayIcon } from '@heroicons/react/24/solid';
+import { Download } from 'lucide-react';
 
 const Attachment = ({ attachmentPath }: { attachmentPath: string | null }) => {
     const [triggerDownload] = useLazyDownloadFileQuery();
@@ -25,7 +25,7 @@ const Attachment = ({ attachmentPath }: { attachmentPath: string | null }) => {
 
     return attachmentPath ? (
         <button onClick={handleDownload} className="flex items-center text-blue-500 hover:text-blue-700">
-            <ArrowDownTrayIcon className="h-5 w-5 mr-2" aria-hidden="true" />
+            <Download className="h-5 w-5 mr-2" aria-hidden="true" />
             Stiahnuť prílohu
         </button>
     ) : (
@@ -33,4 +33,4 @@ const Attachment = ({ attachmentPath }: { attachmentPath: string | null }) => {
     );
 };
 
-export default Attachment;
+export { Attachment };

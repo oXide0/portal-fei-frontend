@@ -7,7 +7,7 @@ export interface RequestResponse {
     readonly studentSurname: string;
     readonly studyProgram: string;
     readonly studyDegree: string;
-    readonly studyYear: number;
+    readonly studyYear: string;
     readonly requestStatus: RequestStatus;
     readonly purpose: string;
     readonly reason: string;

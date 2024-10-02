@@ -27,4 +27,4 @@ const Card = ({ variant = 'primary', ...props }: CardProps) => {
     );
 };
 
-export default Card;
+export { Card };

@@ -1,7 +1,14 @@
-import { useNavigate } from 'react-router-dom';
-import Breadcrumbs from '../../components/Breadcrumbs';
-import LoadingSpinner from '../../components/LoadingSpinner';
-import RequestForm, { IFormInput } from '../../components/RequestForm';
+import {
+    Breadcrumb,
+    BreadcrumbItem,
+    BreadcrumbLink,
+    BreadcrumbList,
+    BreadcrumbPage,
+    BreadcrumbSeparator,
+} from '@/components/ui/breadcrumb';
+import { Skeleton } from '@/components/ui/skeleton';
+import { Link, useNavigate } from 'react-router-dom';
+import RequestForm, { IFormInput } from '../../components/requestForm';
 import { useRequiredParam } from '../../hooks/useRequiredParam';
 import { useGetRequestByIdQuery, useUpdateRequestMutation } from '../../services/isp/request';
 
@@ -38,19 +45,31 @@ const EditRequestPage = () => {
         navigate('/isp/requests');
     };
 
-    if (!data) return <LoadingSpinner />;
+    if (!data) return <Skeleton />;
     return (
         <div className="p-4">
-            <Breadcrumbs
-                links={[
-                    { name: 'Kategórie', path: '/' },
-                    { name: 'ISP Žiadosti', path: '/isp/requests' },
-                    { name: 'Upraviť žiadosť', path: `/isp/requests/${requestId}` },
-                ]}
-            />
+            <Breadcrumb style={{ paddingBottom: '20px' }}>
+                <BreadcrumbList>
+                    <BreadcrumbItem>
+                        <BreadcrumbLink asChild>
+                            <Link to="/">Kategórie</Link>
+                        </BreadcrumbLink>
+                    </BreadcrumbItem>
+                    <BreadcrumbSeparator />
+                    <BreadcrumbItem>
+                        <BreadcrumbLink asChild>
+                            <Link to="/isp/requests">ISP Žiadosti</Link>
+                        </BreadcrumbLink>
+                    </BreadcrumbItem>
+                    <BreadcrumbSeparator />
+                    <BreadcrumbItem>
+                        <BreadcrumbPage>Upraviť žiadosť</BreadcrumbPage>
+                    </BreadcrumbItem>
+                </BreadcrumbList>
+            </Breadcrumb>
             <RequestForm title="Upraviť žiadosť" initialValues={data} onSubmit={onSubmit} />;
         </div>
     );
 };
 
-export default EditRequestPage;
+export { EditRequestPage };
