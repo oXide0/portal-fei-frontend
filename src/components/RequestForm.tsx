@@ -1,8 +1,9 @@
-import { Input } from './ui/input';
-import { Select, SelectContent, SelectGroup, SelectItem, SelectLabel, SelectTrigger, SelectValue } from './ui/select';
 import { useEffect, useState } from 'react';
 import { Controller, SubmitHandler, useForm } from 'react-hook-form';
+import { Attachment } from './attachment';
 import { Button } from './ui/button';
+import { Input } from './ui/input';
+import { Select, SelectContent, SelectGroup, SelectItem, SelectLabel, SelectTrigger, SelectValue } from './ui/select';
 import { Textarea } from './ui/textarea';
 
 interface RequestFormProps {
@@ -202,19 +203,10 @@ const RequestForm = ({ title, initialValues, onSubmit }: RequestFormProps) => {
                     />
                     {errors.reason && <p className="text-red-500 text-sm">{errors.reason.message}</p>}
                 </div>
-                <div>
+                <div className="flex flex-col gap-2">
                     <label className="block text-sm font-medium mb-1">Odkaz na prílohu (nepovinné)</label>
                     {initialValues?.attachmentPath && (
-                        <div className="mb-2">
-                            <a
-                                href={initialValues.attachmentPath}
-                                target="_blank"
-                                rel="noopener noreferrer"
-                                className="text-blue-500"
-                            >
-                                Zobraziť existujúcu prílohu
-                            </a>
-                        </div>
+                        <Attachment label="Stiahnuť existujúcu prílohu" attachmentPath={initialValues.attachmentPath} />
                     )}
                     <Input
                         type="file"

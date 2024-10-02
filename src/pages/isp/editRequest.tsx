@@ -67,7 +67,12 @@ const EditRequestPage = () => {
                     </BreadcrumbItem>
                 </BreadcrumbList>
             </Breadcrumb>
-            <RequestForm title="Upraviť žiadosť" initialValues={data} onSubmit={onSubmit} />;
+            <RequestForm
+                title="Upraviť žiadosť"
+                initialValues={{ ...data, studyYear: data.studyYear.toString() }}
+                onSubmit={onSubmit}
+            />
+            ;
         </div>
     );
 };

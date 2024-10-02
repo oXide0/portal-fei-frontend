@@ -1,7 +1,12 @@
 import { useLazyDownloadFileQuery } from '../services/isp/request';
 import { Download } from 'lucide-react';
 
-const Attachment = ({ attachmentPath }: { attachmentPath: string | null }) => {
+interface AttachmentProps {
+    attachmentPath: string | null;
+    label?: string;
+}
+
+const Attachment = ({ attachmentPath, label = 'Stiahnuť prílohu' }: AttachmentProps) => {
     const [triggerDownload] = useLazyDownloadFileQuery();
 
     const handleDownload = () => {
@@ -24,9 +29,9 @@ const Attachment = ({ attachmentPath }: { attachmentPath: string | null }) => {
     };
 
     return attachmentPath ? (
-        <button onClick={handleDownload} className="flex items-center text-blue-500 hover:text-blue-700">
+        <button type="button" onClick={handleDownload} className="flex items-center text-blue-500 hover:text-blue-700">
             <Download className="h-5 w-5 mr-2" aria-hidden="true" />
-            Stiahnuť prílohu
+            {label}
         </button>
     ) : (
         <p>Žiadna príloha</p>
