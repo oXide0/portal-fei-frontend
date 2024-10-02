@@ -7,7 +7,7 @@ import {
     BreadcrumbSeparator,
 } from '@/components/ui/breadcrumb';
 import { Link, useNavigate } from 'react-router-dom';
-import RequestForm, { IFormInput } from '../../components/requestForm';
+import { RequestForm, IFormInput } from '../../components/requestForm';
 import { useCreateRequestMutation } from '../../services/isp/request';
 
 const CreateRequestPage = () => {

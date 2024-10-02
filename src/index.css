@@ -7,7 +7,7 @@
 }
 
 @layer base {
-  :root {
+    :root {
         --radius: 0.5rem;
     }
 }

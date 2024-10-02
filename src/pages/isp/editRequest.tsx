@@ -8,7 +8,7 @@ import {
 } from '@/components/ui/breadcrumb';
 import { Skeleton } from '@/components/ui/skeleton';
 import { Link, useNavigate } from 'react-router-dom';
-import RequestForm, { IFormInput } from '../../components/requestForm';
+import { RequestForm, IFormInput } from '../../components/requestForm';
 import { useRequiredParam } from '../../hooks/useRequiredParam';
 import { useGetRequestByIdQuery, useUpdateRequestMutation } from '../../services/isp/request';
 

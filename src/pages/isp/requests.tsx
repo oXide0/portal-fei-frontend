@@ -174,30 +174,27 @@ const RequestsPage = () => {
                                         <TooltipProvider>
                                             <Tooltip>
                                                 <TooltipTrigger asChild>
-                                                    <div>
+                                                    <span>
                                                         <Button
-                                                            onClick={() =>
-                                                                request.requestStatus !== 'APPROVED_BY_REFERENT' &&
-                                                                request.requestStatus !== 'APPROVED' &&
-                                                                navigate(`/isp/subjects-table/${request.tableId}`)
-                                                            }
                                                             disabled={
                                                                 request.requestStatus !== 'APPROVED_BY_REFERENT' &&
                                                                 request.requestStatus !== 'APPROVED'
                                                             }
+                                                            onClick={() =>
+                                                                navigate(`/isp/subjects-table/${request.tableId}`)
+                                                            }
                                                         >
                                                             Zobraziť predmety
                                                         </Button>
-                                                    </div>
+                                                    </span>
                                                 </TooltipTrigger>
-                                                <TooltipContent>
-                                                    <p>
-                                                        {request.requestStatus !== 'APPROVED_BY_REFERENT' &&
-                                                        request.requestStatus !== 'APPROVED'
-                                                            ? "Žiadosť nemá stav 'schválená'."
-                                                            : 'Zobraziť predmety'}
-                                                    </p>
-                                                </TooltipContent>
+
+                                                {request.requestStatus !== 'APPROVED_BY_REFERENT' &&
+                                                    request.requestStatus !== 'APPROVED' && (
+                                                        <TooltipContent>
+                                                            <p>Žiadosť nemá stav 'schválená'.</p>
+                                                        </TooltipContent>
+                                                    )}
                                             </Tooltip>
                                         </TooltipProvider>
                                     </TableCell>
@@ -206,30 +203,27 @@ const RequestsPage = () => {
                                         <TooltipProvider>
                                             <Tooltip>
                                                 <TooltipTrigger asChild>
-                                                    <div>
+                                                    <span>
                                                         <Button
-                                                            onClick={() =>
-                                                                request.requestStatus !== 'APPROVED_BY_REFERENT' &&
-                                                                request.requestStatus !== 'APPROVED' &&
-                                                                navigate(`/isp/subjects-table/${request.tableId}`)
-                                                            }
                                                             disabled={
                                                                 request.requestStatus !== 'APPROVED_BY_REFERENT' &&
                                                                 request.requestStatus !== 'APPROVED'
                                                             }
+                                                            onClick={() =>
+                                                                navigate(`/isp/subjects-table/${request.tableId}`)
+                                                            }
                                                         >
                                                             Zobraziť predmety
                                                         </Button>
-                                                    </div>
+                                                    </span>
                                                 </TooltipTrigger>
-                                                <TooltipContent>
-                                                    <p>
-                                                        {request.requestStatus !== 'APPROVED_BY_REFERENT' &&
-                                                        request.requestStatus !== 'APPROVED'
-                                                            ? "Žiadosť nemá stav 'schválená'."
-                                                            : 'Zobraziť predmety'}
-                                                    </p>
-                                                </TooltipContent>
+
+                                                {request.requestStatus !== 'APPROVED_BY_REFERENT' &&
+                                                    request.requestStatus !== 'APPROVED' && (
+                                                        <TooltipContent>
+                                                            <p>Žiadosť nemá stav 'schválená'.</p>
+                                                        </TooltipContent>
+                                                    )}
                                             </Tooltip>
                                         </TooltipProvider>
                                     </TableCell>

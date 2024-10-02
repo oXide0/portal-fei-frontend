@@ -1,7 +1,7 @@
 import { useKeycloak } from '@react-keycloak/web';
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import tukeImg from '../assets/tuke-2.png';
+import tukeImg from '../assets/tuke.png';
 import tukeLogoImg from '../assets/tuke-logo.png';
 import { CircleUserRound } from 'lucide-react';
 
