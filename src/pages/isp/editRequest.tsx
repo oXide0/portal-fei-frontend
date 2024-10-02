@@ -6,9 +6,8 @@ import {
     BreadcrumbPage,
     BreadcrumbSeparator,
 } from '@/components/ui/breadcrumb';
-import { Skeleton } from '@/components/ui/skeleton';
 import { Link, useNavigate } from 'react-router-dom';
-import { RequestForm, IFormInput } from '../../components/requestForm';
+import { IFormInput, RequestForm } from '../../components/requestForm';
 import { useRequiredParam } from '../../hooks/useRequiredParam';
 import { useGetRequestByIdQuery, useUpdateRequestMutation } from '../../services/isp/request';
 
@@ -45,7 +44,7 @@ const EditRequestPage = () => {
         navigate('/isp/requests');
     };
 
-    if (!data) return <Skeleton />;
+    if (!data) return <div className="loader"></div>;
     return (
         <div className="p-4">
             <Breadcrumb style={{ paddingBottom: '20px' }}>

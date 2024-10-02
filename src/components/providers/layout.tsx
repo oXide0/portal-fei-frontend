@@ -1,11 +1,10 @@
+import { Header } from '@/components/header';
 import { useKeycloak } from '@react-keycloak/web';
 import { useEffect } from 'react';
 import { Outlet } from 'react-router-dom';
 import { setId, setRole, setToken } from '../../features/userSlice';
 import { parseIdToken } from '../../helpers';
 import { useAppDispatch, useAppSelector } from '../../hooks/redux-hooks';
-import { Header } from '@/components/header';
-import { Skeleton } from '../ui/skeleton';
 
 const Layout = () => {
     return (
@@ -39,6 +38,6 @@ const ProtectedRoute = ({ children }: { children: React.ReactNode }) => {
         }
     }, [isAuthenticated, keycloak]);
 
-    if (!token) return <Skeleton />;
+    if (!token) return <div className="loader"></div>;
     return isAuthenticated ? children : null;
 };

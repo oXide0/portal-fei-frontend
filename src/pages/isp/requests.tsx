@@ -20,7 +20,6 @@ import {
 } from '@/components/ui/breadcrumb';
 import { Button } from '@/components/ui/button';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { Skeleton } from '@/components/ui/skeleton';
 import { Table, TableBody, TableCaption, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip';
 import { Pencil, Trash2 } from 'lucide-react';
@@ -76,8 +75,7 @@ const RequestsPage = () => {
         }
     }, [data, userRequests]);
 
-    if (!requests) return <Skeleton />;
-
+    if (!requests) return <div className="loader"></div>;
     return (
         <div className="p-4">
             <Breadcrumb style={{ paddingBottom: '20px' }}>

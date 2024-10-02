@@ -28,7 +28,6 @@ import {
     SelectTrigger,
     SelectValue,
 } from '@/components/ui/select';
-import { Skeleton } from '@/components/ui/skeleton';
 import { Table, TableBody, TableCaption, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import { useState } from 'react';
 import { Link } from 'react-router-dom';
@@ -86,7 +85,7 @@ const SubjectsTablePage = () => {
         }
     };
 
-    if (isLoading || !data) return <Skeleton />;
+    if (isLoading || !data) return <div className="loader"></div>;
 
     return (
         <div className="p-4">
