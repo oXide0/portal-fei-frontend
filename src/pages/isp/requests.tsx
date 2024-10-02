@@ -1,5 +1,16 @@
 import { Attachment } from '@/components/attachment';
 import {
+    AlertDialog,
+    AlertDialogAction,
+    AlertDialogCancel,
+    AlertDialogContent,
+    AlertDialogDescription,
+    AlertDialogFooter,
+    AlertDialogHeader,
+    AlertDialogTitle,
+    AlertDialogTrigger,
+} from '@/components/ui/alert-dialog';
+import {
     Breadcrumb,
     BreadcrumbItem,
     BreadcrumbLink,
@@ -29,6 +40,7 @@ const RequestsPage = () => {
     const navigate = useNavigate();
     const [requests, setRequests] = useState<RequestResponse[]>();
     const { role, id: userId } = useAppSelector((state) => state.user);
+    const [requestToDelete, setRequestToDelete] = useState<string | null>(null);
     const isClerk = role === 'N';
     const isStudent = role === 'S';
 
@@ -43,10 +55,7 @@ const RequestsPage = () => {
     const [deleteRequest] = useDeleteRequestMutation();
 
     const handleDelete = async (requestId: string) => {
-        if (window.confirm('Are you sure you want to delete this request?')) {
-            await deleteRequest(requestId);
-            refetch();
-        }
+        await deleteRequest(requestId);
     };
 
     const handleStatusChange = async (requestId: string, newStatus: RequestStatus) => {
@@ -84,6 +93,41 @@ const RequestsPage = () => {
                     </BreadcrumbItem>
                 </BreadcrumbList>
             </Breadcrumb>
+
+            <AlertDialog
+                open={requestToDelete ? true : false}
+                onOpenChange={(value: boolean) => {
+                    if (!value) {
+                        setRequestToDelete(null);
+                    }
+                }}
+            >
+                <AlertDialogTrigger asChild>
+                    <Button style={{ display: 'none' }}>Open</Button>
+                </AlertDialogTrigger>
+                <AlertDialogContent>
+                    <AlertDialogHeader>
+                        <AlertDialogTitle>Ste si úplne istí?</AlertDialogTitle>
+                        <AlertDialogDescription>
+                            Táto akcia sa nedá zvrátiť. Žiadosť bude vymazaná.
+                        </AlertDialogDescription>
+                    </AlertDialogHeader>
+                    <AlertDialogFooter>
+                        <AlertDialogCancel onClick={() => setRequestToDelete(null)}>Zrušiť</AlertDialogCancel>
+                        <AlertDialogAction
+                            onClick={() => {
+                                if (requestToDelete) {
+                                    handleDelete(requestToDelete);
+                                    setRequestToDelete(null);
+                                }
+                            }}
+                        >
+                            Vymazať
+                        </AlertDialogAction>
+                    </AlertDialogFooter>
+                </AlertDialogContent>
+            </AlertDialog>
+
             <div className="flex justify-between pb-4">
                 <h1 className="text-3xl font-bold mb-4">{isStudent ? 'Moje Žiadosti' : 'Žiadosti'}</h1>
 
@@ -93,6 +137,7 @@ const RequestsPage = () => {
                     </div>
                 )}
             </div>
+
             <div className="overflow-x-auto">
                 <Table>
                     <TableCaption>Zoznam vašich žiadostí.</TableCaption>
@@ -165,7 +210,7 @@ const RequestsPage = () => {
                                                     <Pencil className="h-4 w-4 mr-1" />
                                                     Upraviť
                                                 </Button>
-                                                <Button onClick={() => handleDelete(request.requestId)}>
+                                                <Button onClick={() => setRequestToDelete(request.requestId)}>
                                                     <Trash2 className="h-4 w-4 mr-1" />
                                                     Odstrániť
                                                 </Button>

@@ -1,3 +1,15 @@
+import { SubjectModal } from '@/components/subjectModal';
+import {
+    AlertDialog,
+    AlertDialogAction,
+    AlertDialogCancel,
+    AlertDialogContent,
+    AlertDialogDescription,
+    AlertDialogFooter,
+    AlertDialogHeader,
+    AlertDialogTitle,
+    AlertDialogTrigger,
+} from '@/components/ui/alert-dialog';
 import {
     Breadcrumb,
     BreadcrumbItem,
@@ -7,7 +19,6 @@ import {
     BreadcrumbSeparator,
 } from '@/components/ui/breadcrumb';
 import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
 import {
     Select,
     SelectContent,
@@ -36,6 +47,7 @@ import { TableStatus } from '../../types/isp/Table';
 const SubjectsTablePage = () => {
     const tableId = useRequiredParam('tableId');
     const [isModalOpen, setIsModalOpen] = useState(false);
+    const [subjectToDelete, setSubjectToDelete] = useState<string | null>(null);
     const { role } = useAppSelector((state) => state.user);
     const isStudent = role === 'S';
 
@@ -46,9 +58,11 @@ const SubjectsTablePage = () => {
     const [deleteSubject] = useDeleteSubjectForTableMutation();
 
     const handleDeleteSubject = async (subjectId: string) => {
-        if (window.confirm('Are you sure you want to delete this subject?')) {
+        try {
             await deleteSubject(subjectId);
             refetch();
+        } catch (error) {
+            console.error('Error deleting subject:', error);
         }
     };
 
@@ -95,6 +109,41 @@ const SubjectsTablePage = () => {
                     </BreadcrumbItem>
                 </BreadcrumbList>
             </Breadcrumb>
+
+            <AlertDialog
+                open={subjectToDelete ? true : false}
+                onOpenChange={(value: boolean) => {
+                    if (!value) {
+                        setSubjectToDelete(null);
+                    }
+                }}
+            >
+                <AlertDialogTrigger asChild>
+                    <Button style={{ display: 'none' }}>Open</Button>
+                </AlertDialogTrigger>
+                <AlertDialogContent>
+                    <AlertDialogHeader>
+                        <AlertDialogTitle>Ste si úplne istí?</AlertDialogTitle>
+                        <AlertDialogDescription>
+                            Táto akcia sa nedá zvrátiť. Toto natrvalo vymaže predmet."
+                        </AlertDialogDescription>
+                    </AlertDialogHeader>
+                    <AlertDialogFooter>
+                        <AlertDialogCancel onClick={() => setSubjectToDelete(null)}>Zrušiť</AlertDialogCancel>
+                        <AlertDialogAction
+                            onClick={() => {
+                                if (subjectToDelete) {
+                                    handleDeleteSubject(subjectToDelete);
+                                    setSubjectToDelete(null);
+                                }
+                            }}
+                        >
+                            Vymazať
+                        </AlertDialogAction>
+                    </AlertDialogFooter>
+                </AlertDialogContent>
+            </AlertDialog>
+
             <h1 className="text-3xl font-bold mb-4">Tabuľka Predmetov</h1>
 
             <div className="mb-6">
@@ -182,7 +231,7 @@ const SubjectsTablePage = () => {
                                 </TableCell>
                                 {!isStudent && (
                                     <TableCell className="py-2 px-4 border space-x-2 text-center">
-                                        <Button variant="ghost" onClick={() => handleDeleteSubject(subject.subjectId)}>
+                                        <Button variant="ghost" onClick={() => setSubjectToDelete(subject.subjectId)}>
                                             Vymazať
                                         </Button>
                                     </TableCell>
@@ -192,7 +241,7 @@ const SubjectsTablePage = () => {
                     </TableBody>
                 </Table>
             </div>
-            <AddSubjectModal
+            <SubjectModal
                 isOpen={isModalOpen}
                 onSubmit={async (subjectName) => {
                     await addSubject({
@@ -208,59 +257,3 @@ const SubjectsTablePage = () => {
 };
 
 export { SubjectsTablePage };
-
-interface AddSubjectModalProps {
-    isOpen: boolean;
-    onClose: () => void;
-    onSubmit: (subjectName: string) => void;
-}
-
-const AddSubjectModal = ({ isOpen, onClose, onSubmit }: AddSubjectModalProps) => {
-    const [subjectName, setSubjectName] = useState('');
-
-    const handleSubmit = (e: React.FormEvent) => {
-        e.preventDefault();
-        onSubmit(subjectName);
-        onClose();
-        setSubjectName('');
-    };
-
-    return (
-        <>
-            {isOpen && (
-                <div
-                    className="fixed inset-0 bg-gray-500 bg-opacity-75 flex justify-center items-center z-50 w-"
-                    onClick={onClose}
-                >
-                    <div
-                        className="bg-white p-6 rounded shadow-lg max-w-md mx-auto w-96"
-                        onClick={(e) => e.stopPropagation()}
-                    >
-                        <h2 className="text-2xl font-semibold mb-4">Pridať nový predmet</h2>
-                        <form onSubmit={handleSubmit}>
-                            <div className="mb-4">
-                                <label className="block text-gray-700 text-sm font-bold mb-2" htmlFor="subjectName">
-                                    Názov predmetu
-                                </label>
-                                <Input
-                                    id="subjectName"
-                                    type="text"
-                                    value={subjectName}
-                                    onChange={(e) => setSubjectName(e.target.value)}
-                                    required
-                                    className="border border-gray-300 rounded px-3 py-2 w-full"
-                                />
-                            </div>
-                            <div className="flex justify-end space-x-2">
-                                <Button variant="ghost" type="button" onClick={onClose}>
-                                    Zrušiť
-                                </Button>
-                                <Button type="submit">Pridať predmet</Button>
-                            </div>
-                        </form>
-                    </div>
-                </div>
-            )}
-        </>
-    );
-};
