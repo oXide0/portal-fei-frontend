@@ -71,7 +71,7 @@ const RequestsPage = () => {
         if (userRequests && isStudent) {
             setRequests(userRequests ?? []);
         }
-        if (data && isClerk) {
+        if (data && !isStudent) {
             setRequests(data ?? []);
         }
     }, [data, userRequests]);
