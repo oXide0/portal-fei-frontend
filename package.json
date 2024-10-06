@@ -9,7 +9,8 @@
         "lint": "eslint . --ext ts,tsx --report-unused-disable-directives --max-warnings 0",
         "preview": "vite preview",
         "tsc": "tsc -b",
-        "format": "npx prettier --write ."
+        "format": "npx prettier --write .",
+        "minio": "docker run -p 9000:9000 -p 9001:9001 --name minio -v C:/Users/nazar/minio/data:/data -v C:/Users/nazar/minio/config:/root/.minio -e MINIO_ROOT_USER=minio99 -e MINIO_ROOT_PASSWORD=minio123 quay.io/minio/minio server /data --console-address :9001"
     },
     "dependencies": {
         "@radix-ui/react-alert-dialog": "^1.1.2",

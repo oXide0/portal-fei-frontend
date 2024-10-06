@@ -64,6 +64,5 @@ export const {
     useUpdateRequestMutation,
     useEvaluateRequestMutation,
     useDeleteRequestMutation,
-    useDownloadFileQuery,
     useLazyDownloadFileQuery,
 } = requestApi;
