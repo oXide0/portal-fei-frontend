@@ -12,7 +12,7 @@ const Card = ({ variant = 'primary', ...props }: CardProps) => {
             style={{
                 backgroundColor: variant === 'primary' ? '#a65858' : 'gray',
             }}
-            className="max-w-40 h-52 rounded-md flex flex-col items-center cursor-pointer card"
+            className="max-w-40 w-full h-52 rounded-md flex flex-col items-center cursor-pointer card"
             onClick={props.onClick}
         >
             <div className="flex-1 pt-4">{props.logo}</div>
