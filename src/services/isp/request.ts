@@ -1,4 +1,10 @@
-import { EvaluateRequestBody, RequestResponse, UpdateRequestResponse, RequestStatus } from '../../types/isp/Request';
+import {
+    EvaluateRequestBody,
+    RequestResponse,
+    UpdateRequestResponse,
+    RequestStatus,
+    CreateRequestResponse,
+} from '../../types/isp/Request';
 import { ispApi } from './api';
 
 export const requestApi = ispApi.injectEndpoints({
@@ -15,7 +21,7 @@ export const requestApi = ispApi.injectEndpoints({
             query: (requestId) => `requests/${requestId}`,
             providesTags: ['Request'],
         }),
-        createRequest: builder.mutation<RequestResponse, FormData>({
+        createRequest: builder.mutation<CreateRequestResponse, FormData>({
             query: (formData) => ({
                 url: 'requests',
                 method: 'POST',
@@ -46,8 +52,8 @@ export const requestApi = ispApi.injectEndpoints({
             invalidatesTags: ['Request'],
         }),
         downloadFile: builder.query<Blob, string>({
-            query: (attachmentPath) => ({
-                url: `requests/attachment/download?path=${encodeURIComponent(attachmentPath)}`,
+            query: (attachmentUrl) => ({
+                url: `requests/attachment/download?attachmentUrl=${encodeURIComponent(attachmentUrl)}`,
                 method: 'GET',
                 responseHandler: (response) => response.blob(),
             }),

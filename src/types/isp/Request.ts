@@ -11,12 +11,18 @@ export interface RequestResponse {
     readonly requestStatus: RequestStatus;
     readonly purpose: string;
     readonly reason: string;
-    readonly attachmentPath: string | null;
+    readonly attachmentUrl: string;
     readonly tableId: string;
+}
+
+export interface CreateRequestResponse {
+    requestId: string;
+    requestStatus: RequestStatus;
 }
 
 export interface UpdateRequestResponse {
     requestStatus: RequestStatus;
+    attachmentUrl: string;
 }
 
 export interface EvaluateRequestBody {

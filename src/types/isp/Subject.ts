@@ -15,7 +15,7 @@ export interface EvaluateSubject {
 
 export interface CreateSubjectResponse {
     readonly subjectId: string;
-    readonly userId: string;
+    readonly userID: string;
     readonly tableId: string;
     readonly name: string;
     readonly subjectStatus: SubjectStatus;

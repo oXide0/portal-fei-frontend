@@ -21,7 +21,7 @@ export interface IFormInput {
     purpose: string;
     reason: string;
     attachment?: File | null;
-    attachmentPath?: string | null;
+    attachmentUrl?: string | null;
 }
 
 const RequestForm = ({ title, initialValues, onSubmit }: RequestFormProps) => {
@@ -204,9 +204,9 @@ const RequestForm = ({ title, initialValues, onSubmit }: RequestFormProps) => {
                     {errors.reason && <p className="text-red-500 text-sm">{errors.reason.message}</p>}
                 </div>
                 <div className="flex flex-col gap-2">
-                    <label className="block text-sm font-medium mb-1">Odkaz na prílohu (nepovinné)</label>
-                    {initialValues?.attachmentPath && (
-                        <Attachment label="Stiahnuť existujúcu prílohu" attachmentPath={initialValues.attachmentPath} />
+                    <label className="block text-sm font-medium mb-1">Príloha</label>
+                    {initialValues?.attachmentUrl && (
+                        <Attachment label="Stiahnuť existujúcu prílohu" url={initialValues.attachmentUrl} />
                     )}
                     <Input
                         type="file"

@@ -195,7 +195,7 @@ const RequestsPage = () => {
                                 <TableCell className="py-2 px-4 border">{request.purpose}</TableCell>
                                 <TableCell className="py-2 px-4 border">{request.reason}</TableCell>
                                 <TableCell className="py-2 px-4 border">
-                                    <Attachment attachmentPath={request.attachmentPath} />
+                                    <Attachment url={request.attachmentUrl ? request.attachmentUrl : null} />
                                 </TableCell>
                                 {isStudent ? (
                                     <TableCell className="py-2 px-4 border space-x-2 min-w-96 flex justify-center">
