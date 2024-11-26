@@ -15,7 +15,7 @@ const EditRequestPage = () => {
     const navigate = useNavigate();
     const requestId = useRequiredParam('requestId');
     const { data } = useGetRequestByIdQuery(requestId);
-    const [updateRequest] = useUpdateRequestMutation();
+    const [updateRequest, { isLoading }] = useUpdateRequestMutation();
 
     const onSubmit = async (data: IFormInput) => {
         if (!requestId) {
@@ -46,7 +46,7 @@ const EditRequestPage = () => {
 
     if (!data) return <div className="loader"></div>;
     return (
-        <div className="p-4">
+        <div>
             <Breadcrumb style={{ paddingBottom: '20px' }}>
                 <BreadcrumbList>
                     <BreadcrumbItem>
@@ -69,9 +69,9 @@ const EditRequestPage = () => {
             <RequestForm
                 title="Upraviť žiadosť"
                 initialValues={{ ...data, studyYear: data.studyYear.toString() }}
+                isLoading={isLoading}
                 onSubmit={onSubmit}
             />
-            ;
         </div>
     );
 };

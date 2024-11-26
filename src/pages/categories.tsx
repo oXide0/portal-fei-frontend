@@ -1,4 +1,4 @@
-import { Card } from '../components/ui/card';
+import { CategoryCard } from '../components/ui/categoryCard';
 import etdImg from '../assets/etd.png';
 import { useNavigate } from 'react-router-dom';
 
@@ -8,7 +8,7 @@ const CategoriesPage = () => {
     return (
         <div className="max-w-6xl my-0 mx-auto">
             <div className="flex flex-wrap gap-10">
-                <Card
+                <CategoryCard
                     title="isp"
                     description="individuálny študijný program"
                     logo={<img src={etdImg} alt="TUKE" style={{ maxWidth: '100px' }} />}

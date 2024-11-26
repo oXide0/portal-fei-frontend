@@ -59,6 +59,13 @@ export const requestApi = ispApi.injectEndpoints({
             }),
             providesTags: ['Request'],
         }),
+        generateDocument: builder.query<Blob, string>({
+            query: (requestId) => ({
+                url: `requests/generate/${requestId}`,
+                method: 'GET',
+                responseHandler: (response) => response.blob(),
+            }),
+        }),
     }),
 });
 
@@ -71,4 +78,5 @@ export const {
     useEvaluateRequestMutation,
     useDeleteRequestMutation,
     useLazyDownloadFileQuery,
+    useLazyGenerateDocumentQuery,
 } = requestApi;

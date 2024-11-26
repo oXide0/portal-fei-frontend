@@ -1,8 +1,9 @@
 import { Header } from '@/components/header';
+import { getInitials } from '@/lib/utils';
 import { useKeycloak } from '@react-keycloak/web';
 import { useEffect } from 'react';
 import { Outlet } from 'react-router-dom';
-import { setId, setRole, setToken } from '../../features/userSlice';
+import { setId, setInitials, setRole, setToken } from '../../features/userSlice';
 import { parseIdToken } from '../../helpers';
 import { useAppDispatch, useAppSelector } from '../../hooks/redux-hooks';
 
@@ -10,7 +11,7 @@ const Layout = () => {
     return (
         <ProtectedRoute>
             <Header />
-            <div className="pt-7">
+            <div className="py-7 px-10">
                 <Outlet />
             </div>
         </ProtectedRoute>
@@ -35,6 +36,7 @@ const ProtectedRoute = ({ children }: { children: React.ReactNode }) => {
             dispatch(setId(parsedToken.sub));
             dispatch(setToken(keycloak.idToken));
             dispatch(setRole(parsedToken.employee_type));
+            dispatch(setInitials(getInitials(parsedToken.name)));
         }
     }, [isAuthenticated, keycloak]);
 
