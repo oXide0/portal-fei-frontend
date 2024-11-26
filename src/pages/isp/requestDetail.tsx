@@ -10,10 +10,12 @@ import {
 } from '@/components/ui/breadcrumb';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { prettifyRequestStatus } from '@/helpers';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
+import { getAvailableRequestStatusOptions, prettifyRequestStatus } from '@/helpers';
 import { useAppSelector } from '@/hooks/redux-hooks';
 import { useRequiredParam } from '@/hooks/useRequiredParam';
-import { useDeleteRequestMutation, useGetRequestByIdQuery } from '@/services/isp/request';
+import { useDeleteRequestMutation, useEvaluateRequestMutation, useGetRequestByIdQuery } from '@/services/isp/request';
+import { RequestStatus } from '@/types/isp/Request';
 import { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 
@@ -21,11 +23,22 @@ function RequestDetailPage() {
     const requestId = useRequiredParam('requestId');
     const [open, setOpen] = useState(false);
     const navigate = useNavigate();
-    const { data } = useGetRequestByIdQuery(requestId);
     const { role } = useAppSelector((state) => state.user);
     const isStudent = role === 'S';
+    const isClerk = role === 'N';
 
+    const { data, refetch } = useGetRequestByIdQuery(requestId);
     const [deleteRequest] = useDeleteRequestMutation();
+    const [evaluateRequest] = useEvaluateRequestMutation();
+
+    const handleStatusChange = async (requestId: string, newStatus: RequestStatus) => {
+        try {
+            await evaluateRequest({ requestId, evaluationStatus: newStatus });
+        } catch (error) {
+            alert('Failed to update request status');
+        }
+        refetch();
+    };
 
     if (data == null) return <div className="loader"></div>;
     return (
@@ -87,8 +100,32 @@ function RequestDetailPage() {
                             <p className="text-lg">{data.studyYear}</p>
                         </div>
                         <div>
-                            <p className="text-sm font-medium text-gray-600">Stav</p>
-                            <p className="text-lg font-bold">{prettifyRequestStatus(data.requestStatus)}</p>
+                            <p className="text-sm font-medium text-gray-600 pb-1">Stav</p>
+                            {isClerk ? (
+                                data.requestStatus === 'PENDING' || data.requestStatus === 'APPROVED_BY_REFERENT' ? (
+                                    <Select
+                                        defaultValue={data.requestStatus}
+                                        onValueChange={(value) =>
+                                            handleStatusChange(data.requestId, value as RequestStatus)
+                                        }
+                                    >
+                                        <SelectTrigger className="max-w-96 w-full px-4 py-3 border border-gray-300 rounded text-lg">
+                                            <SelectValue placeholder="-- Vyberte stav --" />
+                                        </SelectTrigger>
+                                        <SelectContent className="text-lg">
+                                            {getAvailableRequestStatusOptions(data.requestStatus).map((status) => (
+                                                <SelectItem key={status} value={status} className="text-lg">
+                                                    {prettifyRequestStatus(status)}
+                                                </SelectItem>
+                                            ))}
+                                        </SelectContent>
+                                    </Select>
+                                ) : (
+                                    <p className="font-bold">{prettifyRequestStatus(data.requestStatus)}</p>
+                                )
+                            ) : (
+                                <p className="font-bold">{prettifyRequestStatus(data.requestStatus)}</p>
+                            )}
                         </div>
                         <div>
                             <p className="text-sm font-medium text-gray-600">Účel</p>
