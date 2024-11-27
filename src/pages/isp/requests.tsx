@@ -1,15 +1,5 @@
 import { Attachment } from '@/components/attachment';
-import {
-    AlertDialog,
-    AlertDialogAction,
-    AlertDialogCancel,
-    AlertDialogContent,
-    AlertDialogDescription,
-    AlertDialogFooter,
-    AlertDialogHeader,
-    AlertDialogTitle,
-    AlertDialogTrigger,
-} from '@/components/ui/alert-dialog';
+import { DeleteRequestModal } from '@/components/deleteRequestModal';
 import {
     Breadcrumb,
     BreadcrumbItem,
@@ -22,7 +12,7 @@ import { Button } from '@/components/ui/button';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Table, TableBody, TableCaption, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip';
-import { Pencil, Trash2 } from 'lucide-react';
+import { ArrowRight, Pencil, Trash2, Book } from 'lucide-react';
 import { useEffect, useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { getAvailableRequestStatusOptions, prettifyRequestStatus } from '../../helpers';
@@ -39,7 +29,10 @@ const RequestsPage = () => {
     const navigate = useNavigate();
     const [requests, setRequests] = useState<RequestResponse[]>();
     const { role, id: userId } = useAppSelector((state) => state.user);
-    const [requestToDelete, setRequestToDelete] = useState<string | null>(null);
+    const [requestToDelete, setRequestIdToDelete] = useState<{ id: string | null; open: boolean }>({
+        id: null,
+        open: false,
+    });
     const isClerk = role === 'N';
     const isStudent = role === 'S';
 
@@ -75,9 +68,9 @@ const RequestsPage = () => {
         }
     }, [data, userRequests]);
 
-    if (!requests) return <div className="loader"></div>;
+    if (requests == null) return <div className="loader"></div>;
     return (
-        <div className="p-4">
+        <div>
             <Breadcrumb style={{ paddingBottom: '20px' }}>
                 <BreadcrumbList>
                     <BreadcrumbItem>
@@ -92,39 +85,15 @@ const RequestsPage = () => {
                 </BreadcrumbList>
             </Breadcrumb>
 
-            <AlertDialog
-                open={requestToDelete ? true : false}
-                onOpenChange={(value: boolean) => {
-                    if (!value) {
-                        setRequestToDelete(null);
+            <DeleteRequestModal
+                open={requestToDelete.open}
+                setOpen={(value) => setRequestIdToDelete({ ...requestToDelete, open: value })}
+                onSubmit={() => {
+                    if (requestToDelete.id) {
+                        handleDelete(requestToDelete.id);
                     }
                 }}
-            >
-                <AlertDialogTrigger asChild>
-                    <Button style={{ display: 'none' }}>Open</Button>
-                </AlertDialogTrigger>
-                <AlertDialogContent>
-                    <AlertDialogHeader>
-                        <AlertDialogTitle>Ste si úplne istí?</AlertDialogTitle>
-                        <AlertDialogDescription>
-                            Táto akcia sa nedá zvrátiť. Žiadosť bude vymazaná.
-                        </AlertDialogDescription>
-                    </AlertDialogHeader>
-                    <AlertDialogFooter>
-                        <AlertDialogCancel onClick={() => setRequestToDelete(null)}>Zrušiť</AlertDialogCancel>
-                        <AlertDialogAction
-                            onClick={() => {
-                                if (requestToDelete) {
-                                    handleDelete(requestToDelete);
-                                    setRequestToDelete(null);
-                                }
-                            }}
-                        >
-                            Vymazať
-                        </AlertDialogAction>
-                    </AlertDialogFooter>
-                </AlertDialogContent>
-            </AlertDialog>
+            />
 
             <div className="flex justify-between pb-4">
                 <h1 className="text-3xl font-bold mb-4">{isStudent ? 'Moje Žiadosti' : 'Žiadosti'}</h1>
@@ -137,31 +106,34 @@ const RequestsPage = () => {
             </div>
 
             <div className="overflow-x-auto">
-                <Table>
+                <Table className="hidden md:table w-full">
                     <TableCaption>Zoznam vašich žiadostí.</TableCaption>
                     <TableHeader>
                         <TableRow>
-                            <TableHead className="py-2 px-4 border">Meno študenta</TableHead>
-                            <TableHead className="py-2 px-4 border">Študijný program</TableHead>
-                            <TableHead className="py-2 px-4 border">Titul</TableHead>
-                            <TableHead className="py-2 px-4 border">Rok</TableHead>
-                            <TableHead className="py-2 px-4 border">Stav</TableHead>
-                            <TableHead className="py-2 px-4 border">Účel</TableHead>
-                            <TableHead className="py-2 px-4 border">Dôvod</TableHead>
-                            <TableHead className="py-2 px-4 border">Príloha</TableHead>
-                            <TableHead className="py-2 px-4 border">Akcie</TableHead>
+                            <TableHead className="py-2 px-4 border text-center">Detail</TableHead>
+                            <TableHead className="py-2 px-4 border text-center">Meno študenta</TableHead>
+                            <TableHead className="py-2 px-4 border text-center">Stav</TableHead>
+                            <TableHead className="py-2 px-4 border text-center">Príloha</TableHead>
+                            <TableHead className="py-2 px-4 border text-center">Akcie</TableHead>
                         </TableRow>
                     </TableHeader>
                     <TableBody>
                         {requests.map((request) => (
                             <TableRow key={request.requestId} className="border">
-                                <TableCell className="py-2 px-4 border">
+                                <TableCell className="py-2 px-4 border text-center">
+                                    <Link
+                                        to={`${request.requestId}`}
+                                        className="text-blue-600 hover:text-blue-800 font-medium flex items-center justify-center gap-1"
+                                    >
+                                        <span>Pozrieť detail</span>
+                                        <ArrowRight size="20px" className="hidden lg:inline" />
+                                    </Link>
+                                </TableCell>
+
+                                <TableCell className="py-2 px-4 border text-center">
                                     {request.studentName} {request.studentSurname}
                                 </TableCell>
-                                <TableCell className="py-2 px-4 border">{request.studyProgram}</TableCell>
-                                <TableCell className="py-2 px-4 border">{request.studyDegree}</TableCell>
-                                <TableCell className="py-2 px-4 border">{request.studyYear}</TableCell>
-                                <TableCell className="py-2 px-4 border">
+                                <TableCell className="py-2 px-4 border text-center">
                                     {isClerk ? (
                                         request.requestStatus === 'PENDING' ||
                                         request.requestStatus === 'APPROVED_BY_REFERENT' ? (
@@ -192,89 +164,154 @@ const RequestsPage = () => {
                                     )}
                                 </TableCell>
 
-                                <TableCell className="py-2 px-4 border">{request.purpose}</TableCell>
-                                <TableCell className="py-2 px-4 border">{request.reason}</TableCell>
                                 <TableCell className="py-2 px-4 border">
-                                    <Attachment url={request.attachmentUrl ? request.attachmentUrl : null} />
+                                    <div className="flex justify-center">
+                                        <Attachment url={request.attachmentUrl ? request.attachmentUrl : null} />
+                                    </div>
                                 </TableCell>
-                                {isStudent ? (
-                                    <TableCell className="py-2 px-4 border space-x-2 min-w-96 flex justify-center">
-                                        {request.requestStatus !== 'APPROVED' && (
-                                            <>
-                                                <Button
-                                                    variant="secondary"
-                                                    onClick={() => navigate(`/isp/edit-request/${request.requestId}`)}
-                                                >
-                                                    <Pencil className="h-4 w-4 mr-1" />
-                                                    Upraviť
-                                                </Button>
-                                                <Button onClick={() => setRequestToDelete(request.requestId)}>
-                                                    <Trash2 className="h-4 w-4 mr-1" />
-                                                    Odstrániť
-                                                </Button>
-                                            </>
-                                        )}
-                                        <TooltipProvider>
-                                            <Tooltip>
-                                                <TooltipTrigger asChild>
-                                                    <span>
-                                                        <Button
-                                                            disabled={
-                                                                request.requestStatus !== 'APPROVED_BY_REFERENT' &&
-                                                                request.requestStatus !== 'APPROVED'
-                                                            }
-                                                            onClick={() =>
-                                                                navigate(`/isp/subjects-table/${request.tableId}`)
-                                                            }
-                                                        >
-                                                            Zobraziť predmety
-                                                        </Button>
-                                                    </span>
-                                                </TooltipTrigger>
 
-                                                {request.requestStatus !== 'APPROVED_BY_REFERENT' &&
-                                                    request.requestStatus !== 'APPROVED' && (
-                                                        <TooltipContent>
-                                                            <p>Žiadosť nemá stav 'schválená'.</p>
-                                                        </TooltipContent>
-                                                    )}
-                                            </Tooltip>
-                                        </TooltipProvider>
-                                    </TableCell>
-                                ) : (
-                                    <TableCell className="py-2 px-4 border space-x-2 text-center">
-                                        <TooltipProvider>
-                                            <Tooltip>
-                                                <TooltipTrigger asChild>
-                                                    <span>
-                                                        <Button
-                                                            disabled={
-                                                                request.requestStatus !== 'APPROVED_BY_REFERENT' &&
-                                                                request.requestStatus !== 'APPROVED'
-                                                            }
-                                                            onClick={() =>
-                                                                navigate(`/isp/subjects-table/${request.tableId}`)
-                                                            }
-                                                        >
-                                                            Zobraziť predmety
-                                                        </Button>
-                                                    </span>
-                                                </TooltipTrigger>
+                                <TableCell className="py-2 px-4 border space-x-2 flex justify-center">
+                                    <TooltipProvider>
+                                        <Tooltip>
+                                            <TooltipTrigger asChild>
+                                                <span>
+                                                    <Button
+                                                        variant="outline"
+                                                        disabled={
+                                                            request.requestStatus !== 'APPROVED_BY_REFERENT' &&
+                                                            request.requestStatus !== 'APPROVED'
+                                                        }
+                                                        onClick={() =>
+                                                            navigate(`/isp/subjects-table/${request.tableId}`)
+                                                        }
+                                                        className="hidden lg:block"
+                                                    >
+                                                        Zobraziť predmety
+                                                    </Button>
+                                                    <Button
+                                                        className="lg:hidden"
+                                                        variant="outline"
+                                                        disabled={
+                                                            request.requestStatus !== 'APPROVED_BY_REFERENT' &&
+                                                            request.requestStatus !== 'APPROVED'
+                                                        }
+                                                        onClick={() =>
+                                                            navigate(`/isp/subjects-table/${request.tableId}`)
+                                                        }
+                                                    >
+                                                        <Book className="h-4.5 w-4.5" />
+                                                    </Button>
+                                                </span>
+                                            </TooltipTrigger>
+                                            {request.requestStatus !== 'APPROVED_BY_REFERENT' &&
+                                                request.requestStatus !== 'APPROVED' && (
+                                                    <TooltipContent>
+                                                        <p>Žiadosť nemá stav 'schválená'.</p>
+                                                    </TooltipContent>
+                                                )}
+                                        </Tooltip>
+                                    </TooltipProvider>
 
-                                                {request.requestStatus !== 'APPROVED_BY_REFERENT' &&
-                                                    request.requestStatus !== 'APPROVED' && (
-                                                        <TooltipContent>
-                                                            <p>Žiadosť nemá stav 'schválená'.</p>
-                                                        </TooltipContent>
-                                                    )}
-                                            </Tooltip>
-                                        </TooltipProvider>
-                                    </TableCell>
-                                )}
+                                    {isStudent && request.requestStatus !== 'APPROVED' && (
+                                        <>
+                                            <Button
+                                                size="icon"
+                                                variant="outline"
+                                                onClick={() => navigate(`/isp/edit-request/${request.requestId}`)}
+                                            >
+                                                <Pencil className="h-5 w-5" />
+                                            </Button>
+                                            <Button
+                                                size="icon"
+                                                variant="outline"
+                                                onClick={() =>
+                                                    setRequestIdToDelete({ id: request.requestId, open: true })
+                                                }
+                                            >
+                                                <Trash2 className="h-5 w-5" />
+                                            </Button>
+                                        </>
+                                    )}
+                                </TableCell>
                             </TableRow>
                         ))}
                     </TableBody>
                 </Table>
+
+                <div className="block md:hidden space-y-4">
+                    {requests.map((request) => (
+                        <div key={request.requestId} className="border rounded-md p-4">
+                            <div className="flex justify-between items-center">
+                                <span className="font-medium text-gray-700">Meno študenta:</span>
+                                <span>
+                                    {request.studentName} {request.studentSurname}
+                                </span>
+                            </div>
+                            <div className="flex justify-between items-center mt-2">
+                                <span className="font-medium text-gray-700">Stav:</span>
+                                {isClerk ? (
+                                    request.requestStatus === 'PENDING' ||
+                                    request.requestStatus === 'APPROVED_BY_REFERENT' ? (
+                                        <Select
+                                            defaultValue={request.requestStatus}
+                                            onValueChange={(value) =>
+                                                handleStatusChange(request.requestId, value as RequestStatus)
+                                            }
+                                        >
+                                            <SelectTrigger className="w-full px-3 py-2 border border-gray-300 rounded">
+                                                <SelectValue placeholder="-- Vyberte stav --" />
+                                            </SelectTrigger>
+                                            <SelectContent>
+                                                {getAvailableRequestStatusOptions(request.requestStatus).map(
+                                                    (status) => (
+                                                        <SelectItem key={status} value={status}>
+                                                            {prettifyRequestStatus(status)}
+                                                        </SelectItem>
+                                                    ),
+                                                )}
+                                            </SelectContent>
+                                        </Select>
+                                    ) : (
+                                        <p className="font-bold">{prettifyRequestStatus(request.requestStatus)}</p>
+                                    )
+                                ) : (
+                                    <p className="font-bold">{prettifyRequestStatus(request.requestStatus)}</p>
+                                )}
+                            </div>
+                            <div className="flex justify-between items-center mt-2">
+                                <span className="font-medium text-gray-700">Príloha:</span>
+                                <Attachment url={request.attachmentUrl ? request.attachmentUrl : null} />
+                            </div>
+                            <div className="flex justify-between items-center mt-4">
+                                <Link
+                                    to={`${request.requestId}`}
+                                    className="text-blue-600 hover:text-blue-800 font-medium flex items-center gap-1"
+                                >
+                                    <span>Pozrieť detail</span>
+                                    <ArrowRight size="20px" />
+                                </Link>
+                                {isStudent && request.requestStatus !== 'APPROVED' && (
+                                    <div className="flex space-x-2">
+                                        <Button
+                                            size="icon"
+                                            variant="outline"
+                                            onClick={() => navigate(`/isp/edit-request/${request.requestId}`)}
+                                        >
+                                            <Pencil className="h-5 w-5" />
+                                        </Button>
+                                        <Button
+                                            size="icon"
+                                            variant="outline"
+                                            onClick={() => setRequestIdToDelete({ id: request.requestId, open: true })}
+                                        >
+                                            <Trash2 className="h-5 w-5" />
+                                        </Button>
+                                    </div>
+                                )}
+                            </div>
+                        </div>
+                    ))}
+                </div>
             </div>
         </div>
     );

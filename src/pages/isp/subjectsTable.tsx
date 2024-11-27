@@ -88,7 +88,7 @@ const SubjectsTablePage = () => {
     if (isLoading || !data) return <div className="loader"></div>;
 
     return (
-        <div className="p-4">
+        <div>
             <Breadcrumb style={{ paddingBottom: '20px' }}>
                 <BreadcrumbList>
                     <BreadcrumbItem>
@@ -145,101 +145,120 @@ const SubjectsTablePage = () => {
 
             <h1 className="text-3xl font-bold mb-4">Tabuľka Predmetov</h1>
 
-            <div className="mb-6">
-                <div className="flex gap-2">
-                    <h2 className="text-xl font-semibold">Status Tabuľky:</h2>
-                    <h2
-                        className={`text-xl font-semibold ${
-                            data.tableStatus === 'APPROVED'
-                                ? 'text-green-500'
-                                : data.tableStatus === 'DECLINED'
-                                  ? 'text-red-500'
-                                  : 'text-yellow-500'
-                        }`}
-                    >
-                        {prettifyTableStatus(data.tableStatus)}
-                    </h2>
+            <div className="space-y-6">
+                <div className="bg-white p-6 rounded-lg shadow">
+                    <div className="flex items-center justify-between">
+                        <h2 className="text-xl font-semibold text-gray-800">Status Tabuľky:</h2>
+                        <h2
+                            className={`text-xl font-semibold ${
+                                data.tableStatus === 'APPROVED'
+                                    ? 'text-green-600'
+                                    : data.tableStatus === 'DECLINED'
+                                      ? 'text-red-600'
+                                      : 'text-yellow-600'
+                            }`}
+                        >
+                            {prettifyTableStatus(data.tableStatus)}
+                        </h2>
+                    </div>
+                    {!isStudent && data.tableStatus === 'PENDING' && (
+                        <div className="mt-4 flex gap-4">
+                            <Button
+                                className="bg-green-500 hover:bg-green-600 text-white px-4 py-2 rounded shadow"
+                                onClick={() => handleChangeTableStatus('APPROVED')}
+                            >
+                                Schváliť Tabuľku
+                            </Button>
+                            <Button
+                                className="bg-red-500 hover:bg-red-600 text-white px-4 py-2 rounded shadow"
+                                onClick={() => handleChangeTableStatus('DECLINED')}
+                            >
+                                Zamietnuť Tabuľku
+                            </Button>
+                        </div>
+                    )}
                 </div>
-                {!isStudent && data.tableStatus === 'PENDING' && (
-                    <div className="mt-4 flex gap-3">
+
+                {!isStudent && (
+                    <div className="text-right">
                         <Button
-                            className="bg-green-500 hover:bg-green-600"
-                            onClick={() => handleChangeTableStatus('APPROVED')}
+                            className="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded shadow"
+                            onClick={() => setIsModalOpen(true)}
                         >
-                            Schváliť Tabuľku
-                        </Button>
-                        <Button
-                            className="bg-red-500 hover:bg-red-600"
-                            onClick={() => handleChangeTableStatus('DECLINED')}
-                        >
-                            Zamietnuť Tabuľku
+                            Pridať Predmet
                         </Button>
                     </div>
                 )}
-            </div>
 
-            {!isStudent && (
-                <div className="mb-4">
-                    <Button onClick={() => setIsModalOpen(true)}>Pridať Predmet</Button>
-                </div>
-            )}
-
-            <div className="overflow-x-auto max-w-5xl">
-                <Table>
-                    <TableCaption>Tabuľka Predmetov</TableCaption>
-                    <TableHeader>
-                        <TableRow>
-                            <TableHead className="w-[200px]">Názov Predmetu</TableHead>
-                            <TableHead>Stav</TableHead>
-                            {!isStudent && <TableHead>Akcie</TableHead>}
-                        </TableRow>
-                    </TableHeader>
-                    <TableBody>
-                        {data.subjects.map((subject) => (
-                            <TableRow key={subject.subjectId} className="border">
-                                <TableCell className="py-2 px-4 border">{subject.name}</TableCell>
-                                <TableCell className="py-2 px-4 border">
-                                    {isStudent ? (
-                                        <p className="font-bold">{prettifySubjectStatus(subject.subjectStatus)}</p>
-                                    ) : subject.subjectStatus === 'PENDING' ? (
-                                        <Select
-                                            defaultValue={subject.subjectStatus}
-                                            onValueChange={(value) =>
-                                                handleChangeSubjectStatus(subject.subjectId, value as SubjectStatus)
-                                            }
-                                        >
-                                            <SelectTrigger className="w-full px-3 py-2 border border-gray-300 rounded">
-                                                <SelectValue placeholder="-- Vyberte stav --" />
-                                            </SelectTrigger>
-                                            <SelectContent>
-                                                <SelectGroup>
-                                                    <SelectLabel>Stav</SelectLabel>
-                                                    {getAvailableSubjectStatusOptions(subject.subjectStatus).map(
-                                                        (status) => (
-                                                            <SelectItem key={status} value={status}>
-                                                                {prettifySubjectStatus(status)}
-                                                            </SelectItem>
-                                                        ),
-                                                    )}
-                                                </SelectGroup>
-                                            </SelectContent>
-                                        </Select>
-                                    ) : (
-                                        <p className="font-bold">{prettifySubjectStatus(subject.subjectStatus)}</p>
-                                    )}
-                                </TableCell>
-                                {!isStudent && (
-                                    <TableCell className="py-2 px-4 border space-x-2 text-center">
-                                        <Button variant="ghost" onClick={() => setSubjectToDelete(subject.subjectId)}>
-                                            Vymazať
-                                        </Button>
-                                    </TableCell>
-                                )}
+                <div className="overflow-x-auto bg-white p-6 rounded-lg shadow max-w-5xl">
+                    <Table>
+                        <TableCaption className="text-gray-500">Tabuľka Predmetov</TableCaption>
+                        <TableHeader>
+                            <TableRow>
+                                <TableHead className="w-[200px]">Názov Predmetu</TableHead>
+                                <TableHead>Stav</TableHead>
+                                {!isStudent && <TableHead>Akcie</TableHead>}
                             </TableRow>
-                        ))}
-                    </TableBody>
-                </Table>
+                        </TableHeader>
+                        <TableBody>
+                            {data.subjects.map((subject) => (
+                                <TableRow
+                                    key={subject.subjectId}
+                                    className="border-b last:border-none hover:bg-gray-50"
+                                >
+                                    <TableCell className="py-3 px-4">{subject.name}</TableCell>
+                                    <TableCell className="py-3 px-4">
+                                        {isStudent ? (
+                                            <p className="font-bold text-gray-800">
+                                                {prettifySubjectStatus(subject.subjectStatus)}
+                                            </p>
+                                        ) : subject.subjectStatus === 'PENDING' ? (
+                                            <Select
+                                                defaultValue={subject.subjectStatus}
+                                                onValueChange={(value) =>
+                                                    handleChangeSubjectStatus(subject.subjectId, value as SubjectStatus)
+                                                }
+                                            >
+                                                <SelectTrigger className="w-full px-4 py-2 border border-gray-300 rounded">
+                                                    <SelectValue placeholder="-- Vyberte stav --" />
+                                                </SelectTrigger>
+                                                <SelectContent>
+                                                    <SelectGroup>
+                                                        <SelectLabel>Stav</SelectLabel>
+                                                        {getAvailableSubjectStatusOptions(subject.subjectStatus).map(
+                                                            (status) => (
+                                                                <SelectItem key={status} value={status}>
+                                                                    {prettifySubjectStatus(status)}
+                                                                </SelectItem>
+                                                            ),
+                                                        )}
+                                                    </SelectGroup>
+                                                </SelectContent>
+                                            </Select>
+                                        ) : (
+                                            <p className="font-bold text-gray-800">
+                                                {prettifySubjectStatus(subject.subjectStatus)}
+                                            </p>
+                                        )}
+                                    </TableCell>
+                                    {!isStudent && (
+                                        <TableCell className="py-3 px-4 text-center">
+                                            <Button
+                                                variant="ghost"
+                                                className="text-red-600 hover:bg-red-50"
+                                                onClick={() => setSubjectToDelete(subject.subjectId)}
+                                            >
+                                                Vymazať
+                                            </Button>
+                                        </TableCell>
+                                    )}
+                                </TableRow>
+                            ))}
+                        </TableBody>
+                    </Table>
+                </div>
             </div>
+
             <SubjectModal
                 isOpen={isModalOpen}
                 onSubmit={async (subjectName) => {

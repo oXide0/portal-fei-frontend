@@ -5,6 +5,7 @@ import { CreateRequestPage } from './pages/isp/createRequest';
 import { EditRequestPage } from './pages/isp/editRequest';
 import { RequestsPage } from './pages/isp/requests';
 import { SubjectsTablePage } from './pages/isp/subjectsTable';
+import { RequestDetailPage } from '@/pages/isp/requestDetail';
 
 export const router = createBrowserRouter([
     {
@@ -18,6 +19,10 @@ export const router = createBrowserRouter([
             {
                 path: 'isp/requests',
                 Component: RequestsPage,
+            },
+            {
+                path: 'isp/requests/:requestId',
+                Component: RequestDetailPage,
             },
             {
                 path: 'isp/create-request',

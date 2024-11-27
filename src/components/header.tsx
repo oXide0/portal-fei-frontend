@@ -1,13 +1,16 @@
+import { Avatar, AvatarFallback } from '@/components/ui/avatar';
+import { useAppSelector } from '@/hooks/redux-hooks';
 import { useKeycloak } from '@react-keycloak/web';
+import { CircleUserRound } from 'lucide-react';
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import tukeImg from '../assets/tuke.png';
 import tukeLogoImg from '../assets/tuke-logo.png';
-import { CircleUserRound } from 'lucide-react';
+import tukeImg from '../assets/tuke.png';
 
 const Header = () => {
     const navigate = useNavigate();
     const { keycloak } = useKeycloak();
+    const initials = useAppSelector((state) => state.user.initials);
     const [dropdownOpen, setDropdownOpen] = useState(false);
 
     return (
@@ -22,11 +25,18 @@ const Header = () => {
                 <img src={tukeLogoImg} alt="TUKE" style={{ maxWidth: '40px' }} className="sm:hidden" />
             </button>
             <div className="relative">
-                <CircleUserRound
-                    size="35px"
-                    className="text-white cursor-pointer"
-                    onClick={() => setDropdownOpen(!dropdownOpen)}
-                />
+                {initials ? (
+                    <Avatar onClick={() => setDropdownOpen(!dropdownOpen)} className="cursor-pointer">
+                        <AvatarFallback>{initials}</AvatarFallback>
+                    </Avatar>
+                ) : (
+                    <CircleUserRound
+                        size="35px"
+                        className="text-white cursor-pointer"
+                        onClick={() => setDropdownOpen(!dropdownOpen)}
+                    />
+                )}
+
                 {dropdownOpen && (
                     <div
                         className="absolute right-0 mt-2 w-48 bg-white rounded-md shadow-lg z-50"

@@ -12,7 +12,7 @@ import { useCreateRequestMutation } from '../../services/isp/request';
 
 const CreateRequestPage = () => {
     const navigate = useNavigate();
-    const [createRequest] = useCreateRequestMutation();
+    const [createRequest, { isLoading }] = useCreateRequestMutation();
 
     const onSubmit = async (data: IFormInput) => {
         const formData = new FormData();
@@ -36,7 +36,7 @@ const CreateRequestPage = () => {
     };
 
     return (
-        <div className="p-4">
+        <div className="">
             <Breadcrumb style={{ paddingBottom: '20px' }}>
                 <BreadcrumbList>
                     <BreadcrumbItem>
@@ -56,7 +56,7 @@ const CreateRequestPage = () => {
                     </BreadcrumbItem>
                 </BreadcrumbList>
             </Breadcrumb>
-            <RequestForm title="Vytvoriť žiadosť" onSubmit={onSubmit} />;
+            <RequestForm title="Vytvoriť žiadosť" isLoading={isLoading} onSubmit={onSubmit} />;
         </div>
     );
 };

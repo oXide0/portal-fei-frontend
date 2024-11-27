@@ -5,10 +5,12 @@ import { Button } from './ui/button';
 import { Input } from './ui/input';
 import { Select, SelectContent, SelectGroup, SelectItem, SelectLabel, SelectTrigger, SelectValue } from './ui/select';
 import { Textarea } from './ui/textarea';
+import { Loader2 } from 'lucide-react';
 
 interface RequestFormProps {
     title: string;
     initialValues?: IFormInput;
+    isLoading: boolean;
     onSubmit: (data: IFormInput) => void;
 }
 
@@ -24,7 +26,7 @@ export interface IFormInput {
     attachmentUrl?: string | null;
 }
 
-const RequestForm = ({ title, initialValues, onSubmit }: RequestFormProps) => {
+const RequestForm = ({ title, initialValues, isLoading, onSubmit }: RequestFormProps) => {
     const [attachment, setAttachment] = useState<File | null>(null);
     const {
         register,
@@ -200,6 +202,7 @@ const RequestForm = ({ title, initialValues, onSubmit }: RequestFormProps) => {
                     <Textarea
                         {...register('reason', { required: 'Dôvod je povinný' })}
                         className="w-full px-3 py-2 border border-gray-300 rounded"
+                        maxLength={250}
                     />
                     {errors.reason && <p className="text-red-500 text-sm">{errors.reason.message}</p>}
                 </div>
@@ -222,8 +225,8 @@ const RequestForm = ({ title, initialValues, onSubmit }: RequestFormProps) => {
                 </div>
                 {errors.attachment && <p className="text-red-500 text-sm">{errors.attachment.message}</p>}
                 <div>
-                    <Button type="submit" className="w-full">
-                        Odoslať
+                    <Button type="submit" className="w-full" disabled={isLoading}>
+                        {isLoading ? <Loader2 className="h-5 w-5 animate-spin" /> : 'Odoslať'}
                     </Button>
                 </div>
             </form>
