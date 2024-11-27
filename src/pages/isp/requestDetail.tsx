@@ -82,7 +82,7 @@ function RequestDetailPage() {
                     <CardTitle>Informácie o žiadosti</CardTitle>
                 </CardHeader>
                 <CardContent>
-                    <div className="grid grid-cols-2 gap-4">
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                         <div>
                             <p className="text-sm font-medium text-gray-600">Meno študenta</p>
                             <p className="text-lg">{`${data.studentName} ${data.studentSurname}`}</p>
@@ -109,7 +109,7 @@ function RequestDetailPage() {
                                             handleStatusChange(data.requestId, value as RequestStatus)
                                         }
                                     >
-                                        <SelectTrigger className="max-w-96 w-full px-4 py-3 border border-gray-300 rounded text-lg">
+                                        <SelectTrigger className="max-w-full w-full px-4 py-3 border border-gray-300 rounded text-lg">
                                             <SelectValue placeholder="-- Vyberte stav --" />
                                         </SelectTrigger>
                                         <SelectContent className="text-lg">
@@ -143,7 +143,7 @@ function RequestDetailPage() {
                 </CardContent>
             </Card>
 
-            <div className="mt-6 space-x-4">
+            <div className="mt-6 md:flex-row flex flex-col gap-2">
                 {isStudent && data.requestStatus !== 'APPROVED' && (
                     <>
                         <Button onClick={() => navigate(`/isp/edit-request/${data.requestId}`)}>Upraviť</Button>

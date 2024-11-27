@@ -11,7 +11,7 @@ const Layout = () => {
     return (
         <ProtectedRoute>
             <Header />
-            <div className="py-7 px-10">
+            <div className="py-7 px-4 md:px-10">
                 <Outlet />
             </div>
         </ProtectedRoute>

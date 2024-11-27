@@ -31,7 +31,7 @@ const Attachment = ({ url, label = 'Stiahnuť prílohu' }: AttachmentProps) => {
 
     return url ? (
         <button type="button" onClick={handleDownload} className="flex items-center text-blue-500 hover:text-blue-700">
-            <Download className="h-5 w-5 mr-2" aria-hidden="true" />
+            <Download className="h-5 w-5 mr-2 hidden lg:inline" aria-hidden="true" />
             {label}
         </button>
     ) : (
