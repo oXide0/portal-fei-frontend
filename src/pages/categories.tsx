@@ -14,6 +14,13 @@ const CategoriesPage = () => {
                     logo={<img src={etdImg} alt="TUKE" style={{ maxWidth: '100px' }} />}
                     onClick={() => navigate('/isp/requests')}
                 />
+                <CategoryCard
+                    title="SJ"
+                    variant="secondary"
+                    description="Skuska z jazyka"
+                    logo={<img src={etdImg} alt="TUKE" style={{ maxWidth: '100px' }} />}
+                    onClick={() => navigate('/skex/dashboard')}
+                />
             </div>
         </div>
     );

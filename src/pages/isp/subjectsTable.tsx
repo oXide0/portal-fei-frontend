@@ -29,6 +29,7 @@ import {
     SelectValue,
 } from '@/components/ui/select';
 import { Table, TableBody, TableCaption, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
+import { toast } from '@/hooks/use-toast';
 import { useState } from 'react';
 import { Link } from 'react-router-dom';
 import { getAvailableSubjectStatusOptions, prettifySubjectStatus, prettifyTableStatus } from '../../helpers';
@@ -146,7 +147,7 @@ const SubjectsTablePage = () => {
             <h1 className="text-3xl font-bold mb-4">Tabuľka Predmetov</h1>
 
             <div className="space-y-6">
-                <div className="bg-white p-6 rounded-lg shadow">
+                <div className="bg-gray-50 p-6 rounded-lg shadow">
                     <div className="flex items-center justify-between">
                         <h2 className="text-xl font-semibold text-gray-800">Status Tabuľky:</h2>
                         <h2
@@ -259,6 +260,13 @@ const SubjectsTablePage = () => {
             <SubjectModal
                 isOpen={isModalOpen}
                 onSubmit={async (subjectName) => {
+                    if (data.tableStatus !== 'PENDING') {
+                        toast({
+                            title: 'Chyba',
+                            description: 'Nemôžete pridať predmet do tabuľky, ktorá nie je v stave "PENDING"',
+                            variant: 'destructive',
+                        });
+                    }
                     await addSubject({
                         name: subjectName,
                         tableId,

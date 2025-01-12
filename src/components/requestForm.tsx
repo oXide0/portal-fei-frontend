@@ -26,7 +26,7 @@ export interface IFormInput {
     attachmentUrl?: string | null;
 }
 
-const RequestForm = ({ title, initialValues, isLoading, onSubmit }: RequestFormProps) => {
+export function RequestForm({ title, initialValues, isLoading, onSubmit }: RequestFormProps) {
     const [attachment, setAttachment] = useState<File | null>(null);
     const {
         register,
@@ -232,6 +232,4 @@ const RequestForm = ({ title, initialValues, isLoading, onSubmit }: RequestFormP
             </form>
         </div>
     );
-};
-
-export { RequestForm };
+}
