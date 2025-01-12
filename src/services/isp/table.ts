@@ -7,11 +7,11 @@ export const tableApi = ispApi.injectEndpoints({
             query: (tableId) => `tables/${tableId}`,
             providesTags: ['Table'],
         }),
-        evaluateTable: builder.mutation<TableStatus, EvaluateTableBody>({
-            query: (body) => ({
-                url: 'tables/evaluate',
+        evaluateTable: builder.mutation<{ tableStatus: TableStatus }, EvaluateTableBody>({
+            query: ({ tableId, evaluationStatus }) => ({
+                url: `tables/${tableId}/evaluate`,
                 method: 'PATCH',
-                body,
+                body: { evaluationStatus },
             }),
             invalidatesTags: ['Table'],
         }),

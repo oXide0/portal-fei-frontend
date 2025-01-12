@@ -1,17 +1,17 @@
-import { CreateSubjectBody, CreateSubjectResponse, EvaluateSubject } from '../../types/isp/Subject';
+import { CreateSubjectBody, CreateSubjectResponse, EvaluateSubject, SubjectStatus } from '../../types/isp/Subject';
 import { ispApi } from './api';
 
 export const subjectApi = ispApi.injectEndpoints({
     endpoints: (builder) => ({
-        evaluateSubject: builder.mutation<EvaluateSubject, EvaluateSubject>({
-            query: (body) => ({
-                url: 'subjects/evaluate',
+        evaluateSubject: builder.mutation<{ subjectStatus: SubjectStatus }, EvaluateSubject>({
+            query: ({ subjectId, evaluationStatus }) => ({
+                url: `subjects/${subjectId}/evaluate`,
                 method: 'PATCH',
-                body,
+                body: { evaluationStatus },
             }),
             invalidatesTags: ['Subject'],
         }),
-        addSubjectForTable: builder.mutation<CreateSubjectResponse, CreateSubjectBody>({
+        createSubject: builder.mutation<CreateSubjectResponse, CreateSubjectBody>({
             query: (body) => ({
                 url: 'subjects',
                 method: 'POST',
@@ -19,7 +19,7 @@ export const subjectApi = ispApi.injectEndpoints({
             }),
             invalidatesTags: ['Subject'],
         }),
-        deleteSubjectForTable: builder.mutation<void, string>({
+        deleteSubject: builder.mutation<void, string>({
             query: (subjectId) => ({
                 url: `subjects/${subjectId}`,
                 method: 'DELETE',
@@ -29,5 +29,4 @@ export const subjectApi = ispApi.injectEndpoints({
     }),
 });
 
-export const { useAddSubjectForTableMutation, useDeleteSubjectForTableMutation, useEvaluateSubjectMutation } =
-    subjectApi;
+export const { useCreateSubjectMutation, useDeleteSubjectMutation, useEvaluateSubjectMutation } = subjectApi;

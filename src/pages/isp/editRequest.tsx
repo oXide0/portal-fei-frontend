@@ -37,7 +37,7 @@ const EditRequestPage = () => {
         }
 
         try {
-            await updateRequest(formData);
+            await updateRequest({ requestId, data: formData });
         } catch (error) {
             alert('Failed to update request');
         }

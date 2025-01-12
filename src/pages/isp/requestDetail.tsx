@@ -139,6 +139,14 @@ function RequestDetailPage() {
                             <p className="text-sm font-medium text-gray-600 pb-2">Príloha</p>
                             <Attachment url={data.attachmentUrl ? data.attachmentUrl : null} />
                         </div>
+                        <div>
+                            <p className="text-sm font-medium text-gray-600 pb-2">Dokument</p>
+                            <Attachment
+                                variant="generate"
+                                url={data.requestId ? data.requestId : null}
+                                label="Stiahnuť dokument"
+                            />
+                        </div>
                     </div>
                 </CardContent>
             </Card>

@@ -10,7 +10,7 @@ export interface SubjectInfo {
 
 export interface EvaluateSubject {
     readonly subjectId: string;
-    readonly subjectStatus: SubjectStatus;
+    readonly evaluationStatus: SubjectStatus;
 }
 
 export interface CreateSubjectResponse {

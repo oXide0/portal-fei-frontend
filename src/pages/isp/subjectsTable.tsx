@@ -35,8 +35,8 @@ import { getAvailableSubjectStatusOptions, prettifySubjectStatus, prettifyTableS
 import { useAppSelector } from '../../hooks/redux-hooks';
 import { useRequiredParam } from '../../hooks/useRequiredParam';
 import {
-    useAddSubjectForTableMutation,
-    useDeleteSubjectForTableMutation,
+    useCreateSubjectMutation,
+    useDeleteSubjectMutation,
     useEvaluateSubjectMutation,
 } from '../../services/isp/subject';
 import { useEvaluateTableMutation, useGetTableQuery } from '../../services/isp/table';
@@ -53,8 +53,8 @@ const SubjectsTablePage = () => {
     const { data, isLoading, refetch } = useGetTableQuery(tableId);
     const [evaluateTable] = useEvaluateTableMutation();
     const [evaluateSubject] = useEvaluateSubjectMutation();
-    const [addSubject] = useAddSubjectForTableMutation();
-    const [deleteSubject] = useDeleteSubjectForTableMutation();
+    const [addSubject] = useCreateSubjectMutation();
+    const [deleteSubject] = useDeleteSubjectMutation();
 
     const handleDeleteSubject = async (subjectId: string) => {
         try {
@@ -67,7 +67,7 @@ const SubjectsTablePage = () => {
 
     const handleChangeSubjectStatus = async (subjectId: string, newStatus: SubjectStatus) => {
         try {
-            await evaluateSubject({ subjectId, subjectStatus: newStatus });
+            await evaluateSubject({ subjectId, evaluationStatus: newStatus });
         } catch (error) {
             alert('Nepodarilo sa aktualizovať stav predmetu');
         }
@@ -78,7 +78,7 @@ const SubjectsTablePage = () => {
         try {
             await evaluateTable({
                 tableId,
-                tableStatus: newStatus,
+                evaluationStatus: newStatus,
             });
         } catch (error) {
             alert('Failed to update table status');
@@ -181,10 +181,7 @@ const SubjectsTablePage = () => {
 
                 {!isStudent && (
                     <div className="text-right">
-                        <Button
-                            className="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded shadow"
-                            onClick={() => setIsModalOpen(true)}
-                        >
+                        <Button className="text-white px-4 py-2 rounded shadow" onClick={() => setIsModalOpen(true)}>
                             Pridať Predmet
                         </Button>
                     </div>

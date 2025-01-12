@@ -12,5 +12,5 @@ export interface TableResponse {
 
 export interface EvaluateTableBody {
     tableId: string;
-    tableStatus: TableStatus;
+    evaluationStatus: TableStatus;
 }

@@ -114,6 +114,7 @@ const RequestsPage = () => {
                             <TableHead className="py-2 px-4 border text-center">Meno študenta</TableHead>
                             <TableHead className="py-2 px-4 border text-center">Stav</TableHead>
                             <TableHead className="py-2 px-4 border text-center">Príloha</TableHead>
+                            <TableHead className="py-2 px-4 border text-center">Dokument</TableHead>
                             <TableHead className="py-2 px-4 border text-center">Akcie</TableHead>
                         </TableRow>
                     </TableHeader>
@@ -166,15 +167,25 @@ const RequestsPage = () => {
 
                                 <TableCell className="py-2 px-4 border">
                                     <div className="flex justify-center">
-                                        <Attachment url={request.attachmentUrl ? request.attachmentUrl : null} />
+                                        <Attachment url={request.attachmentUrl} />
                                     </div>
                                 </TableCell>
 
-                                <TableCell className="py-2 px-4 border space-x-2 flex justify-center">
+                                <TableCell className="py-2 px-4 border">
+                                    <div className="flex justify-center">
+                                        <Attachment
+                                            variant="generate"
+                                            url={request.requestId}
+                                            label="Stiahnuť dokument"
+                                        />
+                                    </div>
+                                </TableCell>
+
+                                <TableCell className="py-2 px-4 space-x-2 flex justify-center">
                                     <TooltipProvider>
                                         <Tooltip>
                                             <TooltipTrigger asChild>
-                                                <span>
+                                                <>
                                                     <Button
                                                         variant="outline"
                                                         disabled={
@@ -201,7 +212,7 @@ const RequestsPage = () => {
                                                     >
                                                         <Book className="h-4.5 w-4.5" />
                                                     </Button>
-                                                </span>
+                                                </>
                                             </TooltipTrigger>
                                             {request.requestStatus !== 'APPROVED_BY_REFERENT' &&
                                                 request.requestStatus !== 'APPROVED' && (
@@ -249,38 +260,44 @@ const RequestsPage = () => {
                             </div>
                             <div className="flex justify-between items-center mt-2">
                                 <span className="font-medium text-gray-700">Stav:</span>
-                                {isClerk ? (
-                                    request.requestStatus === 'PENDING' ||
-                                    request.requestStatus === 'APPROVED_BY_REFERENT' ? (
-                                        <Select
-                                            defaultValue={request.requestStatus}
-                                            onValueChange={(value) =>
-                                                handleStatusChange(request.requestId, value as RequestStatus)
-                                            }
-                                        >
-                                            <SelectTrigger className="w-full px-3 py-2 border border-gray-300 rounded">
-                                                <SelectValue placeholder="-- Vyberte stav --" />
-                                            </SelectTrigger>
-                                            <SelectContent>
-                                                {getAvailableRequestStatusOptions(request.requestStatus).map(
-                                                    (status) => (
-                                                        <SelectItem key={status} value={status}>
-                                                            {prettifyRequestStatus(status)}
-                                                        </SelectItem>
-                                                    ),
-                                                )}
-                                            </SelectContent>
-                                        </Select>
+                                <div className="max-w-52">
+                                    {isClerk ? (
+                                        request.requestStatus === 'PENDING' ||
+                                        request.requestStatus === 'APPROVED_BY_REFERENT' ? (
+                                            <Select
+                                                defaultValue={request.requestStatus}
+                                                onValueChange={(value) =>
+                                                    handleStatusChange(request.requestId, value as RequestStatus)
+                                                }
+                                            >
+                                                <SelectTrigger className="w-full px-3 py-2 border border-gray-300 rounded">
+                                                    <SelectValue placeholder="-- Vyberte stav --" />
+                                                </SelectTrigger>
+                                                <SelectContent>
+                                                    {getAvailableRequestStatusOptions(request.requestStatus).map(
+                                                        (status) => (
+                                                            <SelectItem key={status} value={status}>
+                                                                {prettifyRequestStatus(status)}
+                                                            </SelectItem>
+                                                        ),
+                                                    )}
+                                                </SelectContent>
+                                            </Select>
+                                        ) : (
+                                            <p className="font-bold">{prettifyRequestStatus(request.requestStatus)}</p>
+                                        )
                                     ) : (
                                         <p className="font-bold">{prettifyRequestStatus(request.requestStatus)}</p>
-                                    )
-                                ) : (
-                                    <p className="font-bold">{prettifyRequestStatus(request.requestStatus)}</p>
-                                )}
+                                    )}
+                                </div>
                             </div>
                             <div className="flex justify-between items-center mt-2">
                                 <span className="font-medium text-gray-700">Príloha:</span>
-                                <Attachment url={request.attachmentUrl ? request.attachmentUrl : null} />
+                                <Attachment url={request.attachmentUrl} />
+                            </div>
+                            <div className="flex justify-between items-center mt-2">
+                                <span className="font-medium text-gray-700">Dokument:</span>
+                                <Attachment variant="generate" url={request.requestId} label="Stiahnuť dokument" />
                             </div>
                             <div className="flex justify-between items-center mt-4">
                                 <Link

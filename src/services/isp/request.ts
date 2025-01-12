@@ -14,7 +14,7 @@ export const requestApi = ispApi.injectEndpoints({
             providesTags: ['Request'],
         }),
         getRequestsByUserId: builder.query<Array<RequestResponse>, string>({
-            query: (userId) => `requests/user/${userId}`,
+            query: (userId) => `requests/users/${userId}`,
             providesTags: ['Request'],
         }),
         getRequestById: builder.query<RequestResponse, string>({
@@ -29,19 +29,19 @@ export const requestApi = ispApi.injectEndpoints({
             }),
             invalidatesTags: ['Request'],
         }),
-        updateRequest: builder.mutation<UpdateRequestResponse, FormData>({
-            query: (formData) => ({
-                url: 'requests',
-                method: 'PATCH',
-                body: formData,
+        updateRequest: builder.mutation<UpdateRequestResponse, { data: FormData; requestId: string }>({
+            query: ({ data, requestId }) => ({
+                url: `requests/${requestId}`,
+                method: 'POST',
+                body: data,
             }),
             invalidatesTags: ['Request'],
         }),
-        evaluateRequest: builder.mutation<RequestStatus, EvaluateRequestBody>({
-            query: (body) => ({
-                url: 'requests/evaluate',
-                method: 'PATCH',
-                body,
+        evaluateRequest: builder.mutation<{ requestStatus: RequestStatus }, EvaluateRequestBody>({
+            query: ({ requestId, evaluationStatus }) => ({
+                url: `requests/${requestId}/evaluate`,
+                method: 'POST',
+                body: { evaluationStatus },
             }),
         }),
         deleteRequest: builder.mutation<void, string>({
@@ -61,7 +61,7 @@ export const requestApi = ispApi.injectEndpoints({
         }),
         generateDocument: builder.query<Blob, string>({
             query: (requestId) => ({
-                url: `requests/generate/${requestId}`,
+                url: `requests/${requestId}/generate`,
                 method: 'GET',
                 responseHandler: (response) => response.blob(),
             }),
