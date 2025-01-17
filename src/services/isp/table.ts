@@ -1,5 +1,5 @@
 import { EvaluateTableBody, TableResponse, TableStatus } from '../../types/isp/Table';
-import { ispApi } from './api';
+import { ispApi } from '../api';
 
 export const tableApi = ispApi.injectEndpoints({
     endpoints: (builder) => ({

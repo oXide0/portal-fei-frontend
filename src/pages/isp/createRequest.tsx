@@ -36,7 +36,7 @@ const CreateRequestPage = () => {
     };
 
     return (
-        <div className="">
+        <div>
             <Breadcrumb style={{ paddingBottom: '20px' }}>
                 <BreadcrumbList>
                     <BreadcrumbItem>

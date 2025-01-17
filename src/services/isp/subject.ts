@@ -1,5 +1,5 @@
 import { CreateSubjectBody, CreateSubjectResponse, EvaluateSubject, SubjectStatus } from '../../types/isp/Subject';
-import { ispApi } from './api';
+import { ispApi } from '../api';
 
 export const subjectApi = ispApi.injectEndpoints({
     endpoints: (builder) => ({

@@ -5,7 +5,7 @@ import {
     RequestStatus,
     CreateRequestResponse,
 } from '../../types/isp/Request';
-import { ispApi } from './api';
+import { ispApi } from '../api';
 
 export const requestApi = ispApi.injectEndpoints({
     endpoints: (builder) => ({

@@ -6,6 +6,7 @@ import { Input } from './ui/input';
 import { Select, SelectContent, SelectGroup, SelectItem, SelectLabel, SelectTrigger, SelectValue } from './ui/select';
 import { Textarea } from './ui/textarea';
 import { Loader2 } from 'lucide-react';
+import { Label } from './ui/label';
 
 interface RequestFormProps {
     title: string;
@@ -56,8 +57,8 @@ export function RequestForm({ title, initialValues, isLoading, onSubmit }: Reque
         <div className="max-w-4xl my-0 mx-auto p-6">
             <h1 className="text-3xl font-bold mb-6">{title}</h1>
             <form onSubmit={handleSubmit(onSubmitData)} className="space-y-4">
-                <div>
-                    <label className="block text-sm font-medium mb-1">Meno študenta</label>
+                <div className="flex flex-col gap-1.5">
+                    <Label>Meno študenta</Label>
                     <Input
                         type="text"
                         {...register('studentName', {
@@ -67,8 +68,8 @@ export function RequestForm({ title, initialValues, isLoading, onSubmit }: Reque
                     />
                     {errors.studentName && <p className="text-red-500 text-sm">{errors.studentName.message}</p>}
                 </div>
-                <div>
-                    <label className="block text-sm font-medium mb-1">Priezvisko študenta</label>
+                <div className="flex flex-col gap-1.5">
+                    <Label>Priezvisko študenta</Label>
                     <Input
                         type="text"
                         {...register('studentSurname', {
@@ -78,8 +79,8 @@ export function RequestForm({ title, initialValues, isLoading, onSubmit }: Reque
                     />
                     {errors.studentSurname && <p className="text-red-500 text-sm">{errors.studentSurname.message}</p>}
                 </div>
-                <div>
-                    <label className="block text-sm font-medium mb-1">Študijný program</label>
+                <div className="flex flex-col gap-1.5">
+                    <Label>Študijný program</Label>
                     <Controller
                         name="studyProgram"
                         control={control}
@@ -119,8 +120,8 @@ export function RequestForm({ title, initialValues, isLoading, onSubmit }: Reque
                     />
                     {errors.studyProgram && <p className="text-red-500 text-sm">{errors.studyProgram.message}</p>}
                 </div>
-                <div>
-                    <label className="block text-sm font-medium mb-1">Študijný stupeň</label>
+                <div className="flex flex-col gap-1.5">
+                    <Label>Študijný stupeň</Label>
                     <Controller
                         name="studyDegree"
                         control={control}
@@ -144,8 +145,8 @@ export function RequestForm({ title, initialValues, isLoading, onSubmit }: Reque
                     />
                     {errors.studyDegree && <p className="text-red-500 text-sm">{errors.studyDegree.message}</p>}
                 </div>
-                <div>
-                    <label className="block text-sm font-medium mb-1">Rok štúdia</label>
+                <div className="flex flex-col gap-1.5">
+                    <Label>Rok štúdia</Label>
                     <Controller
                         name="studyYear"
                         control={control}
@@ -188,8 +189,8 @@ export function RequestForm({ title, initialValues, isLoading, onSubmit }: Reque
                     />
                     {errors.studyYear && <p className="text-red-500 text-sm">{errors.studyYear.message}</p>}
                 </div>
-                <div>
-                    <label className="block text-sm font-medium mb-1">Účel</label>
+                <div className="flex flex-col gap-1.5">
+                    <Label>Účel</Label>
                     <Input
                         type="text"
                         {...register('purpose', { required: 'Účel je povinný' })}
@@ -197,8 +198,8 @@ export function RequestForm({ title, initialValues, isLoading, onSubmit }: Reque
                     />
                     {errors.purpose && <p className="text-red-500 text-sm">{errors.purpose.message}</p>}
                 </div>
-                <div>
-                    <label className="block text-sm font-medium mb-1">Dôvod</label>
+                <div className="flex flex-col gap-1.5">
+                    <Label>Dôvod</Label>
                     <Textarea
                         {...register('reason', { required: 'Dôvod je povinný' })}
                         className="w-full px-3 py-2 border border-gray-300 rounded"
@@ -206,8 +207,8 @@ export function RequestForm({ title, initialValues, isLoading, onSubmit }: Reque
                     />
                     {errors.reason && <p className="text-red-500 text-sm">{errors.reason.message}</p>}
                 </div>
-                <div className="flex flex-col gap-2">
-                    <label className="block text-sm font-medium mb-1">Príloha</label>
+                <div className="flex flex-col gap-1.5">
+                    <Label>Príloha</Label>
                     {initialValues?.attachmentUrl && (
                         <Attachment label="Stiahnuť existujúcu prílohu" url={initialValues.attachmentUrl} />
                     )}

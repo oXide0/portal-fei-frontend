@@ -1,4 +1,4 @@
-import { CategoryCard } from '../components/ui/categoryCard';
+import { CategoryCard } from '../components/categoryCard';
 import etdImg from '../assets/etd.png';
 import { useNavigate } from 'react-router-dom';
 
@@ -19,7 +19,7 @@ const CategoriesPage = () => {
                     variant="secondary"
                     description="Skuska z jazyka"
                     logo={<img src={etdImg} alt="TUKE" style={{ maxWidth: '100px' }} />}
-                    onClick={() => navigate('/skex/dashboard')}
+                    onClick={() => navigate('/skex/exams')}
                 />
             </div>
         </div>
