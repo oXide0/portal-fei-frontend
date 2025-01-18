@@ -1,22 +1,12 @@
+import { Checkbox } from '@/components/ui/checkbox';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
-import {
-    ColumnDef,
-    flexRender,
-    getCoreRowModel,
-    getFacetedRowModel,
-    getFacetedUniqueValues,
-    getFilteredRowModel,
-    getPaginationRowModel,
-    getSortedRowModel,
-    useReactTable,
-} from '@tanstack/react-table';
-import { useState } from 'react';
-import { DataTablePagination } from './data-table-pagination';
-import { DataTableToolbar } from './data-table-toolbar';
+import { Student } from '@/types/skex/Student';
+import { useEffect, useState } from 'react';
+import { TableToolbar } from './tableToolbar';
+import { TablePagination } from './tablePagination';
 
-interface DataTableProps<TData, TValue> {
-    columns: ColumnDef<TData, TValue>[];
-    data: TData[];
+interface StudentsTableProps {
+    data: Student[];
     values: {
         name: string;
         surname: string;
@@ -24,63 +14,107 @@ interface DataTableProps<TData, TValue> {
     };
     onChange: (values: { name: string; surname: string; email: string }) => void;
     onReset: () => void;
-    defaultRowSelection?: Record<string, boolean>;
+    onSubmit: (selectedStudentMails: string[]) => Promise<void>;
 }
 
-export function DataTable<TData, TValue>(props: DataTableProps<TData, TValue>) {
-    const [rowSelection, setRowSelection] = useState<Record<string, boolean>>(props.defaultRowSelection ?? {});
-    console.log(rowSelection);
+export function StudentsTable(props: StudentsTableProps) {
+    const [currentPage, setCurrentPage] = useState(0);
+    const [rowSelection, setRowSelection] = useState<Record<string, boolean>>({});
+    const totalPages = Math.ceil(props.data.length / 10); // 10 is the number of rows per page
+    const selectedRowsCount = Object.values(rowSelection).filter(Boolean).length;
 
-    const table = useReactTable({
-        data: props.data,
-        columns: props.columns,
-        state: {
-            rowSelection,
-        },
-        enableRowSelection: true,
-        onRowSelectionChange: setRowSelection,
-        getCoreRowModel: getCoreRowModel(),
-        getFilteredRowModel: getFilteredRowModel(),
-        getPaginationRowModel: getPaginationRowModel(),
-        getSortedRowModel: getSortedRowModel(),
-        getFacetedRowModel: getFacetedRowModel(),
-        getFacetedUniqueValues: getFacetedUniqueValues(),
-    });
+    const isAllSelected =
+        Object.values(rowSelection).filter((value) => value).length === props.data.length && props.data.length > 0;
+
+    useEffect(() => {
+        setRowSelection(
+            props.data.reduce(
+                (acc, student) => {
+                    acc[student.email] = student.isAssigned;
+                    return acc;
+                },
+                {} as Record<string, boolean>,
+            ),
+        );
+    }, [props.data]);
 
     return (
         <div className="space-y-4">
-            <DataTableToolbar values={props.values} onChange={props.onChange} onReset={props.onReset} />
+            <TableToolbar
+                values={props.values}
+                onChange={props.onChange}
+                onReset={props.onReset}
+                onSave={() => {
+                    const selectedStudents = Object.entries(rowSelection)
+                        .filter(([, isSelected]) => isSelected)
+                        .map(([email]) => email);
+                    props.onSubmit(selectedStudents);
+                }}
+            />
             <div className="rounded-md border">
                 <Table>
                     <TableHeader>
-                        {table.getHeaderGroups().map((headerGroup) => (
-                            <TableRow key={headerGroup.id}>
-                                {headerGroup.headers.map((header) => {
-                                    return (
-                                        <TableHead key={header.id} colSpan={header.colSpan}>
-                                            {header.isPlaceholder
-                                                ? null
-                                                : flexRender(header.column.columnDef.header, header.getContext())}
-                                        </TableHead>
-                                    );
-                                })}
-                            </TableRow>
-                        ))}
+                        <TableRow>
+                            <TableHead className="w-12">
+                                <Checkbox
+                                    checked={isAllSelected}
+                                    onCheckedChange={(value) => {
+                                        const newSelection = props.data.reduce(
+                                            (acc, student) => {
+                                                acc[student.email] = !!value;
+                                                return acc;
+                                            },
+                                            {} as Record<string, boolean>,
+                                        );
+                                        setRowSelection(newSelection);
+                                    }}
+                                    aria-label="Select all"
+                                />
+                            </TableHead>
+                            <TableHead>Student</TableHead>
+                            <TableHead>Email</TableHead>
+                            <TableHead>Study Program</TableHead>
+                        </TableRow>
                     </TableHeader>
                     <TableBody>
-                        {table.getRowModel().rows?.length ? (
-                            table.getRowModel().rows.map((row) => (
-                                <TableRow key={row.id} data-state={row.getIsSelected() && 'selected'}>
-                                    {row.getVisibleCells().map((cell) => (
-                                        <TableCell key={cell.id}>
-                                            {flexRender(cell.column.columnDef.cell, cell.getContext())}
-                                        </TableCell>
-                                    ))}
+                        {props.data.length ? (
+                            props.data.map((student) => (
+                                <TableRow
+                                    key={student.email}
+                                    className={rowSelection[student.email] ? 'bg-gray-100' : ''}
+                                >
+                                    <TableCell className="w-12">
+                                        <Checkbox
+                                            checked={rowSelection[student.email] ?? false}
+                                            onCheckedChange={(value) => {
+                                                setRowSelection((prev) => ({
+                                                    ...prev,
+                                                    [student.email]: !!value,
+                                                }));
+                                            }}
+                                            aria-label={`Select ${student.name} ${student.surname}`}
+                                        />
+                                    </TableCell>
+                                    <TableCell>
+                                        <div className="flex space-x-2">
+                                            <span className="truncate font-medium">
+                                                {student.name} {student.surname}
+                                            </span>
+                                        </div>
+                                    </TableCell>
+                                    <TableCell>
+                                        <div className="w-[80px] truncate">{student.email}</div>
+                                    </TableCell>
+                                    <TableCell>
+                                        <div className="flex space-x-2">
+                                            <span className="truncate font-medium">{student.studyProgram}</span>
+                                        </div>
+                                    </TableCell>
                                 </TableRow>
                             ))
                         ) : (
                             <TableRow>
-                                <TableCell colSpan={props.columns.length} className="h-24 text-center">
+                                <TableCell colSpan={4} className="h-24 text-center">
                                     No results.
                                 </TableCell>
                             </TableRow>
@@ -88,7 +122,17 @@ export function DataTable<TData, TValue>(props: DataTableProps<TData, TValue>) {
                     </TableBody>
                 </Table>
             </div>
-            <DataTablePagination table={table} />
+
+            <div className="flex items-center justify-between px-2">
+                <div className="hidden flex-1 text-sm text-muted-foreground sm:block">
+                    {selectedRowsCount} of {props.data.length} row(s) selected.
+                </div>
+                <TablePagination
+                    currentPage={currentPage}
+                    totalPages={totalPages}
+                    onPageChange={(page) => setCurrentPage(page)}
+                />
+            </div>
         </div>
     );
 }

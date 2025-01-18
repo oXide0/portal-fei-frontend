@@ -1,6 +1,5 @@
 import { ExamDrawer } from '@/components/examDrawer';
-import { studentColumns } from '@/components/student-columns';
-import { DataTable } from '@/components/studentsTable';
+import { StudentsTable } from '@/components/studentsTable';
 import {
     AlertDialog,
     AlertDialogAction,
@@ -25,11 +24,9 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { useRequiredParam } from '@/hooks/useRequiredParam';
 import {
     useDeleteExamMutation,
-    useGetExamByIdQuery,
     useUpdateExamDetailsMutation,
     useUpdateExamStudentsMutation,
 } from '@/services/skex/exam';
-import { useGetFilteredStudentsQuery } from '@/services/skex/student';
 import { GetDetailedExamResponse } from '@/types/skex/Exam';
 import { Student } from '@/types/skex/Student';
 import { Calendar, CheckCircle, Edit, FileText, Trash, User } from 'lucide-react';
@@ -220,13 +217,19 @@ export function ExamDetailPage() {
 
             <div className="pt-3">
                 <h2 className="text-2xl font-semibold py-4">Students</h2>
-                <DataTable
-                    columns={studentColumns}
+                <StudentsTable
                     data={students}
                     values={filter}
                     onChange={setFilter}
                     onReset={() => setFilter({ name: '', surname: '', email: '' })}
-                    defaultRowSelection={{ '1': true }}
+                    onSubmit={async (selectedStudentMails) => {
+                        await updateExamStudents({
+                            examId: parseInt(examId),
+                            updateExamCommand: {
+                                students: selectedStudentMails,
+                            },
+                        });
+                    }}
                 />
             </div>
         </>

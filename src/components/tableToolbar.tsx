@@ -2,7 +2,7 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 
-interface DataTableToolbarProps {
+interface TableToolbarProps {
     values: {
         name: string;
         surname: string;
@@ -10,9 +10,10 @@ interface DataTableToolbarProps {
     };
     onChange: (values: { name: string; surname: string; email: string }) => void;
     onReset: () => void;
+    onSave: () => void;
 }
 
-export function DataTableToolbar(props: DataTableToolbarProps) {
+export function TableToolbar(props: TableToolbarProps) {
     return (
         <div className="flex items-end justify-between">
             <div className="flex flex-1 flex-col-reverse items-start gap-y-2 sm:flex-row sm:items-center sm:space-x-4">
@@ -46,7 +47,7 @@ export function DataTableToolbar(props: DataTableToolbarProps) {
                     />
                 </div>
             </div>
-            <Button>Save selected students</Button>
+            <Button onClick={props.onSave}>Save selected students</Button>
         </div>
     );
 }
