@@ -1,12 +1,14 @@
 export interface Student {
-    mail: string;
+    email: string;
     name: string;
     surname: string;
     studyProgram: string;
+    isAssigned: boolean;
 }
 
 export interface GetStudentParams {
-    name: string;
-    surname: string;
-    email: string;
+    examId: number;
+    name?: string;
+    surname?: string;
+    email?: string;
 }

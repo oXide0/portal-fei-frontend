@@ -39,9 +39,9 @@ export const studentColumns: ColumnDef<any>[] = [
         },
     },
     {
-        accessorKey: 'mail',
+        accessorKey: 'email',
         header: ({ column }) => <DataTableColumnHeader column={column} title="Email" />,
-        cell: ({ row }) => <div className="w-[80px]">{row.getValue('mail')}</div>,
+        cell: ({ row }) => <div className="w-[80px]">{row.getValue('email')}</div>,
         enableSorting: false,
         enableHiding: false,
     },

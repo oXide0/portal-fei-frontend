@@ -23,7 +23,9 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Separator } from '@/components/ui/separator';
+import { useCreateExamMutation, useDeleteExamMutation, useUpdateExamDetailsMutation } from '@/services/skex/exam';
 import { Exam } from '@/types/skex/Exam';
+import Fuse, { IFuseOptions } from 'fuse.js';
 import { FileText, Plus, Search, SlidersHorizontal, Upload } from 'lucide-react';
 import { useMemo, useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
@@ -35,27 +37,48 @@ interface ExamsFilter {
 }
 
 export function ExamsPage() {
-    // const { data } = useGetExamsQuery();
     const data = exams;
-    const [filter, setFilter] = useState<ExamsFilter>({ searchTerm: '', isFinished: 'all', sort: 'ascending' });
+    const [createExam] = useCreateExamMutation();
+    const [updateExam] = useUpdateExamDetailsMutation();
+    const [deleteExam] = useDeleteExamMutation();
+
+    const [filter, setFilter] = useState<ExamsFilter>({
+        searchTerm: '',
+        isFinished: 'all',
+        sort: 'ascending',
+    });
 
     const [openDrawer, setOpenDrawer] = useState({ create: false, update: false, delete: false });
+    const [examId, setExamId] = useState<number | null>(null);
     const navigate = useNavigate();
+
+    const fuseOptions: IFuseOptions<Exam> = {
+        keys: ['name', 'description'],
+        threshold: 0.3,
+    };
+
+    const fuse = new Fuse(data, fuseOptions);
 
     const filteredData = useMemo(() => {
         if (data == null) return [];
-        return data
-            .filter((exam) => {
-                if (filter.isFinished === 'finished' && !exam.isFinished) return false;
-                if (filter.isFinished === 'notFinished' && exam.isFinished) return false;
-                if (!exam.name.toLowerCase().includes(filter.searchTerm.toLowerCase())) return false;
-                return true;
-            })
-            .sort((a, b) => {
-                if (filter.sort === 'ascending') return a.date.localeCompare(b.date);
-                return b.date.localeCompare(a.date);
-            });
+
+        const filteredByStatus = data.filter((exam) => {
+            if (filter.isFinished === 'finished' && !exam.isFinished) return false;
+            if (filter.isFinished === 'notFinished' && exam.isFinished) return false;
+            return true;
+        });
+
+        const searchTermFiltered = filter.searchTerm
+            ? fuse.search(filter.searchTerm).map((result) => result.item)
+            : filteredByStatus;
+
+        return searchTermFiltered.sort((a, b) => {
+            if (filter.sort === 'ascending') return a.date.localeCompare(b.date);
+            return b.date.localeCompare(a.date);
+        });
     }, [data, filter]);
+
+    // if (data == null) return <div className="loader"></div>;
 
     return (
         <div>
@@ -73,11 +96,36 @@ export function ExamsPage() {
                 </BreadcrumbList>
             </Breadcrumb>
 
-            <ExamDrawer open={openDrawer.create} setOpen={(v) => setOpenDrawer({ ...openDrawer, create: v })} />
+            <ExamDrawer
+                open={openDrawer.create}
+                setOpen={(v) => setOpenDrawer({ ...openDrawer, create: v })}
+                onSubmit={async (data) => {
+                    await createExam({
+                        name: data.name,
+                        audience: data.audience,
+                        date: data.date?.toISOString(),
+                        comment: data.comment,
+                        examType: data.examType,
+                    });
+                }}
+            />
             <ExamDrawer
                 isUpdate
                 open={openDrawer.update}
                 setOpen={(v) => setOpenDrawer({ ...openDrawer, update: v })}
+                onSubmit={async (data) => {
+                    if (examId == null) return;
+                    await updateExam({
+                        examId,
+                        updateExamCommand: {
+                            name: data.name,
+                            audience: data.audience,
+                            date: data.date?.toISOString(),
+                            comment: data.comment,
+                            examType: data.examType,
+                        },
+                    });
+                }}
             />
 
             <AlertDialog
@@ -99,7 +147,9 @@ export function ExamsPage() {
                             Zrušiť
                         </AlertDialogCancel>
                         <AlertDialogAction
-                            onClick={() => {
+                            onClick={async () => {
+                                if (examId == null) return;
+                                await deleteExam(examId);
                                 setOpenDrawer({ ...openDrawer, delete: false });
                             }}
                         >
@@ -192,8 +242,14 @@ export function ExamsPage() {
                         examType={exam.examType}
                         isFinished={exam.isFinished}
                         onClick={() => navigate(`/skex/exam/${exam.id}`)}
-                        onEdit={() => setOpenDrawer({ ...openDrawer, update: true })}
-                        onDelete={() => setOpenDrawer({ ...openDrawer, delete: true })}
+                        onEdit={() => {
+                            setExamId(exam.id);
+                            setOpenDrawer({ ...openDrawer, update: true });
+                        }}
+                        onDelete={() => {
+                            setExamId(exam.id);
+                            setOpenDrawer({ ...openDrawer, delete: true });
+                        }}
                     />
                 ))}
             </div>
@@ -206,24 +262,30 @@ const exams: Exam[] = [
         name: 'Exam 1',
         audience: 'Students',
         date: '12.12.2021',
-        examType: 'Grammar',
+        examType: 'LETNY',
         id: 1,
         isFinished: false,
+        comment:
+            'lorem ipsum dolor sit amet consectetur adipisicing elit. Alias, dolorem. Quibusdam perferendis omnis doloribus voluptatem velit magnam porro dolor. Quam veniam error natus quis modi nihil sint dolorem eligendi magni.',
     },
     {
         name: 'Exam 2',
         audience: 'Students',
         date: '12.12.2021',
-        examType: 'Grammar',
+        examType: 'ZIMNY',
         id: 2,
         isFinished: true,
+        comment:
+            'Lorem ipsum dolor sit amet consectetur adipisicing elit. Alias, dolorem. Quibusdam perferendis omnis doloribus voluptatem velit magnam porro dolor. Quam veniam error natus quis modi nihil sint dolorem eligendi magni.',
     },
     {
         name: 'Exam 3',
         audience: 'Students',
         date: '12.12.2021',
-        examType: 'Grammar',
+        examType: 'ZIMNY',
         id: 3,
         isFinished: false,
+        comment:
+            'Lorem ipsum dolor sit amet consectetur adipisicing elit. Alias, dolorem. Quibusdam perferendis omnis doloribus voluptatem velit magnam porro dolor. Quam veniam error natus quis modi nihil sint dolorem eligendi magni.',
     },
 ];

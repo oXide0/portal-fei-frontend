@@ -1,11 +1,11 @@
 import { CreateSubjectBody, CreateSubjectResponse, EvaluateSubject, SubjectStatus } from '../../types/isp/Subject';
-import { ispApi } from '../api';
+import { api } from '../api';
 
-export const subjectApi = ispApi.injectEndpoints({
+export const subjectApi = api.injectEndpoints({
     endpoints: (builder) => ({
         evaluateSubject: builder.mutation<{ subjectStatus: SubjectStatus }, EvaluateSubject>({
             query: ({ subjectId, evaluationStatus }) => ({
-                url: `subjects/${subjectId}/evaluate`,
+                url: `isp/subjects/${subjectId}/evaluate`,
                 method: 'PATCH',
                 body: { evaluationStatus },
             }),
@@ -13,7 +13,7 @@ export const subjectApi = ispApi.injectEndpoints({
         }),
         createSubject: builder.mutation<CreateSubjectResponse, CreateSubjectBody>({
             query: (body) => ({
-                url: 'subjects',
+                url: 'isp/subjects',
                 method: 'POST',
                 body,
             }),
@@ -21,7 +21,7 @@ export const subjectApi = ispApi.injectEndpoints({
         }),
         deleteSubject: builder.mutation<void, string>({
             query: (subjectId) => ({
-                url: `subjects/${subjectId}`,
+                url: `isp/subjects/${subjectId}`,
                 method: 'DELETE',
             }),
             invalidatesTags: ['Subject'],

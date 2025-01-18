@@ -1,11 +1,11 @@
-import { Student } from './Student';
+type ExamType = 'LETNY' | 'ZIMNY';
 
 export interface CreateExamCommand {
     name: string;
     audience: string;
     date: string;
     comment: string;
-    examType: string;
+    examType: ExamType;
 }
 
 export interface GetDetailedExamResponse {
@@ -14,9 +14,8 @@ export interface GetDetailedExamResponse {
     audience: string;
     date: string;
     comment: string;
-    examType: string;
+    examType: ExamType;
     isFinished: boolean;
-    students: Array<Student>;
 }
 
 export interface Exam {
@@ -24,15 +23,19 @@ export interface Exam {
     name: string;
     audience: string;
     date: string;
-    examType: string;
+    examType: ExamType;
+    comment: string;
     isFinished: boolean;
 }
 
-export interface UpdateExamCommand {
+export interface UpdateExamDetailsCommand {
     name: string;
     audience: string;
     date: string;
     comment: string;
-    examType: string;
+    examType: ExamType;
+}
+
+export interface UpdateExamStudentsCommand {
     students: Array<string>;
 }

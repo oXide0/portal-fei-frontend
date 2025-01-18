@@ -1,37 +1,50 @@
-import { CreateExamCommand, GetDetailedExamResponse, Exam, UpdateExamCommand } from '@/types/skex/Exam';
-import { ispApi } from '../api';
+import {
+    CreateExamCommand,
+    GetDetailedExamResponse,
+    Exam,
+    UpdateExamDetailsCommand,
+    UpdateExamStudentsCommand,
+} from '@/types/skex/Exam';
+import { api } from '../api';
 
-export const examApi = ispApi.injectEndpoints({
+export const examApi = api.injectEndpoints({
     endpoints: (builder) => ({
         createExam: builder.mutation<void, CreateExamCommand>({
             query: (createExamCommand) => ({
-                url: '/exams',
+                url: 'skex/exams',
                 method: 'POST',
                 body: createExamCommand,
             }),
         }),
         deleteExam: builder.mutation<void, number>({
             query: (examId) => ({
-                url: `/exams/${examId}`,
+                url: `skex/exams/${examId}`,
                 method: 'DELETE',
             }),
         }),
         getExamById: builder.query<GetDetailedExamResponse, number>({
             query: (examId) => ({
-                url: `/exams/${examId}`,
+                url: `skex/exams/${examId}`,
                 method: 'GET',
             }),
         }),
         getExams: builder.query<Exam[], void>({
             query: () => ({
-                url: '/exams',
+                url: 'skex/exams',
                 method: 'GET',
             }),
         }),
-        updateExam: builder.mutation<void, { examId: number; updateExamCommand: UpdateExamCommand }>({
+        updateExamDetails: builder.mutation<void, { examId: number; updateExamCommand: UpdateExamDetailsCommand }>({
             query: ({ examId, updateExamCommand }) => ({
-                url: `/exams/${examId}`,
-                method: 'PUT',
+                url: `skex/exams/${examId}`,
+                method: 'PATCH',
+                body: updateExamCommand,
+            }),
+        }),
+        updateExamStudents: builder.mutation<void, { examId: number; updateExamCommand: UpdateExamStudentsCommand }>({
+            query: ({ examId, updateExamCommand }) => ({
+                url: `skex/exams/${examId}/students`,
+                method: 'PATCH',
                 body: updateExamCommand,
             }),
         }),
@@ -43,5 +56,6 @@ export const {
     useDeleteExamMutation,
     useGetExamByIdQuery,
     useGetExamsQuery,
-    useUpdateExamMutation,
+    useUpdateExamDetailsMutation,
+    useUpdateExamStudentsMutation,
 } = examApi;

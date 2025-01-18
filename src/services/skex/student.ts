@@ -1,24 +1,24 @@
 import { GetStudentParams, Student } from '@/types/skex/Student';
-import { ispApi } from '../api';
+import { api } from '../api';
 
-export const studentApi = ispApi.injectEndpoints({
+export const studentApi = api.injectEndpoints({
     endpoints: (builder) => ({
         loadStudents: builder.mutation<void, FormData>({
             query: (formData) => ({
-                url: '/students',
+                url: 'skex/students',
                 method: 'POST',
                 body: formData,
             }),
         }),
         getFilteredStudents: builder.query<Student[], GetStudentParams>({
-            query: ({ name, surname, email }) => ({
-                url: '/students',
+            query: ({ name, surname, email, examId }) => ({
+                url: `skex/exams/${examId}/students/filter`,
                 params: { name, surname, email },
             }),
         }),
         deleteStudents: builder.mutation<void, void>({
             query: () => ({
-                url: '/students',
+                url: 'skex/students',
                 method: 'DELETE',
             }),
         }),

@@ -1,9 +1,6 @@
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import {
     ColumnDef,
-    ColumnFiltersState,
-    SortingState,
-    VisibilityState,
     flexRender,
     getCoreRowModel,
     getFacetedRowModel,
@@ -20,28 +17,28 @@ import { DataTableToolbar } from './data-table-toolbar';
 interface DataTableProps<TData, TValue> {
     columns: ColumnDef<TData, TValue>[];
     data: TData[];
+    values: {
+        name: string;
+        surname: string;
+        email: string;
+    };
+    onChange: (values: { name: string; surname: string; email: string }) => void;
+    onReset: () => void;
+    defaultRowSelection?: Record<string, boolean>;
 }
 
-export function DataTable<TData, TValue>({ columns, data }: DataTableProps<TData, TValue>) {
-    const [rowSelection, setRowSelection] = useState({});
-    const [columnVisibility, setColumnVisibility] = useState<VisibilityState>({});
-    const [columnFilters, setColumnFilters] = useState<ColumnFiltersState>([]);
-    const [sorting, setSorting] = useState<SortingState>([]);
+export function DataTable<TData, TValue>(props: DataTableProps<TData, TValue>) {
+    const [rowSelection, setRowSelection] = useState<Record<string, boolean>>(props.defaultRowSelection ?? {});
+    console.log(rowSelection);
 
     const table = useReactTable({
-        data,
-        columns,
+        data: props.data,
+        columns: props.columns,
         state: {
-            sorting,
-            columnVisibility,
             rowSelection,
-            columnFilters,
         },
         enableRowSelection: true,
         onRowSelectionChange: setRowSelection,
-        onSortingChange: setSorting,
-        onColumnFiltersChange: setColumnFilters,
-        onColumnVisibilityChange: setColumnVisibility,
         getCoreRowModel: getCoreRowModel(),
         getFilteredRowModel: getFilteredRowModel(),
         getPaginationRowModel: getPaginationRowModel(),
@@ -52,7 +49,7 @@ export function DataTable<TData, TValue>({ columns, data }: DataTableProps<TData
 
     return (
         <div className="space-y-4">
-            <DataTableToolbar table={table} />
+            <DataTableToolbar values={props.values} onChange={props.onChange} onReset={props.onReset} />
             <div className="rounded-md border">
                 <Table>
                     <TableHeader>
@@ -83,7 +80,7 @@ export function DataTable<TData, TValue>({ columns, data }: DataTableProps<TData
                             ))
                         ) : (
                             <TableRow>
-                                <TableCell colSpan={columns.length} className="h-24 text-center">
+                                <TableCell colSpan={props.columns.length} className="h-24 text-center">
                                     No results.
                                 </TableCell>
                             </TableRow>

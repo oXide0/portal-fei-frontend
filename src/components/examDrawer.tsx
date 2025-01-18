@@ -20,17 +20,19 @@ interface ExamDrawerProps {
     open: boolean;
     setOpen: (open: boolean) => void;
     isUpdate?: boolean;
+    initialValues?: FormValues;
+    onSubmit: (data: FormValues) => Promise<void>;
 }
 
 interface FormValues {
     name: string;
     audience: string;
-    date: Date | undefined;
+    date: Date;
     comment: string;
-    examType: 'LETNY' | 'ZIMNY' | '';
+    examType: 'LETNY' | 'ZIMNY';
 }
 
-export function ExamDrawer({ open, setOpen, isUpdate }: ExamDrawerProps) {
+export function ExamDrawer(props: ExamDrawerProps) {
     const {
         control,
         handleSubmit,
@@ -39,16 +41,11 @@ export function ExamDrawer({ open, setOpen, isUpdate }: ExamDrawerProps) {
         setValue,
         formState: { errors },
     } = useForm<FormValues>({
-        defaultValues: {
-            name: '',
-            audience: '',
-            date: undefined,
-            comment: '',
-            examType: '',
-        },
+        defaultValues: props.initialValues,
     });
 
     const onSubmit = (data: FormValues) => {
+        props.onSubmit(data);
         toast({
             title: 'You submitted the following values:',
             description: (
@@ -60,12 +57,12 @@ export function ExamDrawer({ open, setOpen, isUpdate }: ExamDrawerProps) {
     };
 
     return (
-        <Sheet open={open} onOpenChange={(v) => setOpen(v)}>
+        <Sheet open={props.open} onOpenChange={(v) => props.setOpen(v)}>
             <SheetContent className="flex flex-col h-full sm:max-w-lg">
                 <SheetHeader className="text-left">
-                    <SheetTitle>{isUpdate ? 'Update Task' : 'Create Task'}</SheetTitle>
+                    <SheetTitle>{props.isUpdate ? 'Update Task' : 'Create Task'}</SheetTitle>
                     <SheetDescription>
-                        {isUpdate
+                        {props.isUpdate
                             ? 'Update the task by providing necessary info.'
                             : 'Add a new task by providing necessary info.'}
                     </SheetDescription>

@@ -5,20 +5,20 @@ import {
     RequestStatus,
     CreateRequestResponse,
 } from '../../types/isp/Request';
-import { ispApi } from '../api';
+import { api } from '../api';
 
-export const requestApi = ispApi.injectEndpoints({
+export const requestApi = api.injectEndpoints({
     endpoints: (builder) => ({
         getAllRequests: builder.query<Array<RequestResponse>, void>({
-            query: () => 'requests',
+            query: () => 'isp/requests',
             providesTags: ['Request'],
         }),
         getRequestsByUserId: builder.query<Array<RequestResponse>, string>({
-            query: (userId) => `requests/users/${userId}`,
+            query: (userId) => `isp/requests/users/${userId}`,
             providesTags: ['Request'],
         }),
         getRequestById: builder.query<RequestResponse, string>({
-            query: (requestId) => `requests/${requestId}`,
+            query: (requestId) => `isp/requests/${requestId}`,
             providesTags: ['Request'],
         }),
         createRequest: builder.mutation<CreateRequestResponse, FormData>({
@@ -31,7 +31,7 @@ export const requestApi = ispApi.injectEndpoints({
         }),
         updateRequest: builder.mutation<UpdateRequestResponse, { data: FormData; requestId: string }>({
             query: ({ data, requestId }) => ({
-                url: `requests/${requestId}`,
+                url: `isp/requests/${requestId}`,
                 method: 'POST',
                 body: data,
             }),
@@ -39,21 +39,21 @@ export const requestApi = ispApi.injectEndpoints({
         }),
         evaluateRequest: builder.mutation<{ requestStatus: RequestStatus }, EvaluateRequestBody>({
             query: ({ requestId, evaluationStatus }) => ({
-                url: `requests/${requestId}/evaluate`,
+                url: `isp/requests/${requestId}/evaluate`,
                 method: 'POST',
                 body: { evaluationStatus },
             }),
         }),
         deleteRequest: builder.mutation<void, string>({
             query: (requestId) => ({
-                url: `requests/${requestId}`,
+                url: `isp/requests/${requestId}`,
                 method: 'DELETE',
             }),
             invalidatesTags: ['Request'],
         }),
         downloadFile: builder.query<Blob, string>({
             query: (attachmentUrl) => ({
-                url: `requests/attachment/download?attachmentUrl=${encodeURIComponent(attachmentUrl)}`,
+                url: `isp/requests/attachment/download?attachmentUrl=${encodeURIComponent(attachmentUrl)}`,
                 method: 'GET',
                 responseHandler: (response) => response.blob(),
             }),
@@ -61,7 +61,7 @@ export const requestApi = ispApi.injectEndpoints({
         }),
         generateDocument: builder.query<Blob, string>({
             query: (requestId) => ({
-                url: `requests/${requestId}/generate`,
+                url: `isp/requests/${requestId}/generate`,
                 method: 'GET',
                 responseHandler: (response) => response.blob(),
             }),

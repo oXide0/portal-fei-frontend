@@ -14,8 +14,8 @@ const baseQuery = fetchBaseQuery({
     },
 });
 
-export const ispApi = createApi({
-    reducerPath: 'ispApi',
+export const api = createApi({
+    reducerPath: 'api',
     baseQuery: baseQuery,
     endpoints: () => ({}),
     tagTypes: ['Request', 'Subject', 'Table'],

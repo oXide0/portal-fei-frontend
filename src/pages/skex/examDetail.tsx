@@ -22,13 +22,53 @@ import {
 } from '@/components/ui/breadcrumb';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { useRequiredParam } from '@/hooks/useRequiredParam';
+import {
+    useDeleteExamMutation,
+    useGetExamByIdQuery,
+    useUpdateExamDetailsMutation,
+    useUpdateExamStudentsMutation,
+} from '@/services/skex/exam';
+import { useGetFilteredStudentsQuery } from '@/services/skex/student';
+import { GetDetailedExamResponse } from '@/types/skex/Exam';
 import { Student } from '@/types/skex/Student';
 import { Calendar, CheckCircle, Edit, FileText, Trash, User } from 'lucide-react';
 import { useState } from 'react';
 import { Link } from 'react-router-dom';
 
 export function ExamDetailPage() {
+    const examId = useRequiredParam('id');
     const [openDrawer, setOpenDrawer] = useState({ update: false, delete: false });
+    const [filter, setFilter] = useState({ name: '', surname: '', email: '' });
+
+    // const { data: exam } = useGetExamByIdQuery(parseInt(examId));
+    // const { data: students } = useGetFilteredStudentsQuery({
+    //     examId: parseInt(examId),
+    //     email: filter.email,
+    //     name: filter.name,
+    //     surname: filter.surname,
+    // });
+    const students: Student[] = [
+        {
+            email: 'john.doe@gmail.com',
+            name: 'John',
+            surname: 'Doe',
+            studyProgram: 'Computer Science',
+            isAssigned: true,
+        },
+        {
+            email: 'jane.doe@gmail.com',
+            name: 'Jane',
+            surname: 'Doe',
+            studyProgram: 'Computer Science',
+            isAssigned: false,
+        },
+    ];
+    const [updateExamDetails] = useUpdateExamDetailsMutation();
+    const [updateExamStudents] = useUpdateExamStudentsMutation();
+    const [deleteExam] = useDeleteExamMutation();
+
+    // if (exam == null || students == null) return <div className="loader"></div>;
 
     return (
         <>
@@ -56,6 +96,25 @@ export function ExamDetailPage() {
                 isUpdate
                 open={openDrawer.update}
                 setOpen={(v) => setOpenDrawer({ ...openDrawer, update: v })}
+                initialValues={{
+                    name: data.name,
+                    audience: data.audience,
+                    date: new Date(data.date),
+                    comment: data.comment,
+                    examType: data.examType,
+                }}
+                onSubmit={async (data) => {
+                    await updateExamDetails({
+                        examId: parseInt(examId),
+                        updateExamCommand: {
+                            name: data.name,
+                            audience: data.audience,
+                            date: data.date.toISOString(),
+                            comment: data.comment,
+                            examType: data.examType,
+                        },
+                    });
+                }}
             />
 
             <AlertDialog
@@ -77,7 +136,8 @@ export function ExamDetailPage() {
                             Zrušiť
                         </AlertDialogCancel>
                         <AlertDialogAction
-                            onClick={() => {
+                            onClick={async () => {
+                                await deleteExam(parseInt(examId));
                                 setOpenDrawer({ ...openDrawer, delete: false });
                             }}
                         >
@@ -147,19 +207,38 @@ export function ExamDetailPage() {
                 </Card>
             </div>
 
+            <Card>
+                <CardHeader className="pb-2">
+                    <CardTitle className="text-sm font-medium">Comment</CardTitle>
+                </CardHeader>
+                <CardContent>
+                    <div className="border p-4 rounded-lg bg-muted-foreground text-sm text-gray-800">
+                        <p>This exam is for all 10th graders. Good luck!</p>
+                    </div>
+                </CardContent>
+            </Card>
+
             <div className="pt-3">
                 <h2 className="text-2xl font-semibold py-4">Students</h2>
-                <DataTable columns={studentColumns} data={data} />
+                <DataTable
+                    columns={studentColumns}
+                    data={students}
+                    values={filter}
+                    onChange={setFilter}
+                    onReset={() => setFilter({ name: '', surname: '', email: '' })}
+                    defaultRowSelection={{ '1': true }}
+                />
             </div>
         </>
     );
 }
 
-const data: Student[] = [
-    {
-        mail: 'john.doe@gmail.com',
-        name: 'John',
-        surname: 'Doe',
-        studyProgram: 'Computer Science',
-    },
-];
+const data: GetDetailedExamResponse = {
+    id: 1,
+    name: 'Math Final Exam',
+    audience: 'All 10th Graders',
+    date: '2025-01-25',
+    comment: 'This exam is for all 10th graders. Good luck!',
+    examType: 'LETNY',
+    isFinished: false,
+};
