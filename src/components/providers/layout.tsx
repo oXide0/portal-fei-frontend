@@ -6,6 +6,7 @@ import { Outlet } from 'react-router-dom';
 import { setId, setInitials, setRole, setToken } from '../../features/userSlice';
 import { parseIdToken } from '../../helpers';
 import { useAppDispatch, useAppSelector } from '../../hooks/redux-hooks';
+import { Toaster } from '../ui/toaster';
 
 const Layout = () => {
     return (
@@ -14,6 +15,7 @@ const Layout = () => {
             <div className="py-7 px-4 md:px-10">
                 <Outlet />
             </div>
+            <Toaster />
         </ProtectedRoute>
     );
 };

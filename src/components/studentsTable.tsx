@@ -68,12 +68,12 @@ export function StudentsTable(props: StudentsTableProps) {
                                         );
                                         setRowSelection(newSelection);
                                     }}
-                                    aria-label="Select all"
+                                    aria-label="Vybrať všetkých"
                                 />
                             </TableHead>
-                            <TableHead>Student</TableHead>
+                            <TableHead>Študent</TableHead>
                             <TableHead>Email</TableHead>
-                            <TableHead>Study Program</TableHead>
+                            <TableHead>Študijný program</TableHead>
                         </TableRow>
                     </TableHeader>
                     <TableBody>
@@ -92,7 +92,7 @@ export function StudentsTable(props: StudentsTableProps) {
                                                     [student.email]: !!value,
                                                 }));
                                             }}
-                                            aria-label={`Select ${student.name} ${student.surname}`}
+                                            aria-label={`Vybrať ${student.name} ${student.surname}`}
                                         />
                                     </TableCell>
                                     <TableCell>
@@ -115,7 +115,7 @@ export function StudentsTable(props: StudentsTableProps) {
                         ) : (
                             <TableRow>
                                 <TableCell colSpan={4} className="h-24 text-center">
-                                    No results.
+                                    Žiadne výsledky.
                                 </TableCell>
                             </TableRow>
                         )}
@@ -125,7 +125,7 @@ export function StudentsTable(props: StudentsTableProps) {
 
             <div className="flex items-center justify-between px-2">
                 <div className="hidden flex-1 text-sm text-muted-foreground sm:block">
-                    {selectedRowsCount} of {props.data.length} row(s) selected.
+                    {selectedRowsCount} z {props.data.length} riadkov vybraných.
                 </div>
                 <TablePagination
                     currentPage={currentPage}

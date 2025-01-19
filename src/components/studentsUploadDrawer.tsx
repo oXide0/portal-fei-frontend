@@ -44,8 +44,8 @@ export function StudentsUploadDrawer(props: StudentsUploadDrawerProps) {
         <Sheet open={props.open} onOpenChange={(v) => props.setOpen(v)}>
             <SheetContent className="flex flex-col h-full sm:max-w-lg">
                 <SheetHeader className="text-left">
-                    <SheetTitle>Upload Students</SheetTitle>
-                    <SheetDescription>Upload a CSV file containing student data.</SheetDescription>
+                    <SheetTitle>Upload Študentov</SheetTitle>
+                    <SheetDescription>Nahrajte CSV súbor obsahujúci údaje o študentoch.</SheetDescription>
                 </SheetHeader>
 
                 <form id="tasks-form" onSubmit={handleSubmit(onSubmit)} className="space-y-4 flex-auto">
@@ -90,7 +90,7 @@ export function StudentsUploadDrawer(props: StudentsUploadDrawerProps) {
                             ref={fileInputRef}
                             id="attachment-input"
                             type="file"
-                            accept=".pdf, .doc, .docx, .txt"
+                            accept=".csv"
                             className="hidden"
                             onChange={(event) => {
                                 const files = event.target.files;
@@ -106,10 +106,10 @@ export function StudentsUploadDrawer(props: StudentsUploadDrawerProps) {
 
                 <SheetFooter className="gap-2 sm:justify-start">
                     <Button form="tasks-form" type="submit">
-                        Save changes
+                        Uložiť zmeny
                     </Button>
                     <SheetClose asChild>
-                        <Button variant="outline">Close</Button>
+                        <Button variant="outline">Zatvoriť</Button>
                     </SheetClose>
                 </SheetFooter>
             </SheetContent>

@@ -1,5 +1,6 @@
 import { Button } from '@/components/ui/button';
 import { Calendar, User, CheckCircle, Edit, Trash } from 'lucide-react';
+import { format } from 'date-fns';
 
 interface ExamCardProps {
     name: string;
@@ -21,7 +22,7 @@ export function ExamCard(props: ExamCardProps) {
                 </div>
                 <div className="flex gap-2">
                     <Button variant="outline" size="default" onClick={props.onClick}>
-                        See details
+                        Zobraziť detaily
                     </Button>
                     <Button variant="outline" size="icon" onClick={props.onEdit}>
                         <Edit />
@@ -41,12 +42,12 @@ export function ExamCard(props: ExamCardProps) {
             </div>
             <div className="mt-2 flex items-center text-sm text-gray-600">
                 <Calendar size={16} className="mr-2" />
-                <span>{props.date}</span>
+                <span>{format(new Date(props.date), 'dd.MM.yyyy')}</span>
             </div>
             {props.isFinished && (
                 <div className="mt-4 flex items-center text-sm text-green-500">
                     <CheckCircle size={16} className="mr-2" />
-                    <span>Finished</span>
+                    <span>Dokončené</span>
                 </div>
             )}
         </div>

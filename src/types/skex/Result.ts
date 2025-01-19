@@ -1,6 +1,6 @@
 import { ExamType } from './Exam';
 
 export interface UploadResultBody {
-    resultsFile: File;
+    resultsFile: FormData;
     examType: ExamType;
 }

@@ -1,5 +1,6 @@
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
+import { Select, SelectContent, SelectGroup, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import {
     Sheet,
     SheetClose,
@@ -9,13 +10,11 @@ import {
     SheetHeader,
     SheetTitle,
 } from '@/components/ui/sheet';
-import { toast } from '@/hooks/use-toast';
 import { ExamType } from '@/types/skex/Exam';
 import { UploadIcon } from 'lucide-react';
 import { useRef, useState } from 'react';
 import { Controller, useForm } from 'react-hook-form';
 import { Label } from './ui/label';
-import { Select, SelectTrigger, SelectValue, SelectContent, SelectGroup, SelectItem } from '@/components/ui/select';
 
 interface ResultsUploadDrawerProps {
     open: boolean;
@@ -39,35 +38,32 @@ export function ResultsUploadDrawer(props: ResultsUploadDrawerProps) {
 
     const onSubmit = (data: FormValues) => {
         props.onSubmit(data);
-        toast({
-            title: 'Výsledky boli úspešne nahrané',
-        });
     };
 
     return (
         <Sheet open={props.open} onOpenChange={(v) => props.setOpen(v)}>
             <SheetContent className="flex flex-col h-full sm:max-w-lg">
                 <SheetHeader className="text-left">
-                    <SheetTitle>Upload Results</SheetTitle>
-                    <SheetDescription>Upload a CSV file containing student data.</SheetDescription>
+                    <SheetTitle>Nahrať výsledky</SheetTitle>
+                    <SheetDescription>Nahrajte CSV súbor obsahujúci údaje o študentoch.</SheetDescription>
                 </SheetHeader>
 
                 <form id="tasks-form" onSubmit={handleSubmit(onSubmit)} className="space-y-4 flex-auto">
                     <div className="flex flex-col gap-1.5">
-                        <Label htmlFor="examType">Exam Type</Label>
+                        <Label htmlFor="examType">Typ skúšky</Label>
                         <Controller
                             name="examType"
                             control={control}
-                            rules={{ required: 'Exam type is required' }}
+                            rules={{ required: 'Typ skúšky je povinný' }}
                             render={({ field }) => (
                                 <Select onValueChange={field.onChange} defaultValue={field.value}>
                                     <SelectTrigger>
-                                        <SelectValue placeholder="Select Exam Type" />
+                                        <SelectValue placeholder="Vyberte typ skúšky" />
                                     </SelectTrigger>
                                     <SelectContent>
                                         <SelectGroup>
-                                            <SelectItem value="LETNY">LETNY</SelectItem>
-                                            <SelectItem value="ZIMNY">ZIMNY</SelectItem>
+                                            <SelectItem value="LETNY">LETNÝ</SelectItem>
+                                            <SelectItem value="ZIMNY">ZIMNÝ</SelectItem>
                                         </SelectGroup>
                                     </SelectContent>
                                 </Select>
@@ -117,7 +113,7 @@ export function ResultsUploadDrawer(props: ResultsUploadDrawerProps) {
                             ref={fileInputRef}
                             id="attachment-input"
                             type="file"
-                            accept=".pdf, .doc, .docx, .txt"
+                            accept=".csv"
                             className="hidden"
                             onChange={(event) => {
                                 const files = event.target.files;
@@ -133,10 +129,10 @@ export function ResultsUploadDrawer(props: ResultsUploadDrawerProps) {
 
                 <SheetFooter className="gap-2 sm:justify-start">
                     <Button form="tasks-form" type="submit">
-                        Save changes
+                        Uložiť zmeny
                     </Button>
                     <SheetClose asChild>
-                        <Button variant="outline">Close</Button>
+                        <Button variant="outline">Zatvoriť</Button>
                     </SheetClose>
                 </SheetFooter>
             </SheetContent>

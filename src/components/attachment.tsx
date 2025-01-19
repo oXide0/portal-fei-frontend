@@ -1,7 +1,6 @@
 import { useLazyDownloadFileQuery, useLazyGenerateDocumentQuery } from '../services/isp/request';
 import { Download } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
-import { Toaster } from './ui/toaster';
 import { useEffect } from 'react';
 
 interface AttachmentProps {
@@ -59,7 +58,6 @@ const Attachment = ({ url, variant = 'download', label = 'Stiahnuť prílohu' }:
 
     return url ? (
         <>
-            <Toaster />
             <button
                 type="button"
                 onClick={handleAction}

@@ -11,7 +11,7 @@ export function TablePagination({ currentPage, totalPages, onPageChange }: Pagin
     return (
         <div className="flex items-center gap-10">
             <div className="hidden flex-1 text-sm text-muted-foreground sm:block">
-                Page {currentPage + 1} of {totalPages}
+                Strana {currentPage + 1} z {totalPages}
             </div>
             <div className="flex items-center space-x-2">
                 <Button
@@ -20,7 +20,7 @@ export function TablePagination({ currentPage, totalPages, onPageChange }: Pagin
                     onClick={() => onPageChange(0)}
                     disabled={currentPage === 0}
                 >
-                    <span className="sr-only">Go to first page</span>
+                    <span className="sr-only">Prejsť na prvú stránku</span>
                     <DoubleArrowLeftIcon className="h-4 w-4" />
                 </Button>
                 <Button
@@ -29,7 +29,7 @@ export function TablePagination({ currentPage, totalPages, onPageChange }: Pagin
                     onClick={() => onPageChange(currentPage - 1)}
                     disabled={currentPage === 0}
                 >
-                    <span className="sr-only">Go to previous page</span>
+                    <span className="sr-only">Prejsť na predchádzajúcu stránku</span>
                     <ChevronLeftIcon className="h-4 w-4" />
                 </Button>
                 <Button
@@ -38,7 +38,7 @@ export function TablePagination({ currentPage, totalPages, onPageChange }: Pagin
                     onClick={() => onPageChange(currentPage + 1)}
                     disabled={currentPage === totalPages - 1}
                 >
-                    <span className="sr-only">Go to next page</span>
+                    <span className="sr-only">Prejsť na ďalšiu stránku</span>
                     <ChevronRightIcon className="h-4 w-4" />
                 </Button>
                 <Button
@@ -47,7 +47,7 @@ export function TablePagination({ currentPage, totalPages, onPageChange }: Pagin
                     onClick={() => onPageChange(totalPages - 1)}
                     disabled={currentPage === totalPages - 1}
                 >
-                    <span className="sr-only">Go to last page</span>
+                    <span className="sr-only">Prejsť na poslednú stránku</span>
                     <DoubleArrowRightIcon className="h-4 w-4" />
                 </Button>
             </div>

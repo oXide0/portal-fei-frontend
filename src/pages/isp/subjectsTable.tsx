@@ -146,9 +146,9 @@ const SubjectsTablePage = () => {
                                         refetch();
                                     } catch (error) {
                                         toast({
+                                            className: 'bg-red-100',
                                             title: 'Chyba',
                                             description: 'Nepodarilo sa vymazať predmet',
-                                            variant: 'destructive',
                                         });
                                     }
                                     setSubjectToDelete(null);
@@ -247,7 +247,7 @@ const SubjectsTablePage = () => {
                                                     toast({
                                                         title: 'Chyba',
                                                         description: 'Nepodarilo sa aktualizovať stav predmetu',
-                                                        variant: 'destructive',
+                                                        className: 'bg-red-100',
                                                     });
                                                 }
                                                 refetch();
@@ -299,7 +299,7 @@ const SubjectsTablePage = () => {
                         toast({
                             title: 'Chyba',
                             description: 'Nemôžete pridať predmet do tabuľky, ktorá nie je v stave "PENDING"',
-                            variant: 'destructive',
+                            className: 'bg-red-100',
                         });
                     }
                     await addSubject({

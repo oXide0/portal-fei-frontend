@@ -9,18 +9,21 @@ export const studentApi = api.injectEndpoints({
                 method: 'POST',
                 body: formData,
             }),
+            invalidatesTags: ['Student'],
         }),
         getFilteredStudents: builder.query<Student[], GetStudentParams>({
             query: ({ name, surname, email, examId }) => ({
                 url: `skex/exams/${examId}/students/filter`,
                 params: { name, surname, email },
             }),
+            providesTags: ['Student'],
         }),
         deleteStudents: builder.mutation<void, void>({
             query: () => ({
                 url: 'skex/students',
                 method: 'DELETE',
             }),
+            invalidatesTags: ['Student'],
         }),
     }),
 });

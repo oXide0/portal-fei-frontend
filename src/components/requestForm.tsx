@@ -1,12 +1,12 @@
+import { Loader2, UploadIcon } from 'lucide-react';
 import { useEffect, useRef, useState } from 'react';
 import { Controller, SubmitHandler, useForm } from 'react-hook-form';
 import { Attachment } from './attachment';
 import { Button } from './ui/button';
 import { Input } from './ui/input';
+import { Label } from './ui/label';
 import { Select, SelectContent, SelectGroup, SelectItem, SelectLabel, SelectTrigger, SelectValue } from './ui/select';
 import { Textarea } from './ui/textarea';
-import { DownloadIcon, Loader2, UploadIcon } from 'lucide-react';
-import { Label } from './ui/label';
 
 interface RequestFormProps {
     title: string;
@@ -34,9 +34,9 @@ export function RequestForm({ title, initialValues, isLoading, onSubmit }: Reque
     const {
         register,
         handleSubmit,
-        setValue,
         watch,
         control,
+        reset,
         formState: { errors },
     } = useForm<IFormInput>({
         defaultValues: initialValues,
@@ -48,10 +48,13 @@ export function RequestForm({ title, initialValues, isLoading, onSubmit }: Reque
     };
 
     useEffect(() => {
+        // if (initialValues) {
+        //     Object.keys(initialValues).forEach((key) => {
+        //         setValue(key as keyof IFormInput, initialValues[key as keyof IFormInput]);
+        //     });
+        // }
         if (initialValues) {
-            Object.keys(initialValues).forEach((key) => {
-                setValue(key as keyof IFormInput, initialValues[key as keyof IFormInput]);
-            });
+            reset(initialValues);
         }
     }, [initialValues]);
 
@@ -214,15 +217,7 @@ export function RequestForm({ title, initialValues, isLoading, onSubmit }: Reque
                     <Label htmlFor="attachment-input">Príloha</Label>
 
                     {initialValues?.attachmentUrl && !attachment ? (
-                        <div className="flex items-center justify-between p-2 border rounded-md bg-muted">
-                            <span className="text-sm text-muted-foreground">Stiahnuť existujúcu prílohu</span>
-                            <Button asChild variant="ghost" size="sm" className="flex items-center gap-1 text-primary">
-                                <a href={initialValues.attachmentUrl} target="_blank" rel="noopener noreferrer">
-                                    <DownloadIcon className="w-4 h-4" />
-                                    Stiahnuť
-                                </a>
-                            </Button>
-                        </div>
+                        <Attachment label="Stiahnuť existujúcu prílohu" url={initialValues.attachmentUrl} />
                     ) : (
                         <div className="flex flex-col items-center justify-center gap-3 p-6 border-2 border-dashed border-gray-300 rounded-md bg-muted">
                             {attachment ? (

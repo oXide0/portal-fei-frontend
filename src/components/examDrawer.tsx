@@ -10,7 +10,7 @@ import {
     SheetHeader,
     SheetTitle,
 } from '@/components/ui/sheet';
-import { toast } from '@/hooks/use-toast';
+import { useEffect, useState } from 'react';
 import { Controller, useForm } from 'react-hook-form';
 import { DateTimePicker } from './dateTimePicker';
 import { Label } from './ui/label';
@@ -37,89 +37,97 @@ export function ExamDrawer(props: ExamDrawerProps) {
         control,
         handleSubmit,
         register,
-        getValues,
         setValue,
+        reset,
         formState: { errors },
     } = useForm<FormValues>({
         defaultValues: props.initialValues,
     });
+    const [selectedDate, setSelectedDate] = useState<Date | undefined>(props.initialValues?.date ?? undefined);
+
+    useEffect(() => {
+        if (selectedDate == null) return;
+        setValue('date', selectedDate);
+    }, [selectedDate]);
+
+    useEffect(() => {
+        reset(props.initialValues);
+        setSelectedDate(props.initialValues?.date ?? undefined);
+    }, [props.initialValues]);
 
     const onSubmit = (data: FormValues) => {
         props.onSubmit(data);
-        toast({
-            variant: 'default',
-            title: props.isUpdate ? 'Exam updated successfully' : 'Exam created successfully',
-        });
+        reset();
     };
 
     return (
         <Sheet open={props.open} onOpenChange={(v) => props.setOpen(v)}>
             <SheetContent className="flex flex-col h-full sm:max-w-lg">
                 <SheetHeader className="text-left">
-                    <SheetTitle>{props.isUpdate ? 'Update Exam' : 'Create Exam'}</SheetTitle>
+                    <SheetTitle>{props.isUpdate ? 'Aktualizovať skúšku' : 'Vytvoriť skúšku'}</SheetTitle>
                     <SheetDescription>
                         {props.isUpdate
-                            ? 'Update the exam by providing necessary info.'
-                            : 'Add a new exam by providing necessary info.'}
+                            ? 'Aktualizujte skúšku poskytnutím potrebných informácií.'
+                            : 'Pridajte novú skúšku poskytnutím potrebných informácií.'}
                     </SheetDescription>
                 </SheetHeader>
 
                 <form id="exams-form" onSubmit={handleSubmit(onSubmit)} className="space-y-4 flex-auto">
                     <div className="flex flex-col gap-1.5">
-                        <Label htmlFor="name">Exam Name</Label>
+                        <Label htmlFor="name">Názov skúšky</Label>
                         <Input
                             id="name"
-                            placeholder="Exam Name"
-                            {...register('name', { required: 'Exam name is required' })}
+                            placeholder="Názov skúšky"
+                            {...register('name', { required: 'Názov skúšky je povinný' })}
                         />
                         {errors.name && <p className="text-red-500 text-sm">{errors.name.message}</p>}
                     </div>
 
                     <div className="flex flex-col gap-1.5">
-                        <Label htmlFor="audience">Audience</Label>
+                        <Label htmlFor="audience">Miestnosť</Label>
                         <Input
                             id="audience"
-                            placeholder="Audience"
-                            {...register('audience', { required: 'Audience is required' })}
+                            placeholder="Miestnosť"
+                            {...register('audience', { required: 'Miestnosť je povinné' })}
                         />
                         {errors.audience && <p className="text-red-500 text-sm">{errors.audience.message}</p>}
                     </div>
 
                     <div className="flex flex-col gap-1.5">
-                        <Label htmlFor="date">Exam Date</Label>
+                        <Label htmlFor="date">Dátum skúšky</Label>
                         <DateTimePicker
-                            date={getValues('date')}
-                            setDate={(date) => setValue('date', date)}
-                            {...register('date', { required: 'Exam date is required' })}
+                            date={selectedDate}
+                            setDate={setSelectedDate}
+                            {...register('date', { required: 'Dátum skúšky je povinný' })}
                         />
                         {errors.date && <p className="text-red-500 text-sm">{errors.date.message}</p>}
                     </div>
 
                     <div className="flex flex-col gap-1.5">
-                        <Label htmlFor="comment">Comment</Label>
+                        <Label htmlFor="comment">Komentár</Label>
                         <Textarea
                             id="comment"
-                            placeholder="Comment"
-                            {...register('comment', { required: 'Comment is required' })}
+                            placeholder="Komentár"
+                            {...register('comment', { required: 'Komentár je povinný' })}
                         />
                         {errors.comment && <p className="text-red-500 text-sm">{errors.comment.message}</p>}
                     </div>
 
                     <div className="flex flex-col gap-1.5">
-                        <Label htmlFor="examType">Exam Type</Label>
+                        <Label htmlFor="examType">Typ skúšky</Label>
                         <Controller
                             name="examType"
                             control={control}
-                            rules={{ required: 'Exam type is required' }}
+                            rules={{ required: 'Typ skúšky je povinný' }}
                             render={({ field }) => (
                                 <Select onValueChange={field.onChange} defaultValue={field.value}>
                                     <SelectTrigger>
-                                        <SelectValue placeholder="Select Exam Type" />
+                                        <SelectValue placeholder="Vyberte typ skúšky" />
                                     </SelectTrigger>
                                     <SelectContent>
                                         <SelectGroup>
-                                            <SelectItem value="LETNY">LETNY</SelectItem>
-                                            <SelectItem value="ZIMNY">ZIMNY</SelectItem>
+                                            <SelectItem value="LETNY">LETNÝ</SelectItem>
+                                            <SelectItem value="ZIMNY">ZIMNÝ</SelectItem>
                                         </SelectGroup>
                                     </SelectContent>
                                 </Select>
@@ -131,10 +139,10 @@ export function ExamDrawer(props: ExamDrawerProps) {
 
                 <SheetFooter className="gap-2 sm:justify-start">
                     <Button form="exams-form" type="submit">
-                        Save changes
+                        Uložiť zmeny
                     </Button>
                     <SheetClose asChild>
-                        <Button variant="outline">Close</Button>
+                        <Button variant="outline">Zatvoriť</Button>
                     </SheetClose>
                 </SheetFooter>
             </SheetContent>

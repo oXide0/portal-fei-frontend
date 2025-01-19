@@ -21,14 +21,15 @@ import {
 } from '@/components/ui/breadcrumb';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { useToast } from '@/hooks/use-toast';
 import { useRequiredParam } from '@/hooks/useRequiredParam';
 import {
     useDeleteExamMutation,
+    useGetExamByIdQuery,
     useUpdateExamDetailsMutation,
     useUpdateExamStudentsMutation,
 } from '@/services/skex/exam';
-import { GetDetailedExamResponse } from '@/types/skex/Exam';
-import { Student } from '@/types/skex/Student';
+import { useGetFilteredStudentsQuery } from '@/services/skex/student';
 import { Calendar, CheckCircle, Edit, FileText, Trash, User } from 'lucide-react';
 import { useState } from 'react';
 import { Link } from 'react-router-dom';
@@ -37,35 +38,22 @@ export function ExamDetailPage() {
     const examId = useRequiredParam('id');
     const [openDrawer, setOpenDrawer] = useState({ update: false, delete: false });
     const [filter, setFilter] = useState({ name: '', surname: '', email: '' });
+    const { toast } = useToast();
 
-    // const { data: exam } = useGetExamByIdQuery(parseInt(examId));
-    // const { data: students } = useGetFilteredStudentsQuery({
-    //     examId: parseInt(examId),
-    //     email: filter.email,
-    //     name: filter.name,
-    //     surname: filter.surname,
-    // });
-    const students: Student[] = [
-        {
-            email: 'john.doe@gmail.com',
-            name: 'John',
-            surname: 'Doe',
-            studyProgram: 'Computer Science',
-            isAssigned: true,
-        },
-        {
-            email: 'jane.doe@gmail.com',
-            name: 'Jane',
-            surname: 'Doe',
-            studyProgram: 'Computer Science',
-            isAssigned: false,
-        },
-    ];
+    const { data: exam } = useGetExamByIdQuery(parseInt(examId));
+    const { data: students } = useGetFilteredStudentsQuery({
+        // TODO: Fix 404 error
+        examId: parseInt(examId),
+        email: filter.email,
+        name: filter.name,
+        surname: filter.surname,
+    });
+
     const [updateExamDetails] = useUpdateExamDetailsMutation();
     const [updateExamStudents] = useUpdateExamStudentsMutation();
     const [deleteExam] = useDeleteExamMutation();
 
-    // if (exam == null || students == null) return <div className="loader"></div>;
+    if (exam == null || students == null) return <div className="loader"></div>;
 
     return (
         <>
@@ -94,11 +82,11 @@ export function ExamDetailPage() {
                 open={openDrawer.update}
                 setOpen={(v) => setOpenDrawer({ ...openDrawer, update: v })}
                 initialValues={{
-                    name: data.name,
-                    audience: data.audience,
-                    date: new Date(data.date),
-                    comment: data.comment,
-                    examType: data.examType,
+                    name: exam.name,
+                    audience: exam.audience,
+                    date: new Date(exam.date),
+                    comment: exam.comment,
+                    examType: exam.examType,
                 }}
                 onSubmit={async (data) => {
                     await updateExamDetails({
@@ -110,6 +98,16 @@ export function ExamDetailPage() {
                             comment: data.comment,
                             examType: data.examType,
                         },
+                    });
+                    setOpenDrawer({ ...openDrawer, update: false });
+                    toast({
+                        className: 'bg-green-100',
+                        description: (
+                            <div className="flex items-center gap-2">
+                                <CheckCircle className="mr-2 h-5 w-5 text-green-500" />
+                                <span>Exam updated successfully!</span>
+                            </div>
+                        ),
                     });
                 }}
             />
@@ -136,6 +134,15 @@ export function ExamDetailPage() {
                             onClick={async () => {
                                 await deleteExam(parseInt(examId));
                                 setOpenDrawer({ ...openDrawer, delete: false });
+                                toast({
+                                    className: 'bg-green-100',
+                                    description: (
+                                        <div className="flex items-center gap-2">
+                                            <CheckCircle className="mr-2 h-5 w-5 text-green-500" />
+                                            <span>Exam deleted successfully!</span>
+                                        </div>
+                                    ),
+                                });
                             }}
                         >
                             Vymazať
@@ -229,19 +236,18 @@ export function ExamDetailPage() {
                                 students: selectedStudentMails,
                             },
                         });
+                        toast({
+                            className: 'bg-green-100',
+                            description: (
+                                <div className="flex items-center gap-2">
+                                    <CheckCircle className="mr-2 h-5 w-5 text-green-500" />
+                                    <span>Students updated successfully!</span>
+                                </div>
+                            ),
+                        });
                     }}
                 />
             </div>
         </>
     );
 }
-
-const data: GetDetailedExamResponse = {
-    id: 1,
-    name: 'Math Final Exam',
-    audience: 'All 10th Graders',
-    date: '2025-01-25',
-    comment: 'This exam is for all 10th graders. Good luck!',
-    examType: 'LETNY',
-    isFinished: false,
-};

@@ -15,9 +15,9 @@ const CategoriesPage = () => {
                     onClick={() => navigate('/isp/requests')}
                 />
                 <CategoryCard
-                    title="SJ"
+                    title="sj"
                     variant="secondary"
-                    description="Skuska z jazyka"
+                    description="skúška z jazyka"
                     logo={<img src={etdImg} alt="TUKE" style={{ maxWidth: '100px' }} />}
                     onClick={() => navigate('/skex/exams')}
                 />

@@ -15,24 +15,28 @@ export const examApi = api.injectEndpoints({
                 method: 'POST',
                 body: createExamCommand,
             }),
+            invalidatesTags: ['Exam'],
         }),
         deleteExam: builder.mutation<void, number>({
             query: (examId) => ({
                 url: `skex/exams/${examId}`,
                 method: 'DELETE',
             }),
+            invalidatesTags: ['Exam'],
         }),
         getExamById: builder.query<GetDetailedExamResponse, number>({
             query: (examId) => ({
                 url: `skex/exams/${examId}`,
                 method: 'GET',
             }),
+            providesTags: ['Exam'],
         }),
         getExams: builder.query<Exam[], void>({
             query: () => ({
                 url: 'skex/exams',
                 method: 'GET',
             }),
+            providesTags: ['Exam'],
         }),
         updateExamDetails: builder.mutation<void, { examId: number; updateExamCommand: UpdateExamDetailsCommand }>({
             query: ({ examId, updateExamCommand }) => ({
@@ -40,6 +44,7 @@ export const examApi = api.injectEndpoints({
                 method: 'PATCH',
                 body: updateExamCommand,
             }),
+            invalidatesTags: ['Exam'],
         }),
         updateExamStudents: builder.mutation<void, { examId: number; updateExamCommand: UpdateExamStudentsCommand }>({
             query: ({ examId, updateExamCommand }) => ({
@@ -47,6 +52,7 @@ export const examApi = api.injectEndpoints({
                 method: 'PATCH',
                 body: updateExamCommand,
             }),
+            invalidatesTags: ['Exam', 'Student'],
         }),
     }),
 });

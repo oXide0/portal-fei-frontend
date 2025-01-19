@@ -1,5 +1,7 @@
 import { ExamCard } from '@/components/examCard';
 import { ExamDrawer } from '@/components/examDrawer';
+import { ResultsUploadDrawer } from '@/components/resultsUploadDrawer';
+import { StudentsUploadDrawer } from '@/components/studentsUploadDrawer';
 import {
     AlertDialog,
     AlertDialogAction,
@@ -23,7 +25,8 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Separator } from '@/components/ui/separator';
-import { StudentsUploadDrawer } from '@/components/studentsUploadDrawer';
+import { call } from '@/helpers';
+import { useToast } from '@/hooks/use-toast';
 import {
     useCreateExamMutation,
     useDeleteExamMutation,
@@ -34,10 +37,9 @@ import { useLoadResultsMutation } from '@/services/skex/result';
 import { useLoadStudentsMutation } from '@/services/skex/student';
 import { Exam } from '@/types/skex/Exam';
 import Fuse, { IFuseOptions } from 'fuse.js';
-import { FileText, Plus, Search, SlidersHorizontal, Upload } from 'lucide-react';
+import { FileText, Plus, Search, SlidersHorizontal, Upload, CheckCircle } from 'lucide-react';
 import { useMemo, useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
-import { ResultsUploadDrawer } from '@/components/resultsUploadDrawer';
 
 interface ExamsFilter {
     searchTerm: string;
@@ -46,14 +48,14 @@ interface ExamsFilter {
 }
 
 export function ExamsPage() {
-    // const { data } = useGetExamsQuery();
-
-    const data = exams;
+    const { data } = useGetExamsQuery();
     const [createExam] = useCreateExamMutation();
     const [updateExam] = useUpdateExamDetailsMutation();
     const [deleteExam] = useDeleteExamMutation();
     const [loadStudents] = useLoadStudentsMutation();
     const [loadResults] = useLoadResultsMutation();
+
+    const { toast } = useToast();
 
     const [filter, setFilter] = useState<ExamsFilter>({
         searchTerm: '',
@@ -92,7 +94,7 @@ export function ExamsPage() {
         });
     }, [data, filter]);
 
-    // if (data == null) return <div className="loader"></div>;
+    if (data == null) return <div className="loader"></div>;
 
     return (
         <div>
@@ -105,7 +107,7 @@ export function ExamsPage() {
                     </BreadcrumbItem>
                     <BreadcrumbSeparator />
                     <BreadcrumbItem>
-                        <BreadcrumbPage>Skusky z jazyka</BreadcrumbPage>
+                        <BreadcrumbPage>Skúšky z jazyka</BreadcrumbPage>
                     </BreadcrumbItem>
                 </BreadcrumbList>
             </Breadcrumb>
@@ -121,12 +123,33 @@ export function ExamsPage() {
                         comment: data.comment,
                         examType: data.examType,
                     });
+                    setOpenDrawer({ ...openDrawer, create: false });
+                    toast({
+                        className: 'bg-green-100',
+                        description: (
+                            <div className="flex items-center gap-2">
+                                <CheckCircle className="mr-2 h-5 w-5 text-green-500" />
+                                <span>Skúška bola úspešne vytvorená</span>
+                            </div>
+                        ),
+                    });
                 }}
             />
             <ExamDrawer
                 isUpdate
                 open={openDrawer.update}
                 setOpen={(v) => setOpenDrawer({ ...openDrawer, update: v })}
+                initialValues={call(() => {
+                    const exam = data.find((exam) => exam.id === examId);
+                    if (exam == null) return undefined;
+                    return {
+                        name: exam.name,
+                        audience: exam.audience,
+                        date: new Date(exam.date),
+                        comment: exam.comment,
+                        examType: exam.examType,
+                    };
+                })}
                 onSubmit={async (data) => {
                     if (examId == null) return;
                     await updateExam({
@@ -134,10 +157,20 @@ export function ExamsPage() {
                         updateExamCommand: {
                             name: data.name,
                             audience: data.audience,
-                            date: data.date?.toISOString(),
+                            date: data.date.toISOString(),
                             comment: data.comment,
                             examType: data.examType,
                         },
+                    });
+                    setOpenDrawer({ ...openDrawer, update: false });
+                    toast({
+                        className: 'bg-green-100',
+                        description: (
+                            <div className="flex items-center gap-2">
+                                <CheckCircle className="mr-2 h-5 w-5 text-green-500" />
+                                <span>Skúška bola úspešne aktualizovaná</span>
+                            </div>
+                        ),
                     });
                 }}
             />
@@ -146,17 +179,27 @@ export function ExamsPage() {
                 onSubmit={async (data) => {
                     const formData = new FormData();
                     formData.append('file', data.file);
-                    // await loadStudents(formData);
+                    await loadStudents(formData);
                 }}
                 open={uploadDrawer.students}
                 setOpen={(v) => setUploadDrawer({ ...uploadDrawer, students: v })}
             />
 
             <ResultsUploadDrawer
-                onSubmit={async (data) => {
+                onSubmit={async ({ examType, file }) => {
                     const formData = new FormData();
-                    formData.append('file', data.file);
-                    // await loadResults({ resultsFile: formData });
+                    formData.append('file', file);
+                    await loadResults({ resultsFile: formData, examType });
+                    toast({
+                        variant: 'default',
+                        className: 'bg-green-100',
+                        description: (
+                            <div className="flex items-center gap-2">
+                                <CheckCircle className="mr-2 h-5 w-5 text-green-500" />
+                                <span>Výsledky boli úspešne nahrané</span>
+                            </div>
+                        ),
+                    });
                 }}
                 open={uploadDrawer.results}
                 setOpen={(v) => setUploadDrawer({ ...uploadDrawer, results: v })}
@@ -167,7 +210,7 @@ export function ExamsPage() {
                 onOpenChange={(value: boolean) => setOpenDrawer({ ...openDrawer, delete: value })}
             >
                 <AlertDialogTrigger asChild>
-                    <Button style={{ display: 'none' }}>Open</Button>
+                    <Button style={{ display: 'none' }}>Otvoriť</Button>
                 </AlertDialogTrigger>
                 <AlertDialogContent>
                     <AlertDialogHeader>
@@ -194,15 +237,17 @@ export function ExamsPage() {
             </AlertDialog>
 
             <div>
-                <h1 className="text-3xl font-bold tracking-tight">Skusky z jazyka</h1>
-                <p className="text-gray-500">Lorem ipsum dolor sit amet, consectetur adipiscing elit.</p>
+                <h1 className="text-3xl font-bold tracking-tight">Skúšky z jazyka</h1>
+                <p className="text-gray-500">
+                    Nahrať zoznam študentov, pridať výsledky a prehliadať si aktuálne alebo minulé skúšky.
+                </p>
             </div>
             <div className="my-4 flex items-end justify-between sm:my-0 sm:items-center">
                 <div className="flex flex-col gap-4 sm:my-4 sm:flex-row">
                     <div className="relative flex items-center">
                         <Search className="absolute left-3 text-muted-foreground" size={16} />
                         <Input
-                            placeholder="Filter exams..."
+                            placeholder="Filtrovať skúšky..."
                             className="h-9 w-40 lg:w-[300px] pl-10"
                             value={filter.searchTerm}
                             onChange={(e) => setFilter({ ...filter, searchTerm: e.target.value })}
@@ -217,15 +262,15 @@ export function ExamsPage() {
                     >
                         <SelectTrigger className="w-36">
                             <SelectValue>
-                                {filter.isFinished === 'all' && 'All Exams'}
-                                {filter.isFinished === 'finished' && 'Finished'}
-                                {filter.isFinished === 'notFinished' && 'Not Finished'}
+                                {filter.isFinished === 'all' && 'Všetky skúšky'}
+                                {filter.isFinished === 'finished' && 'Dokončené'}
+                                {filter.isFinished === 'notFinished' && 'Nedokončené'}
                             </SelectValue>
                         </SelectTrigger>
                         <SelectContent>
-                            <SelectItem value="all">All Exams</SelectItem>
-                            <SelectItem value="finished">Finished</SelectItem>
-                            <SelectItem value="notFinished">Not Finished</SelectItem>
+                            <SelectItem value="all">Všetky skúšky</SelectItem>
+                            <SelectItem value="finished">Dokončené</SelectItem>
+                            <SelectItem value="notFinished">Nedokončené</SelectItem>
                         </SelectContent>
                     </Select>
                     <Select
@@ -239,10 +284,10 @@ export function ExamsPage() {
                         </SelectTrigger>
                         <SelectContent align="end">
                             <SelectItem value="ascending">
-                                <span>Newer First</span>
+                                <span>Novšie</span>
                             </SelectItem>
                             <SelectItem value="descending">
-                                <span>Older First</span>
+                                <span>Staršie</span>
                             </SelectItem>
                         </SelectContent>
                     </Select>
@@ -251,15 +296,15 @@ export function ExamsPage() {
                 <div className="flex flex-col gap-4 sm:my-4 sm:flex-row">
                     <Button variant="outline" onClick={() => setUploadDrawer({ ...uploadDrawer, students: true })}>
                         <Upload size={16} className="mr-2" />
-                        Upload Students
+                        Nahrať študentov
                     </Button>
                     <Button variant="outline" onClick={() => setUploadDrawer({ ...uploadDrawer, results: true })}>
                         <FileText size={16} className="mr-2" />
-                        Upload Results
+                        Nahrať výsledky
                     </Button>
                     <Button onClick={() => setOpenDrawer({ ...openDrawer, create: true })}>
                         <Plus size={16} className="mr-2 mt-0.5" />
-                        Create Exam
+                        Vytvoriť skúšku
                     </Button>
                 </div>
             </div>
@@ -290,36 +335,3 @@ export function ExamsPage() {
         </div>
     );
 }
-
-const exams: Exam[] = [
-    {
-        name: 'Exam 1',
-        audience: 'Students',
-        date: '12.12.2021',
-        examType: 'LETNY',
-        id: 1,
-        isFinished: false,
-        comment:
-            'lorem ipsum dolor sit amet consectetur adipisicing elit. Alias, dolorem. Quibusdam perferendis omnis doloribus voluptatem velit magnam porro dolor. Quam veniam error natus quis modi nihil sint dolorem eligendi magni.',
-    },
-    {
-        name: 'Exam 2',
-        audience: 'Students',
-        date: '12.12.2021',
-        examType: 'ZIMNY',
-        id: 2,
-        isFinished: true,
-        comment:
-            'Lorem ipsum dolor sit amet consectetur adipisicing elit. Alias, dolorem. Quibusdam perferendis omnis doloribus voluptatem velit magnam porro dolor. Quam veniam error natus quis modi nihil sint dolorem eligendi magni.',
-    },
-    {
-        name: 'Exam 3',
-        audience: 'Students',
-        date: '12.12.2021',
-        examType: 'ZIMNY',
-        id: 3,
-        isFinished: false,
-        comment:
-            'Lorem ipsum dolor sit amet consectetur adipisicing elit. Alias, dolorem. Quibusdam perferendis omnis doloribus voluptatem velit magnam porro dolor. Quam veniam error natus quis modi nihil sint dolorem eligendi magni.',
-    },
-];
