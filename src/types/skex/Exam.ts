@@ -1,4 +1,4 @@
-type ExamType = 'LETNY' | 'ZIMNY';
+export type ExamType = 'LETNY' | 'ZIMNY';
 
 export interface CreateExamCommand {
     name: string;

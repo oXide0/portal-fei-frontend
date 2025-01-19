@@ -47,12 +47,8 @@ export function ExamDrawer(props: ExamDrawerProps) {
     const onSubmit = (data: FormValues) => {
         props.onSubmit(data);
         toast({
-            title: 'You submitted the following values:',
-            description: (
-                <pre className="mt-2 w-[340px] rounded-md bg-slate-950 p-4">
-                    <code className="text-white">{JSON.stringify(data, null, 2)}</code>
-                </pre>
-            ),
+            variant: 'default',
+            title: props.isUpdate ? 'Exam updated successfully' : 'Exam created successfully',
         });
     };
 
@@ -60,21 +56,21 @@ export function ExamDrawer(props: ExamDrawerProps) {
         <Sheet open={props.open} onOpenChange={(v) => props.setOpen(v)}>
             <SheetContent className="flex flex-col h-full sm:max-w-lg">
                 <SheetHeader className="text-left">
-                    <SheetTitle>{props.isUpdate ? 'Update Task' : 'Create Task'}</SheetTitle>
+                    <SheetTitle>{props.isUpdate ? 'Update Exam' : 'Create Exam'}</SheetTitle>
                     <SheetDescription>
                         {props.isUpdate
-                            ? 'Update the task by providing necessary info.'
-                            : 'Add a new task by providing necessary info.'}
+                            ? 'Update the exam by providing necessary info.'
+                            : 'Add a new exam by providing necessary info.'}
                     </SheetDescription>
                 </SheetHeader>
 
-                <form id="tasks-form" onSubmit={handleSubmit(onSubmit)} className="space-y-4 flex-auto">
+                <form id="exams-form" onSubmit={handleSubmit(onSubmit)} className="space-y-4 flex-auto">
                     <div className="flex flex-col gap-1.5">
-                        <Label htmlFor="name">Task Name</Label>
+                        <Label htmlFor="name">Exam Name</Label>
                         <Input
                             id="name"
-                            placeholder="Task Name"
-                            {...register('name', { required: 'Task name is required' })}
+                            placeholder="Exam Name"
+                            {...register('name', { required: 'Exam name is required' })}
                         />
                         {errors.name && <p className="text-red-500 text-sm">{errors.name.message}</p>}
                     </div>
@@ -134,7 +130,7 @@ export function ExamDrawer(props: ExamDrawerProps) {
                 </form>
 
                 <SheetFooter className="gap-2 sm:justify-start">
-                    <Button form="tasks-form" type="submit">
+                    <Button form="exams-form" type="submit">
                         Save changes
                     </Button>
                     <SheetClose asChild>

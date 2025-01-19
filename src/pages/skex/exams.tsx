@@ -23,7 +23,15 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Separator } from '@/components/ui/separator';
-import { useCreateExamMutation, useDeleteExamMutation, useUpdateExamDetailsMutation } from '@/services/skex/exam';
+import { UploadDrawer } from '@/components/uploadDrawer';
+import {
+    useCreateExamMutation,
+    useDeleteExamMutation,
+    useGetExamsQuery,
+    useUpdateExamDetailsMutation,
+} from '@/services/skex/exam';
+import { useLoadResultsMutation } from '@/services/skex/result';
+import { useLoadStudentsMutation } from '@/services/skex/student';
 import { Exam } from '@/types/skex/Exam';
 import Fuse, { IFuseOptions } from 'fuse.js';
 import { FileText, Plus, Search, SlidersHorizontal, Upload } from 'lucide-react';
@@ -37,10 +45,14 @@ interface ExamsFilter {
 }
 
 export function ExamsPage() {
+    // const { data } = useGetExamsQuery();
+
     const data = exams;
     const [createExam] = useCreateExamMutation();
     const [updateExam] = useUpdateExamDetailsMutation();
     const [deleteExam] = useDeleteExamMutation();
+    const [loadStudents] = useLoadStudentsMutation();
+    const [loadResults] = useLoadResultsMutation();
 
     const [filter, setFilter] = useState<ExamsFilter>({
         searchTerm: '',
@@ -49,6 +61,7 @@ export function ExamsPage() {
     });
 
     const [openDrawer, setOpenDrawer] = useState({ create: false, update: false, delete: false });
+    const [uploadDrawer, setUploadDrawer] = useState({ students: false, results: false });
     const [examId, setExamId] = useState<number | null>(null);
     const navigate = useNavigate();
 
@@ -57,7 +70,7 @@ export function ExamsPage() {
         threshold: 0.3,
     };
 
-    const fuse = new Fuse(data, fuseOptions);
+    const fuse = new Fuse(data ?? [], fuseOptions);
 
     const filteredData = useMemo(() => {
         if (data == null) return [];
@@ -126,6 +139,30 @@ export function ExamsPage() {
                         },
                     });
                 }}
+            />
+
+            <UploadDrawer
+                title="Upload Students"
+                description="Upload a CSV file containing student data."
+                onSubmit={async (data) => {
+                    const formData = new FormData();
+                    formData.append('file', data.file);
+                    // await loadStudents(formData);
+                }}
+                open={uploadDrawer.students}
+                setOpen={(v) => setUploadDrawer({ ...uploadDrawer, students: v })}
+            />
+
+            <UploadDrawer
+                title="Upload Results"
+                description="Upload a CSV file containing exam results."
+                onSubmit={async (data) => {
+                    const formData = new FormData();
+                    formData.append('file', data.file);
+                    // await loadResults({ resultsFile: formData });
+                }}
+                open={uploadDrawer.results}
+                setOpen={(v) => setUploadDrawer({ ...uploadDrawer, results: v })}
             />
 
             <AlertDialog
@@ -215,11 +252,11 @@ export function ExamsPage() {
                 </div>
 
                 <div className="flex flex-col gap-4 sm:my-4 sm:flex-row">
-                    <Button variant="outline">
+                    <Button variant="outline" onClick={() => setUploadDrawer({ ...uploadDrawer, students: true })}>
                         <Upload size={16} className="mr-2" />
                         Upload Students
                     </Button>
-                    <Button variant="outline">
+                    <Button variant="outline" onClick={() => setUploadDrawer({ ...uploadDrawer, results: true })}>
                         <FileText size={16} className="mr-2" />
                         Upload Results
                     </Button>
