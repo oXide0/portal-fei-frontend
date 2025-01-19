@@ -23,7 +23,7 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Separator } from '@/components/ui/separator';
-import { UploadDrawer } from '@/components/uploadDrawer';
+import { StudentsUploadDrawer } from '@/components/studentsUploadDrawer';
 import {
     useCreateExamMutation,
     useDeleteExamMutation,
@@ -37,6 +37,7 @@ import Fuse, { IFuseOptions } from 'fuse.js';
 import { FileText, Plus, Search, SlidersHorizontal, Upload } from 'lucide-react';
 import { useMemo, useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
+import { ResultsUploadDrawer } from '@/components/resultsUploadDrawer';
 
 interface ExamsFilter {
     searchTerm: string;
@@ -141,9 +142,7 @@ export function ExamsPage() {
                 }}
             />
 
-            <UploadDrawer
-                title="Upload Students"
-                description="Upload a CSV file containing student data."
+            <StudentsUploadDrawer
                 onSubmit={async (data) => {
                     const formData = new FormData();
                     formData.append('file', data.file);
@@ -153,9 +152,7 @@ export function ExamsPage() {
                 setOpen={(v) => setUploadDrawer({ ...uploadDrawer, students: v })}
             />
 
-            <UploadDrawer
-                title="Upload Results"
-                description="Upload a CSV file containing exam results."
+            <ResultsUploadDrawer
                 onSubmit={async (data) => {
                     const formData = new FormData();
                     formData.append('file', data.file);
