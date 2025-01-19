@@ -1,7 +1,7 @@
 import { createBrowserRouter } from 'react-router-dom';
 import { Layout } from '../components/providers/layout';
 import { CategoriesPage } from '../pages/categories';
-import { ForbiddenPage } from '../pages/forbiddenPage';
+import { ForbiddenPage } from '../pages/forbidden';
 import { ispRoutes } from './ispRoutes';
 import { skexRoutes } from './skexRoutes';
 

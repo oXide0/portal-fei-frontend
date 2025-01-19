@@ -6,7 +6,7 @@ export const subjectApi = api.injectEndpoints({
         evaluateSubject: builder.mutation<{ subjectStatus: SubjectStatus }, EvaluateSubject>({
             query: ({ subjectId, evaluationStatus }) => ({
                 url: `isp/subjects/${subjectId}/evaluate`,
-                method: 'PATCH',
+                method: 'POST',
                 body: { evaluationStatus },
             }),
             invalidatesTags: ['Subject'],

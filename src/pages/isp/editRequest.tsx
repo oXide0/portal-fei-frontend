@@ -45,12 +45,6 @@ const EditRequestPage = () => {
         navigate('/isp/requests');
     };
 
-    useEffect(() => {
-        if (data?.requestStatus !== 'PENDING') {
-            navigate('/forbidden');
-        }
-    }, []);
-
     if (!data) return <div className="loader"></div>;
     return (
         <div>

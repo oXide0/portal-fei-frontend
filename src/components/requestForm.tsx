@@ -1,11 +1,11 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { Controller, SubmitHandler, useForm } from 'react-hook-form';
 import { Attachment } from './attachment';
 import { Button } from './ui/button';
 import { Input } from './ui/input';
 import { Select, SelectContent, SelectGroup, SelectItem, SelectLabel, SelectTrigger, SelectValue } from './ui/select';
 import { Textarea } from './ui/textarea';
-import { Loader2 } from 'lucide-react';
+import { DownloadIcon, Loader2, UploadIcon } from 'lucide-react';
 import { Label } from './ui/label';
 
 interface RequestFormProps {
@@ -29,6 +29,8 @@ export interface IFormInput {
 
 export function RequestForm({ title, initialValues, isLoading, onSubmit }: RequestFormProps) {
     const [attachment, setAttachment] = useState<File | null>(null);
+    const fileInputRef = useRef<HTMLInputElement | null>(null);
+
     const {
         register,
         handleSubmit,
@@ -207,24 +209,73 @@ export function RequestForm({ title, initialValues, isLoading, onSubmit }: Reque
                     />
                     {errors.reason && <p className="text-red-500 text-sm">{errors.reason.message}</p>}
                 </div>
-                <div className="flex flex-col gap-1.5">
-                    <Label>Príloha</Label>
-                    {initialValues?.attachmentUrl && (
-                        <Attachment label="Stiahnuť existujúcu prílohu" url={initialValues.attachmentUrl} />
+
+                <div className="flex flex-col gap-3">
+                    <Label htmlFor="attachment-input">Príloha</Label>
+
+                    {initialValues?.attachmentUrl && !attachment ? (
+                        <div className="flex items-center justify-between p-2 border rounded-md bg-muted">
+                            <span className="text-sm text-muted-foreground">Stiahnuť existujúcu prílohu</span>
+                            <Button asChild variant="ghost" size="sm" className="flex items-center gap-1 text-primary">
+                                <a href={initialValues.attachmentUrl} target="_blank" rel="noopener noreferrer">
+                                    <DownloadIcon className="w-4 h-4" />
+                                    Stiahnuť
+                                </a>
+                            </Button>
+                        </div>
+                    ) : (
+                        <div className="flex flex-col items-center justify-center gap-3 p-6 border-2 border-dashed border-gray-300 rounded-md bg-muted">
+                            {attachment ? (
+                                <div className="flex flex-col items-center gap-2">
+                                    <p className="text-sm font-medium text-primary">{attachment.name}</p>
+                                    <Button
+                                        variant="outline"
+                                        size="sm"
+                                        onClick={() => {
+                                            setAttachment(null);
+                                            if (fileInputRef.current) {
+                                                fileInputRef.current.value = '';
+                                            }
+                                        }}
+                                    >
+                                        Odstrániť súbor
+                                    </Button>
+                                </div>
+                            ) : (
+                                <>
+                                    <UploadIcon className="w-6 h-6 text-gray-500" />
+                                    <p className="text-sm text-muted-foreground">
+                                        Nahrajte súbor kliknutím na tlačidlo nižšie
+                                    </p>
+                                    <Label
+                                        htmlFor="attachment-input"
+                                        className="flex items-center gap-1 cursor-pointer border border-neutral-200 bg-white hover:bg-neutral-100 hover:text-neutral-900 dark:border-neutral-800 dark:bg-neutral-950 dark:hover:bg-neutral-800 dark:hover:text-neutral-50 h-9 rounded-md px-3"
+                                    >
+                                        <UploadIcon className="w-4 h-4 mr-2" />
+                                        Nahrať súbor
+                                    </Label>
+                                </>
+                            )}
+                        </div>
                     )}
+
                     <Input
+                        ref={fileInputRef}
+                        id="attachment-input"
                         type="file"
                         accept=".pdf, .doc, .docx, .txt"
-                        className="w-full px-3 py-2 border border-gray-300 rounded"
+                        className="hidden"
                         onChange={(event) => {
                             const files = event.target.files;
                             if (files && files.length > 0) {
-                                setAttachment(files[0]);
+                                const file = files[0];
+                                setAttachment(file);
                             }
                         }}
                     />
                 </div>
                 {errors.attachment && <p className="text-red-500 text-sm">{errors.attachment.message}</p>}
+
                 <div>
                     <Button type="submit" className="w-full" disabled={isLoading}>
                         {isLoading ? <Loader2 className="h-5 w-5 animate-spin" /> : 'Odoslať'}

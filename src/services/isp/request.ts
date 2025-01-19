@@ -23,7 +23,7 @@ export const requestApi = api.injectEndpoints({
         }),
         createRequest: builder.mutation<CreateRequestResponse, FormData>({
             query: (formData) => ({
-                url: 'requests',
+                url: 'isp/requests',
                 method: 'POST',
                 body: formData,
             }),
@@ -32,7 +32,7 @@ export const requestApi = api.injectEndpoints({
         updateRequest: builder.mutation<UpdateRequestResponse, { data: FormData; requestId: string }>({
             query: ({ data, requestId }) => ({
                 url: `isp/requests/${requestId}`,
-                method: 'POST',
+                method: 'PATCH',
                 body: data,
             }),
             invalidatesTags: ['Request'],

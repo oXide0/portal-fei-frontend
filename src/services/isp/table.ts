@@ -10,7 +10,7 @@ export const tableApi = api.injectEndpoints({
         evaluateTable: builder.mutation<{ tableStatus: TableStatus }, EvaluateTableBody>({
             query: ({ tableId, evaluationStatus }) => ({
                 url: `isp/tables/${tableId}/evaluate`,
-                method: 'PATCH',
+                method: 'POST',
                 body: { evaluationStatus },
             }),
             invalidatesTags: ['Table'],
