@@ -29,21 +29,27 @@ import {
     useUpdateExamDetailsMutation,
     useUpdateExamStudentsMutation,
 } from '@/services/skex/exam';
-import { useGetFilteredStudentsQuery } from '@/services/skex/student';
+import { useGetStudentsQuery } from '@/services/skex/student';
+import { format } from 'date-fns';
 import { Calendar, CheckCircle, Edit, FileText, Trash, User } from 'lucide-react';
 import { useState } from 'react';
 import { Link } from 'react-router-dom';
 
+interface Filter {
+    name: string | undefined;
+    surname: string | undefined;
+    email: string | undefined;
+}
+
 export function ExamDetailPage() {
     const examId = useRequiredParam('id');
     const [openDrawer, setOpenDrawer] = useState({ update: false, delete: false });
-    const [filter, setFilter] = useState({ name: '', surname: '', email: '' });
+    const [filter, setFilter] = useState<Filter>({ name: undefined, surname: undefined, email: undefined });
     const { toast } = useToast();
 
     const { data: exam } = useGetExamByIdQuery(parseInt(examId));
-    const { data: students } = useGetFilteredStudentsQuery({
-        // TODO: Fix 404 error
-        examId: parseInt(examId),
+    const { data: students } = useGetStudentsQuery({
+        exam_id: parseInt(examId),
         email: filter.email,
         name: filter.name,
         surname: filter.surname,
@@ -67,12 +73,12 @@ export function ExamDetailPage() {
                     <BreadcrumbSeparator />
                     <BreadcrumbItem>
                         <BreadcrumbLink asChild>
-                            <Link to="/skex/exams">Skusky z jazyka</Link>
+                            <Link to="/skex/exams">Skúšky z jazyka</Link>
                         </BreadcrumbLink>
                     </BreadcrumbItem>
                     <BreadcrumbSeparator />
                     <BreadcrumbItem>
-                        <BreadcrumbPage>Detail skusky</BreadcrumbPage>
+                        <BreadcrumbPage>Detail skúšky</BreadcrumbPage>
                     </BreadcrumbItem>
                 </BreadcrumbList>
             </Breadcrumb>
@@ -105,7 +111,7 @@ export function ExamDetailPage() {
                         description: (
                             <div className="flex items-center gap-2">
                                 <CheckCircle className="mr-2 h-5 w-5 text-green-500" />
-                                <span>Exam updated successfully!</span>
+                                <span>Skúška bola úspešne aktualizovaná!</span>
                             </div>
                         ),
                     });
@@ -117,13 +123,13 @@ export function ExamDetailPage() {
                 onOpenChange={(value: boolean) => setOpenDrawer({ ...openDrawer, delete: value })}
             >
                 <AlertDialogTrigger asChild>
-                    <Button style={{ display: 'none' }}>Open</Button>
+                    <Button style={{ display: 'none' }}>Otvoriť</Button>
                 </AlertDialogTrigger>
                 <AlertDialogContent>
                     <AlertDialogHeader>
                         <AlertDialogTitle>Ste si úplne istí?</AlertDialogTitle>
                         <AlertDialogDescription>
-                            Táto akcia je nevratná a všetky dáta budú stratené.
+                            Táto akcia je nevratná a všetky údaje budú stratené.
                         </AlertDialogDescription>
                     </AlertDialogHeader>
                     <AlertDialogFooter>
@@ -139,7 +145,7 @@ export function ExamDetailPage() {
                                     description: (
                                         <div className="flex items-center gap-2">
                                             <CheckCircle className="mr-2 h-5 w-5 text-green-500" />
-                                            <span>Exam deleted successfully!</span>
+                                            <span>Skúška bola úspešne vymazaná!</span>
                                         </div>
                                     ),
                                 });
@@ -152,15 +158,15 @@ export function ExamDetailPage() {
             </AlertDialog>
 
             <div className="flex justify-between items-center py-6">
-                <h1 className="text-3xl font-bold tracking-tight">Math Final Exam</h1>
+                <h1 className="text-3xl font-bold tracking-tight">{exam.name}</h1>
                 <div className="flex gap-4">
                     <Button variant="secondary" onClick={() => setOpenDrawer({ ...openDrawer, update: true })}>
                         <Edit className="mr-2 h-4 w-4" />
-                        Edit Exam
+                        Upraviť skúšku
                     </Button>
                     <Button onClick={() => setOpenDrawer({ ...openDrawer, delete: true })}>
                         <Trash className="mr-2 h-4 w-4" />
-                        Delete Exam
+                        Vymazať skúšku
                     </Button>
                 </div>
             </div>
@@ -168,65 +174,65 @@ export function ExamDetailPage() {
             <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-4 py-6">
                 <Card>
                     <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-                        <CardTitle className="text-sm font-medium">Audience</CardTitle>
+                        <CardTitle className="text-sm font-medium">Miestnosť</CardTitle>
                         <User className="h-6 w-6 text-muted-foreground" />
                     </CardHeader>
                     <CardContent>
-                        <div className="text-2xl font-bold">All 10th Graders</div>
-                        <p className="text-xs text-muted-foreground">Target Group for the Exam</p>
+                        <div className="text-2xl font-bold">{exam.audience}</div>
+                        <p className="text-xs text-muted-foreground">Cieľová miestnosť pre skúšku</p>
                     </CardContent>
                 </Card>
 
                 <Card>
                     <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-                        <CardTitle className="text-sm font-medium">Exam Date</CardTitle>
+                        <CardTitle className="text-sm font-medium">Dátum skúšky</CardTitle>
                         <Calendar className="h-6 w-6 text-muted-foreground" />
                     </CardHeader>
                     <CardContent>
-                        <div className="text-2xl font-bold">January 25, 2025</div>
-                        <p className="text-xs text-muted-foreground">Scheduled Exam Date</p>
+                        <div className="text-2xl font-bold">{format(new Date(exam.date), 'MMMM dd, yyyy')}</div>
+                        <p className="text-xs text-muted-foreground">Naplánovaný dátum skúšky</p>
                     </CardContent>
                 </Card>
 
                 <Card>
                     <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-                        <CardTitle className="text-sm font-medium">Exam Type</CardTitle>
+                        <CardTitle className="text-sm font-medium">Typ skúšky</CardTitle>
                         <FileText className="h-6 w-6 text-muted-foreground" />
                     </CardHeader>
                     <CardContent>
-                        <div className="text-2xl font-bold">Written Exam</div>
-                        <p className="text-xs text-muted-foreground">Exam Format</p>
+                        <div className="text-2xl font-bold">{exam.examType}</div>
+                        <p className="text-xs text-muted-foreground">Typ skúšky: letný alebo zimný semester</p>
                     </CardContent>
                 </Card>
 
                 <Card>
                     <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-                        <CardTitle className="text-sm font-medium">Finished</CardTitle>
+                        <CardTitle className="text-sm font-medium">Dokončené</CardTitle>
                         <CheckCircle className="h-6 w-6 text-muted-foreground" />
                     </CardHeader>
                     <CardContent>
-                        <div className="text-2xl font-bold text-red-500">No</div>
-                        <p className="text-xs text-muted-foreground">Status: Not completed</p>
+                        <div className="text-2xl font-bold text-red-500">{exam.isFinished ? 'Áno' : 'Nie'}</div>
+                        <p className="text-xs text-muted-foreground">Stav: Dokončené alebo Nie</p>
                     </CardContent>
                 </Card>
             </div>
 
             <Card>
                 <CardHeader className="pb-2">
-                    <CardTitle className="text-sm font-medium">Comment</CardTitle>
+                    <CardTitle className="text-sm font-medium">Komentár</CardTitle>
                 </CardHeader>
                 <CardContent>
                     <div className="border p-4 rounded-lg bg-muted-foreground text-sm text-gray-800">
-                        <p>This exam is for all 10th graders. Good luck!</p>
+                        <p>{exam.comment}</p>
                     </div>
                 </CardContent>
             </Card>
 
             <div className="pt-3">
-                <h2 className="text-2xl font-semibold py-4">Students</h2>
+                <h2 className="text-2xl font-semibold py-4">Študenti</h2>
                 <StudentsTable
                     data={students}
-                    values={filter}
+                    values={{ name: filter.name ?? '', surname: filter.surname ?? '', email: filter.email ?? '' }}
                     onChange={setFilter}
                     onReset={() => setFilter({ name: '', surname: '', email: '' })}
                     onSubmit={async (selectedStudentMails) => {
@@ -241,7 +247,7 @@ export function ExamDetailPage() {
                             description: (
                                 <div className="flex items-center gap-2">
                                     <CheckCircle className="mr-2 h-5 w-5 text-green-500" />
-                                    <span>Students updated successfully!</span>
+                                    <span>Študenti boli úspešne aktualizovaní!</span>
                                 </div>
                             ),
                         });

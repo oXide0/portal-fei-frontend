@@ -9,9 +9,8 @@ import {
     SheetHeader,
     SheetTitle,
 } from '@/components/ui/sheet';
-import { toast } from '@/hooks/use-toast';
 import { UploadIcon } from 'lucide-react';
-import { useRef, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { Label } from './ui/label';
 
@@ -30,21 +29,24 @@ export function StudentsUploadDrawer(props: StudentsUploadDrawerProps) {
     const fileInputRef = useRef<HTMLInputElement | null>(null);
     const {
         handleSubmit,
+        setValue,
         formState: { errors },
     } = useForm<FormValues>();
 
     const onSubmit = (data: FormValues) => {
         props.onSubmit(data);
-        toast({
-            title: 'Súbor bol úspešne nahraný',
-        });
     };
+
+    useEffect(() => {
+        if (file == null) return;
+        setValue('file', file);
+    }, [file]);
 
     return (
         <Sheet open={props.open} onOpenChange={(v) => props.setOpen(v)}>
             <SheetContent className="flex flex-col h-full sm:max-w-lg">
                 <SheetHeader className="text-left">
-                    <SheetTitle>Upload Študentov</SheetTitle>
+                    <SheetTitle>Nahrať študentov</SheetTitle>
                     <SheetDescription>Nahrajte CSV súbor obsahujúci údaje o študentoch.</SheetDescription>
                 </SheetHeader>
 

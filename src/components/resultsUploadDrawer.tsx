@@ -45,7 +45,7 @@ export function ResultsUploadDrawer(props: ResultsUploadDrawerProps) {
             <SheetContent className="flex flex-col h-full sm:max-w-lg">
                 <SheetHeader className="text-left">
                     <SheetTitle>Nahrať výsledky</SheetTitle>
-                    <SheetDescription>Nahrajte CSV súbor obsahujúci údaje o študentoch.</SheetDescription>
+                    <SheetDescription>Nahrajte CSV súbor obsahujúci výsledky skúšky.</SheetDescription>
                 </SheetHeader>
 
                 <form id="tasks-form" onSubmit={handleSubmit(onSubmit)} className="space-y-4 flex-auto">

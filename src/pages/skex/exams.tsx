@@ -37,7 +37,7 @@ import { useLoadResultsMutation } from '@/services/skex/result';
 import { useLoadStudentsMutation } from '@/services/skex/student';
 import { Exam } from '@/types/skex/Exam';
 import Fuse, { IFuseOptions } from 'fuse.js';
-import { FileText, Plus, Search, SlidersHorizontal, Upload, CheckCircle } from 'lucide-react';
+import { FileText, Plus, Search, SlidersHorizontal, Upload, CheckCircle, TriangleAlertIcon } from 'lucide-react';
 import { useMemo, useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 
@@ -50,7 +50,7 @@ interface ExamsFilter {
 export function ExamsPage() {
     const { data } = useGetExamsQuery();
     const [createExam] = useCreateExamMutation();
-    const [updateExam] = useUpdateExamDetailsMutation();
+    const [updateExam, { isSuccess: isUpadateSuccess }] = useUpdateExamDetailsMutation();
     const [deleteExam] = useDeleteExamMutation();
     const [loadStudents] = useLoadStudentsMutation();
     const [loadResults] = useLoadResultsMutation();
@@ -163,23 +163,50 @@ export function ExamsPage() {
                         },
                     });
                     setOpenDrawer({ ...openDrawer, update: false });
-                    toast({
-                        className: 'bg-green-100',
-                        description: (
-                            <div className="flex items-center gap-2">
-                                <CheckCircle className="mr-2 h-5 w-5 text-green-500" />
-                                <span>Skúška bola úspešne aktualizovaná</span>
-                            </div>
-                        ),
-                    });
+                    if (isUpadateSuccess) {
+                        toast({
+                            className: 'bg-green-100',
+                            description: (
+                                <div className="flex items-center gap-2">
+                                    <CheckCircle className="mr-2 h-5 w-5 text-green-500" />
+                                    <span>Skúška bola úspešne aktualizovaná</span>
+                                </div>
+                            ),
+                        });
+                    }
                 }}
             />
 
             <StudentsUploadDrawer
                 onSubmit={async (data) => {
                     const formData = new FormData();
-                    formData.append('file', data.file);
-                    await loadStudents(formData);
+                    formData.append('studentsFile', data.file);
+                    try {
+                        await loadStudents(formData).unwrap();
+                        toast({
+                            variant: 'default',
+                            className: 'bg-green-100',
+                            description: (
+                                <div className="flex items-center gap-2">
+                                    <CheckCircle className="mr-2 h-5 w-5 text-green-500" />
+                                    <span>Študenti boli úspešne nahraní</span>
+                                </div>
+                            ),
+                        });
+                    } catch (e) {
+                        toast({
+                            variant: 'default',
+                            className: 'bg-red-100',
+                            description: (
+                                <div className="flex items-center gap-2">
+                                    <TriangleAlertIcon className="mr-2 h-5 w-5 text-red-500" />
+                                    <span>Chyba pri nahrávaní študentov</span>
+                                </div>
+                            ),
+                        });
+                    }
+
+                    setUploadDrawer({ ...uploadDrawer, students: false });
                 }}
                 open={uploadDrawer.students}
                 setOpen={(v) => setUploadDrawer({ ...uploadDrawer, students: v })}
@@ -188,7 +215,7 @@ export function ExamsPage() {
             <ResultsUploadDrawer
                 onSubmit={async ({ examType, file }) => {
                     const formData = new FormData();
-                    formData.append('file', file);
+                    formData.append('resultsFile', file);
                     await loadResults({ resultsFile: formData, examType });
                     toast({
                         variant: 'default',
@@ -200,6 +227,7 @@ export function ExamsPage() {
                             </div>
                         ),
                     });
+                    setUploadDrawer({ ...uploadDrawer, results: false });
                 }}
                 open={uploadDrawer.results}
                 setOpen={(v) => setUploadDrawer({ ...uploadDrawer, results: v })}

@@ -20,17 +20,20 @@ interface StudentsTableProps {
 export function StudentsTable(props: StudentsTableProps) {
     const [currentPage, setCurrentPage] = useState(0);
     const [rowSelection, setRowSelection] = useState<Record<string, boolean>>({});
-    const totalPages = Math.ceil(props.data.length / 10); // 10 is the number of rows per page
+    const rowsPerPage = 10;
+    const totalPages = Math.ceil(props.data.length / rowsPerPage); // 10 is the number of rows per page
     const selectedRowsCount = Object.values(rowSelection).filter(Boolean).length;
 
     const isAllSelected =
         Object.values(rowSelection).filter((value) => value).length === props.data.length && props.data.length > 0;
 
+    const paginatedData = props.data.slice(currentPage * rowsPerPage, currentPage * rowsPerPage + rowsPerPage);
+
     useEffect(() => {
         setRowSelection(
             props.data.reduce(
                 (acc, student) => {
-                    acc[student.email] = student.isAssigned;
+                    acc[student.email] = student.is_assigned;
                     return acc;
                 },
                 {} as Record<string, boolean>,
@@ -77,8 +80,8 @@ export function StudentsTable(props: StudentsTableProps) {
                         </TableRow>
                     </TableHeader>
                     <TableBody>
-                        {props.data.length ? (
-                            props.data.map((student) => (
+                        {paginatedData.length ? (
+                            paginatedData.map((student) => (
                                 <TableRow
                                     key={student.email}
                                     className={rowSelection[student.email] ? 'bg-gray-100' : ''}
@@ -96,20 +99,10 @@ export function StudentsTable(props: StudentsTableProps) {
                                         />
                                     </TableCell>
                                     <TableCell>
-                                        <div className="flex space-x-2">
-                                            <span className="truncate font-medium">
-                                                {student.name} {student.surname}
-                                            </span>
-                                        </div>
+                                        {student.name} {student.surname}
                                     </TableCell>
-                                    <TableCell>
-                                        <div className="w-[80px] truncate">{student.email}</div>
-                                    </TableCell>
-                                    <TableCell>
-                                        <div className="flex space-x-2">
-                                            <span className="truncate font-medium">{student.studyProgram}</span>
-                                        </div>
-                                    </TableCell>
+                                    <TableCell>{student.email}</TableCell>
+                                    <TableCell>{student.studyProgram}</TableCell>
                                 </TableRow>
                             ))
                         ) : (

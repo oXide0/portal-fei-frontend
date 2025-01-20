@@ -1,4 +1,4 @@
-import { GetStudentParams, Student } from '@/types/skex/Student';
+import { GetStudentExamsResponse, GetStudentParams, Student } from '@/types/skex/Student';
 import { api } from '../api';
 
 export const studentApi = api.injectEndpoints({
@@ -11,10 +11,17 @@ export const studentApi = api.injectEndpoints({
             }),
             invalidatesTags: ['Student'],
         }),
-        getFilteredStudents: builder.query<Student[], GetStudentParams>({
-            query: ({ name, surname, email, examId }) => ({
-                url: `skex/exams/${examId}/students/filter`,
-                params: { name, surname, email },
+        getStudents: builder.query<Array<Student>, GetStudentParams>({
+            query: ({ name, surname, email, exam_id }) => ({
+                url: `skex/students`,
+                params: { name, surname, email, exam_id },
+            }),
+            providesTags: ['Student'],
+        }),
+        getStudentExams: builder.query<Array<GetStudentExamsResponse>, void>({
+            query: () => ({
+                url: `skex/students/exams`,
+                method: 'GET',
             }),
             providesTags: ['Student'],
         }),
@@ -28,4 +35,5 @@ export const studentApi = api.injectEndpoints({
     }),
 });
 
-export const { useLoadStudentsMutation, useGetFilteredStudentsQuery, useDeleteStudentsMutation } = studentApi;
+export const { useLoadStudentsMutation, useGetStudentExamsQuery, useGetStudentsQuery, useDeleteStudentsMutation } =
+    studentApi;
