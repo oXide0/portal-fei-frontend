@@ -57,6 +57,7 @@ export function ExamDrawer(props: ExamDrawerProps) {
 
     const onSubmit = (data: FormValues) => {
         props.onSubmit(data);
+        setSelectedDate(undefined);
         reset();
     };
 

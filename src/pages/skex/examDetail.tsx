@@ -21,7 +21,7 @@ import {
 } from '@/components/ui/breadcrumb';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { useToast } from '@/hooks/use-toast';
+import { useMutationWithToast } from '@/hooks/useMutationWithToast';
 import { useRequiredParam } from '@/hooks/useRequiredParam';
 import {
     useDeleteExamMutation,
@@ -31,9 +31,10 @@ import {
 } from '@/services/skex/exam';
 import { useGetStudentsQuery } from '@/services/skex/student';
 import { format } from 'date-fns';
+import { sk } from 'date-fns/locale';
 import { Calendar, CheckCircle, Edit, FileText, Trash, User } from 'lucide-react';
 import { useState } from 'react';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 
 interface Filter {
     name: string | undefined;
@@ -45,7 +46,6 @@ export function ExamDetailPage() {
     const examId = useRequiredParam('id');
     const [openDrawer, setOpenDrawer] = useState({ update: false, delete: false });
     const [filter, setFilter] = useState<Filter>({ name: undefined, surname: undefined, email: undefined });
-    const { toast } = useToast();
 
     const { data: exam } = useGetExamByIdQuery(parseInt(examId));
     const { data: students } = useGetStudentsQuery({
@@ -56,8 +56,13 @@ export function ExamDetailPage() {
     });
 
     const [updateExamDetails] = useUpdateExamDetailsMutation();
+    const updateExamDetailsWithToast = useMutationWithToast(updateExamDetails);
     const [updateExamStudents] = useUpdateExamStudentsMutation();
+    const updateExamStudentsWithToast = useMutationWithToast(updateExamStudents);
     const [deleteExam] = useDeleteExamMutation();
+    const deleteExamWithToast = useMutationWithToast(deleteExam);
+
+    const navigate = useNavigate();
 
     if (exam == null || students == null) return <div className="loader"></div>;
 
@@ -95,26 +100,23 @@ export function ExamDetailPage() {
                     examType: exam.examType,
                 }}
                 onSubmit={async (data) => {
-                    await updateExamDetails({
-                        examId: parseInt(examId),
-                        updateExamCommand: {
-                            name: data.name,
-                            audience: data.audience,
-                            date: data.date.toISOString(),
-                            comment: data.comment,
-                            examType: data.examType,
+                    await updateExamDetailsWithToast(
+                        {
+                            examId: parseInt(examId),
+                            updateExamCommand: {
+                                name: data.name,
+                                audience: data.audience,
+                                date: data.date.toISOString(),
+                                comment: data.comment,
+                                examType: data.examType,
+                            },
                         },
-                    });
+                        {
+                            successMessage: 'Skúška bola úspešne aktualizovaná!',
+                            errorMessage: 'Nepodarilo sa aktualizovať skúšku.',
+                        },
+                    );
                     setOpenDrawer({ ...openDrawer, update: false });
-                    toast({
-                        className: 'bg-green-100',
-                        description: (
-                            <div className="flex items-center gap-2">
-                                <CheckCircle className="mr-2 h-5 w-5 text-green-500" />
-                                <span>Skúška bola úspešne aktualizovaná!</span>
-                            </div>
-                        ),
-                    });
                 }}
             />
 
@@ -138,17 +140,12 @@ export function ExamDetailPage() {
                         </AlertDialogCancel>
                         <AlertDialogAction
                             onClick={async () => {
-                                await deleteExam(parseInt(examId));
-                                setOpenDrawer({ ...openDrawer, delete: false });
-                                toast({
-                                    className: 'bg-green-100',
-                                    description: (
-                                        <div className="flex items-center gap-2">
-                                            <CheckCircle className="mr-2 h-5 w-5 text-green-500" />
-                                            <span>Skúška bola úspešne vymazaná!</span>
-                                        </div>
-                                    ),
+                                await deleteExamWithToast(parseInt(examId), {
+                                    successMessage: 'Skúška bola úspešne vymazaná!',
+                                    errorMessage: 'Nepodarilo sa vymazať skúšku.',
                                 });
+                                setOpenDrawer({ ...openDrawer, delete: false });
+                                navigate('/skex/exams');
                             }}
                         >
                             Vymazať
@@ -189,7 +186,9 @@ export function ExamDetailPage() {
                         <Calendar className="h-6 w-6 text-muted-foreground" />
                     </CardHeader>
                     <CardContent>
-                        <div className="text-2xl font-bold">{format(new Date(exam.date), 'MMMM dd, yyyy')}</div>
+                        <div className="text-2xl font-bold">
+                            {format(new Date(exam.date), 'dd. MMMM yyyy, HH:mm', { locale: sk })}
+                        </div>
                         <p className="text-xs text-muted-foreground">Naplánovaný dátum skúšky</p>
                     </CardContent>
                 </Card>
@@ -236,21 +235,18 @@ export function ExamDetailPage() {
                     onChange={setFilter}
                     onReset={() => setFilter({ name: '', surname: '', email: '' })}
                     onSubmit={async (selectedStudentMails) => {
-                        await updateExamStudents({
-                            examId: parseInt(examId),
-                            updateExamCommand: {
-                                students: selectedStudentMails,
+                        await updateExamStudentsWithToast(
+                            {
+                                examId: parseInt(examId),
+                                updateExamCommand: {
+                                    students: selectedStudentMails,
+                                },
                             },
-                        });
-                        toast({
-                            className: 'bg-green-100',
-                            description: (
-                                <div className="flex items-center gap-2">
-                                    <CheckCircle className="mr-2 h-5 w-5 text-green-500" />
-                                    <span>Študenti boli úspešne aktualizovaní!</span>
-                                </div>
-                            ),
-                        });
+                            {
+                                successMessage: 'Študenti boli úspešne priradení na skúšku!',
+                                errorMessage: 'Nepodarilo sa priradiť študentov na skúšku.',
+                            },
+                        );
                     }}
                 />
             </div>

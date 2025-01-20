@@ -39,7 +39,7 @@ export const DateTimePicker = forwardRef<HTMLButtonElement, DateTimePickerProps>
                         className={cn('w-full justify-start text-left font-normal', !date && 'text-muted-foreground')}
                     >
                         <CalendarIcon className="mr-2 h-4 w-4" />
-                        {date ? format(date, 'MM.dd.yyyy hh:mm') : <span>MM.DD.YYYY hh:mm</span>}
+                        {date ? format(date, 'dd.MM.yyyy HH:mm') : <span>DD.MM.YYYY HH:mm</span>}
                     </Button>
                 </PopoverTrigger>
                 <PopoverContent className="w-auto p-0 pointer-events-auto">

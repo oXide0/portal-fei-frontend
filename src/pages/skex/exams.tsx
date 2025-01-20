@@ -26,7 +26,7 @@ import { Input } from '@/components/ui/input';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Separator } from '@/components/ui/separator';
 import { call } from '@/helpers';
-import { useToast } from '@/hooks/use-toast';
+import { useMutationWithToast } from '@/hooks/useMutationWithToast';
 import {
     useCreateExamMutation,
     useDeleteExamMutation,
@@ -37,7 +37,7 @@ import { useLoadResultsMutation } from '@/services/skex/result';
 import { useLoadStudentsMutation } from '@/services/skex/student';
 import { Exam } from '@/types/skex/Exam';
 import Fuse, { IFuseOptions } from 'fuse.js';
-import { FileText, Plus, Search, SlidersHorizontal, Upload, CheckCircle, TriangleAlertIcon } from 'lucide-react';
+import { FileText, Plus, Search, SlidersHorizontal, Upload } from 'lucide-react';
 import { useMemo, useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 
@@ -50,12 +50,15 @@ interface ExamsFilter {
 export function ExamsPage() {
     const { data } = useGetExamsQuery();
     const [createExam] = useCreateExamMutation();
-    const [updateExam, { isSuccess: isUpadateSuccess }] = useUpdateExamDetailsMutation();
+    const createExamWithToast = useMutationWithToast(createExam);
+    const [updateExam] = useUpdateExamDetailsMutation();
+    const updateExamWithToast = useMutationWithToast(updateExam);
     const [deleteExam] = useDeleteExamMutation();
+    const deleteExamWithToast = useMutationWithToast(deleteExam);
     const [loadStudents] = useLoadStudentsMutation();
+    const loadStudentsWithToast = useMutationWithToast(loadStudents);
     const [loadResults] = useLoadResultsMutation();
-
-    const { toast } = useToast();
+    const loadResultsWithToast = useMutationWithToast(loadResults);
 
     const [filter, setFilter] = useState<ExamsFilter>({
         searchTerm: '',
@@ -116,23 +119,17 @@ export function ExamsPage() {
                 open={openDrawer.create}
                 setOpen={(v) => setOpenDrawer({ ...openDrawer, create: v })}
                 onSubmit={async (data) => {
-                    await createExam({
-                        name: data.name,
-                        audience: data.audience,
-                        date: data.date?.toISOString(),
-                        comment: data.comment,
-                        examType: data.examType,
-                    });
+                    await createExamWithToast(
+                        {
+                            name: data.name,
+                            audience: data.audience,
+                            date: data.date?.toISOString(),
+                            comment: data.comment,
+                            examType: data.examType,
+                        },
+                        { successMessage: 'Skúška bola úspešne vytvorená', errorMessage: 'Chyba pri vytváraní skúšky' },
+                    );
                     setOpenDrawer({ ...openDrawer, create: false });
-                    toast({
-                        className: 'bg-green-100',
-                        description: (
-                            <div className="flex items-center gap-2">
-                                <CheckCircle className="mr-2 h-5 w-5 text-green-500" />
-                                <span>Skúška bola úspešne vytvorená</span>
-                            </div>
-                        ),
-                    });
                 }}
             />
             <ExamDrawer
@@ -152,28 +149,23 @@ export function ExamsPage() {
                 })}
                 onSubmit={async (data) => {
                     if (examId == null) return;
-                    await updateExam({
-                        examId,
-                        updateExamCommand: {
-                            name: data.name,
-                            audience: data.audience,
-                            date: data.date.toISOString(),
-                            comment: data.comment,
-                            examType: data.examType,
+                    await updateExamWithToast(
+                        {
+                            examId,
+                            updateExamCommand: {
+                                name: data.name,
+                                audience: data.audience,
+                                date: data.date.toISOString(),
+                                comment: data.comment,
+                                examType: data.examType,
+                            },
                         },
-                    });
+                        {
+                            successMessage: 'Skúška bola úspešne aktualizovaná',
+                            errorMessage: 'Chyba pri aktualizovaní skúšky',
+                        },
+                    );
                     setOpenDrawer({ ...openDrawer, update: false });
-                    if (isUpadateSuccess) {
-                        toast({
-                            className: 'bg-green-100',
-                            description: (
-                                <div className="flex items-center gap-2">
-                                    <CheckCircle className="mr-2 h-5 w-5 text-green-500" />
-                                    <span>Skúška bola úspešne aktualizovaná</span>
-                                </div>
-                            ),
-                        });
-                    }
                 }}
             />
 
@@ -181,30 +173,10 @@ export function ExamsPage() {
                 onSubmit={async (data) => {
                     const formData = new FormData();
                     formData.append('studentsFile', data.file);
-                    try {
-                        await loadStudents(formData).unwrap();
-                        toast({
-                            variant: 'default',
-                            className: 'bg-green-100',
-                            description: (
-                                <div className="flex items-center gap-2">
-                                    <CheckCircle className="mr-2 h-5 w-5 text-green-500" />
-                                    <span>Študenti boli úspešne nahraní</span>
-                                </div>
-                            ),
-                        });
-                    } catch (e) {
-                        toast({
-                            variant: 'default',
-                            className: 'bg-red-100',
-                            description: (
-                                <div className="flex items-center gap-2">
-                                    <TriangleAlertIcon className="mr-2 h-5 w-5 text-red-500" />
-                                    <span>Chyba pri nahrávaní študentov</span>
-                                </div>
-                            ),
-                        });
-                    }
+                    await loadStudentsWithToast(formData, {
+                        successMessage: 'Študenti boli úspešne nahraní',
+                        errorMessage: 'Chyba pri nahrávaní študentov',
+                    });
 
                     setUploadDrawer({ ...uploadDrawer, students: false });
                 }}
@@ -216,17 +188,13 @@ export function ExamsPage() {
                 onSubmit={async ({ examType, file }) => {
                     const formData = new FormData();
                     formData.append('resultsFile', file);
-                    await loadResults({ resultsFile: formData, examType });
-                    toast({
-                        variant: 'default',
-                        className: 'bg-green-100',
-                        description: (
-                            <div className="flex items-center gap-2">
-                                <CheckCircle className="mr-2 h-5 w-5 text-green-500" />
-                                <span>Výsledky boli úspešne nahrané</span>
-                            </div>
-                        ),
-                    });
+                    await loadResultsWithToast(
+                        { resultsFile: formData, examType },
+                        {
+                            successMessage: 'Výsledky boli úspešne nahrané',
+                            errorMessage: 'Chyba pri nahrávaní výsledkov',
+                        },
+                    );
                     setUploadDrawer({ ...uploadDrawer, results: false });
                 }}
                 open={uploadDrawer.results}
@@ -254,7 +222,10 @@ export function ExamsPage() {
                         <AlertDialogAction
                             onClick={async () => {
                                 if (examId == null) return;
-                                await deleteExam(examId);
+                                await deleteExamWithToast(examId, {
+                                    successMessage: 'Skúška bola úspešne vymazaná',
+                                    errorMessage: 'Chyba pri mazaní skúšky',
+                                });
                                 setOpenDrawer({ ...openDrawer, delete: false });
                             }}
                         >

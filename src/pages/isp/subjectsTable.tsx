@@ -10,6 +10,7 @@ import {
     AlertDialogTitle,
     AlertDialogTrigger,
 } from '@/components/ui/alert-dialog';
+import { Badge } from '@/components/ui/badge';
 import {
     Breadcrumb,
     BreadcrumbItem,
@@ -27,6 +28,7 @@ import {
     DropdownMenuSeparator,
     DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu';
+import { Input } from '@/components/ui/input';
 import {
     Select,
     SelectContent,
@@ -36,10 +38,9 @@ import {
     SelectTrigger,
     SelectValue,
 } from '@/components/ui/select';
-import { Badge } from '@/components/ui/badge';
-import { Input } from '@/components/ui/input';
 import { Table, TableBody, TableCaption, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import { toast } from '@/hooks/use-toast';
+import { useMutationWithToast } from '@/hooks/useMutationWithToast';
 import Fuse, { IFuseOptions } from 'fuse.js';
 import { Search } from 'lucide-react';
 import { useMemo, useState } from 'react';
@@ -66,19 +67,25 @@ const SubjectsTablePage = () => {
 
     const { data, isLoading, refetch } = useGetTableQuery(tableId);
     const [evaluateTable] = useEvaluateTableMutation();
+    const evaluateTableWithToast = useMutationWithToast(evaluateTable);
     const [evaluateSubject] = useEvaluateSubjectMutation();
+    const evaluateSubjectWithToast = useMutationWithToast(evaluateSubject);
     const [addSubject] = useCreateSubjectMutation();
+    const addSubjectWithToast = useMutationWithToast(addSubject);
     const [deleteSubject] = useDeleteSubjectMutation();
+    const deleteSubjectWithToast = useMutationWithToast(deleteSubject);
 
     const handleChangeTableStatus = async (newStatus: TableStatus) => {
-        try {
-            await evaluateTable({
+        await evaluateTableWithToast(
+            {
                 tableId,
                 evaluationStatus: newStatus,
-            });
-        } catch (error) {
-            alert('Failed to update table status');
-        }
+            },
+            {
+                successMessage: 'Tabuľka bola úspešne aktualizovaná',
+                errorMessage: 'Nepodarilo sa aktualizovať tabuľku',
+            },
+        );
     };
 
     const filteredSubjects = useMemo(() => {
@@ -141,16 +148,11 @@ const SubjectsTablePage = () => {
                         <AlertDialogAction
                             onClick={async () => {
                                 if (subjectToDelete) {
-                                    try {
-                                        await deleteSubject(subjectToDelete);
-                                        refetch();
-                                    } catch (error) {
-                                        toast({
-                                            className: 'bg-red-100',
-                                            title: 'Chyba',
-                                            description: 'Nepodarilo sa vymazať predmet',
-                                        });
-                                    }
+                                    await deleteSubjectWithToast(subjectToDelete, {
+                                        successMessage: 'Predmet bol úspešne vymazaný',
+                                        errorMessage: 'Nepodarilo sa vymazať predmet',
+                                    });
+                                    refetch();
                                     setSubjectToDelete(null);
                                 }
                             }}
@@ -183,7 +185,18 @@ const SubjectsTablePage = () => {
 
                         <DropdownMenuItem
                             className="text-green-600"
-                            onClick={() => handleChangeTableStatus('APPROVED')}
+                            onClick={async () => {
+                                await evaluateTableWithToast(
+                                    {
+                                        tableId,
+                                        evaluationStatus: 'APPROVED',
+                                    },
+                                    {
+                                        successMessage: 'Tabuľka bola úspešne aktualizovaná',
+                                        errorMessage: 'Nepodarilo sa aktualizovať tabuľku',
+                                    },
+                                );
+                            }}
                         >
                             Schváliť Tabuľku
                         </DropdownMenuItem>
@@ -238,18 +251,16 @@ const SubjectsTablePage = () => {
                                         <Select
                                             defaultValue={subject.subjectStatus}
                                             onValueChange={async (value) => {
-                                                try {
-                                                    await evaluateSubject({
+                                                await evaluateSubjectWithToast(
+                                                    {
                                                         subjectId: subject.subjectId,
                                                         evaluationStatus: value as SubjectStatus,
-                                                    });
-                                                } catch (error) {
-                                                    toast({
-                                                        title: 'Chyba',
-                                                        description: 'Nepodarilo sa aktualizovať stav predmetu',
-                                                        className: 'bg-red-100',
-                                                    });
-                                                }
+                                                    },
+                                                    {
+                                                        successMessage: 'Stav predmetu bol úspešne aktualizovaný',
+                                                        errorMessage: 'Nepodarilo sa aktualizovať stav predmetu',
+                                                    },
+                                                );
                                                 refetch();
                                             }}
                                         >
@@ -302,10 +313,13 @@ const SubjectsTablePage = () => {
                             className: 'bg-red-100',
                         });
                     }
-                    await addSubject({
-                        name: subjectName,
-                        tableId,
-                    });
+                    await addSubjectWithToast(
+                        {
+                            name: subjectName,
+                            tableId,
+                        },
+                        { successMessage: 'Predmet bol úspešne pridaný', errorMessage: 'Nepodarilo sa pridať predmet' },
+                    );
                     refetch();
                 }}
                 onClose={() => setIsModalOpen(false)}
