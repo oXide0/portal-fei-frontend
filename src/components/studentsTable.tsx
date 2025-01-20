@@ -33,7 +33,7 @@ export function StudentsTable(props: StudentsTableProps) {
         setRowSelection(
             props.data.reduce(
                 (acc, student) => {
-                    acc[student.email] = student.is_assigned;
+                    acc[student.email] = student.isAssigned;
                     return acc;
                 },
                 {} as Record<string, boolean>,

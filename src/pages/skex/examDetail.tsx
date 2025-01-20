@@ -49,7 +49,7 @@ export function ExamDetailPage() {
 
     const { data: exam } = useGetExamByIdQuery(parseInt(examId));
     const { data: students } = useGetStudentsQuery({
-        exam_id: parseInt(examId),
+        examId: parseInt(examId),
         email: filter.email,
         name: filter.name,
         surname: filter.surname,

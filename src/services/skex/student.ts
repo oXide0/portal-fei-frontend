@@ -12,9 +12,9 @@ export const studentApi = api.injectEndpoints({
             invalidatesTags: ['Student'],
         }),
         getStudents: builder.query<Array<Student>, GetStudentParams>({
-            query: ({ name, surname, email, exam_id }) => ({
+            query: ({ name, surname, email, examId }) => ({
                 url: `skex/students`,
-                params: { name, surname, email, exam_id },
+                params: { name, surname, email, examId },
             }),
             providesTags: ['Student'],
         }),

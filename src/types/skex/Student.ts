@@ -5,11 +5,11 @@ export interface Student {
     name: string;
     surname: string;
     studyProgram: string;
-    is_assigned: boolean; // change
+    isAssigned: boolean;
 }
 
 export interface GetStudentParams {
-    exam_id: number; // change
+    examId: number;
     name?: string;
     surname?: string;
     email?: string;

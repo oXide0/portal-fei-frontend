@@ -123,7 +123,7 @@ export function ExamsPage() {
                         {
                             name: data.name,
                             audience: data.audience,
-                            date: data.date?.toISOString(),
+                            date: data.date.toISOString(),
                             comment: data.comment,
                             examType: data.examType,
                         },
