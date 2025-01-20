@@ -104,7 +104,7 @@ const SubjectsTablePage = () => {
     if (isLoading || !data) return <div className="loader"></div>;
 
     return (
-        <div>
+        <>
             <Breadcrumb style={{ paddingBottom: '20px' }}>
                 <BreadcrumbList>
                     <BreadcrumbItem>
@@ -324,7 +324,7 @@ const SubjectsTablePage = () => {
                 }}
                 onClose={() => setIsModalOpen(false)}
             />
-        </div>
+        </>
     );
 };
 

@@ -22,5 +22,5 @@ export interface GetStudentExamsResponse {
     audience: string;
     date: string;
     name: string;
-    mark: 0;
+    mark: number;
 }
