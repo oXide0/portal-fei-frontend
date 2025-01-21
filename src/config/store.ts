@@ -1,19 +1,19 @@
 import { configureStore } from '@reduxjs/toolkit';
 import userReducer from '../features/userSlice';
-import { ispApi } from '../services/isp/api';
+import { api } from '../services/api';
 
 export const store = configureStore({
     reducer: {
         user: userReducer,
-        [ispApi.reducerPath]: ispApi.reducer,
+        [api.reducerPath]: api.reducer,
     },
     middleware: (getDefaultMiddleware) =>
         getDefaultMiddleware({
             serializableCheck: {
-                ignoredActions: ['ispApi/executeQuery/fulfilled'],
-                ignoredPaths: ['ispApi.queries'],
+                ignoredActions: ['api/executeQuery/fulfilled'],
+                ignoredPaths: ['api.queries'],
             },
-        }).concat(ispApi.middleware),
+        }).concat(api.middleware),
 });
 
 export type RootState = ReturnType<typeof store.getState>;

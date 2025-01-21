@@ -96,3 +96,7 @@ export const getAvailableSubjectStatusOptions = (currentStatus: SubjectStatus): 
             return [];
     }
 };
+
+export function call<T>(fn: () => T): T | undefined {
+    return fn();
+}
