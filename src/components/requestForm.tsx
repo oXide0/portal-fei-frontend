@@ -1,11 +1,12 @@
-import { useEffect, useState } from 'react';
+import { Loader2, UploadIcon } from 'lucide-react';
+import { useEffect, useRef, useState } from 'react';
 import { Controller, SubmitHandler, useForm } from 'react-hook-form';
 import { Attachment } from './attachment';
 import { Button } from './ui/button';
 import { Input } from './ui/input';
+import { Label } from './ui/label';
 import { Select, SelectContent, SelectGroup, SelectItem, SelectLabel, SelectTrigger, SelectValue } from './ui/select';
 import { Textarea } from './ui/textarea';
-import { Loader2 } from 'lucide-react';
 
 interface RequestFormProps {
     title: string;
@@ -26,14 +27,16 @@ export interface IFormInput {
     attachmentUrl?: string | null;
 }
 
-const RequestForm = ({ title, initialValues, isLoading, onSubmit }: RequestFormProps) => {
+export function RequestForm({ title, initialValues, isLoading, onSubmit }: RequestFormProps) {
     const [attachment, setAttachment] = useState<File | null>(null);
+    const fileInputRef = useRef<HTMLInputElement | null>(null);
+
     const {
         register,
         handleSubmit,
-        setValue,
         watch,
         control,
+        reset,
         formState: { errors },
     } = useForm<IFormInput>({
         defaultValues: initialValues,
@@ -45,10 +48,13 @@ const RequestForm = ({ title, initialValues, isLoading, onSubmit }: RequestFormP
     };
 
     useEffect(() => {
+        // if (initialValues) {
+        //     Object.keys(initialValues).forEach((key) => {
+        //         setValue(key as keyof IFormInput, initialValues[key as keyof IFormInput]);
+        //     });
+        // }
         if (initialValues) {
-            Object.keys(initialValues).forEach((key) => {
-                setValue(key as keyof IFormInput, initialValues[key as keyof IFormInput]);
-            });
+            reset(initialValues);
         }
     }, [initialValues]);
 
@@ -56,8 +62,8 @@ const RequestForm = ({ title, initialValues, isLoading, onSubmit }: RequestFormP
         <div className="max-w-4xl my-0 mx-auto p-6">
             <h1 className="text-3xl font-bold mb-6">{title}</h1>
             <form onSubmit={handleSubmit(onSubmitData)} className="space-y-4">
-                <div>
-                    <label className="block text-sm font-medium mb-1">Meno študenta</label>
+                <div className="flex flex-col gap-1.5">
+                    <Label>Meno študenta</Label>
                     <Input
                         type="text"
                         {...register('studentName', {
@@ -67,8 +73,8 @@ const RequestForm = ({ title, initialValues, isLoading, onSubmit }: RequestFormP
                     />
                     {errors.studentName && <p className="text-red-500 text-sm">{errors.studentName.message}</p>}
                 </div>
-                <div>
-                    <label className="block text-sm font-medium mb-1">Priezvisko študenta</label>
+                <div className="flex flex-col gap-1.5">
+                    <Label>Priezvisko študenta</Label>
                     <Input
                         type="text"
                         {...register('studentSurname', {
@@ -78,8 +84,8 @@ const RequestForm = ({ title, initialValues, isLoading, onSubmit }: RequestFormP
                     />
                     {errors.studentSurname && <p className="text-red-500 text-sm">{errors.studentSurname.message}</p>}
                 </div>
-                <div>
-                    <label className="block text-sm font-medium mb-1">Študijný program</label>
+                <div className="flex flex-col gap-1.5">
+                    <Label>Študijný program</Label>
                     <Controller
                         name="studyProgram"
                         control={control}
@@ -119,8 +125,8 @@ const RequestForm = ({ title, initialValues, isLoading, onSubmit }: RequestFormP
                     />
                     {errors.studyProgram && <p className="text-red-500 text-sm">{errors.studyProgram.message}</p>}
                 </div>
-                <div>
-                    <label className="block text-sm font-medium mb-1">Študijný stupeň</label>
+                <div className="flex flex-col gap-1.5">
+                    <Label>Študijný stupeň</Label>
                     <Controller
                         name="studyDegree"
                         control={control}
@@ -144,8 +150,8 @@ const RequestForm = ({ title, initialValues, isLoading, onSubmit }: RequestFormP
                     />
                     {errors.studyDegree && <p className="text-red-500 text-sm">{errors.studyDegree.message}</p>}
                 </div>
-                <div>
-                    <label className="block text-sm font-medium mb-1">Rok štúdia</label>
+                <div className="flex flex-col gap-1.5">
+                    <Label>Rok štúdia</Label>
                     <Controller
                         name="studyYear"
                         control={control}
@@ -188,8 +194,8 @@ const RequestForm = ({ title, initialValues, isLoading, onSubmit }: RequestFormP
                     />
                     {errors.studyYear && <p className="text-red-500 text-sm">{errors.studyYear.message}</p>}
                 </div>
-                <div>
-                    <label className="block text-sm font-medium mb-1">Účel</label>
+                <div className="flex flex-col gap-1.5">
+                    <Label>Účel</Label>
                     <Input
                         type="text"
                         {...register('purpose', { required: 'Účel je povinný' })}
@@ -197,8 +203,8 @@ const RequestForm = ({ title, initialValues, isLoading, onSubmit }: RequestFormP
                     />
                     {errors.purpose && <p className="text-red-500 text-sm">{errors.purpose.message}</p>}
                 </div>
-                <div>
-                    <label className="block text-sm font-medium mb-1">Dôvod</label>
+                <div className="flex flex-col gap-1.5">
+                    <Label>Dôvod</Label>
                     <Textarea
                         {...register('reason', { required: 'Dôvod je povinný' })}
                         className="w-full px-3 py-2 border border-gray-300 rounded"
@@ -206,24 +212,65 @@ const RequestForm = ({ title, initialValues, isLoading, onSubmit }: RequestFormP
                     />
                     {errors.reason && <p className="text-red-500 text-sm">{errors.reason.message}</p>}
                 </div>
-                <div className="flex flex-col gap-2">
-                    <label className="block text-sm font-medium mb-1">Príloha</label>
-                    {initialValues?.attachmentUrl && (
+
+                <div className="flex flex-col gap-3">
+                    <Label htmlFor="attachment-input">Príloha</Label>
+
+                    {initialValues?.attachmentUrl && !attachment ? (
                         <Attachment label="Stiahnuť existujúcu prílohu" url={initialValues.attachmentUrl} />
+                    ) : (
+                        <div className="flex flex-col items-center justify-center gap-3 p-6 border-2 border-dashed border-gray-300 rounded-md bg-muted">
+                            {attachment ? (
+                                <div className="flex flex-col items-center gap-2">
+                                    <p className="text-sm font-medium text-primary">{attachment.name}</p>
+                                    <Button
+                                        variant="outline"
+                                        size="sm"
+                                        onClick={() => {
+                                            setAttachment(null);
+                                            if (fileInputRef.current) {
+                                                fileInputRef.current.value = '';
+                                            }
+                                        }}
+                                    >
+                                        Odstrániť súbor
+                                    </Button>
+                                </div>
+                            ) : (
+                                <>
+                                    <UploadIcon className="w-6 h-6 text-gray-500" />
+                                    <p className="text-sm text-muted-foreground">
+                                        Nahrajte súbor kliknutím na tlačidlo nižšie
+                                    </p>
+                                    <Label
+                                        htmlFor="attachment-input"
+                                        className="flex items-center gap-1 cursor-pointer border border-neutral-200 bg-white hover:bg-neutral-100 hover:text-neutral-900 dark:border-neutral-800 dark:bg-neutral-950 dark:hover:bg-neutral-800 dark:hover:text-neutral-50 h-9 rounded-md px-3"
+                                    >
+                                        <UploadIcon className="w-4 h-4 mr-2" />
+                                        Nahrať súbor
+                                    </Label>
+                                </>
+                            )}
+                        </div>
                     )}
+
                     <Input
+                        ref={fileInputRef}
+                        id="attachment-input"
                         type="file"
                         accept=".pdf, .doc, .docx, .txt"
-                        className="w-full px-3 py-2 border border-gray-300 rounded"
+                        className="hidden"
                         onChange={(event) => {
                             const files = event.target.files;
                             if (files && files.length > 0) {
-                                setAttachment(files[0]);
+                                const file = files[0];
+                                setAttachment(file);
                             }
                         }}
                     />
                 </div>
                 {errors.attachment && <p className="text-red-500 text-sm">{errors.attachment.message}</p>}
+
                 <div>
                     <Button type="submit" className="w-full" disabled={isLoading}>
                         {isLoading ? <Loader2 className="h-5 w-5 animate-spin" /> : 'Odoslať'}
@@ -232,6 +279,4 @@ const RequestForm = ({ title, initialValues, isLoading, onSubmit }: RequestFormP
             </form>
         </div>
     );
-};
-
-export { RequestForm };
+}
