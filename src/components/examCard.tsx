@@ -42,7 +42,7 @@ export function ExamCard(props: ExamCardProps) {
             </div>
             <div className="mt-2 flex items-center text-sm text-gray-600">
                 <Calendar size={16} className="mr-2" />
-                <span>{format(new Date(props.date), 'dd.MM.yyyy')}</span>
+                <span>{format(new Date(props.date), 'dd.MM.yyyy HH:mm')}</span>
             </div>
             {props.isFinished && (
                 <div className="mt-4 flex items-center text-sm text-green-500">

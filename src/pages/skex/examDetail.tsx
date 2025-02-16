@@ -31,6 +31,7 @@ import {
 } from '@/services/skex/exam';
 import { useGetStudentsQuery } from '@/services/skex/student';
 import { format } from 'date-fns';
+import { formatInTimeZone } from 'date-fns-tz';
 import { sk } from 'date-fns/locale';
 import { Calendar, CheckCircle, Edit, FileText, Trash, User } from 'lucide-react';
 import { useState } from 'react';
@@ -100,13 +101,16 @@ export function ExamDetailPage() {
                     examType: exam.examType,
                 }}
                 onSubmit={async (data) => {
+                    const timeZone = Intl.DateTimeFormat().resolvedOptions().timeZone;
+                    const formattedDate = formatInTimeZone(data.date, timeZone, "yyyy-MM-dd'T'HH:mm:ss.SSS");
+
                     await updateExamDetailsWithToast(
                         {
                             examId: parseInt(examId),
                             updateExamCommand: {
                                 name: data.name,
                                 audience: data.audience,
-                                date: data.date.toISOString(),
+                                date: formattedDate,
                                 comment: data.comment,
                                 examType: data.examType,
                             },

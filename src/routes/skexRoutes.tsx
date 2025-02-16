@@ -9,7 +9,7 @@ export const skexRoutes: RouteObject[] = [
         path: 'skex/exams',
         element: (
             <ProtectedRoute allowedRoles={['P', 'D', 'N']} redirectPath="/forbidden">
-                <ExamsPage />,
+                <ExamsPage />
             </ProtectedRoute>
         ),
     },
@@ -17,7 +17,7 @@ export const skexRoutes: RouteObject[] = [
         path: 'skex/exam/:id',
         element: (
             <ProtectedRoute allowedRoles={['P', 'D', 'N']} redirectPath="/forbidden">
-                <ExamDetailPage />,
+                <ExamDetailPage />
             </ProtectedRoute>
         ),
     },

@@ -1,16 +1,12 @@
-import { UploadResultBody } from '@/types/skex/Result';
 import { api } from '../api';
 
 export const resultApi = api.injectEndpoints({
     endpoints: (builder) => ({
-        loadResults: builder.mutation<void, UploadResultBody>({
-            query: ({ examType, resultsFile }) => ({
+        loadResults: builder.mutation<void, FormData>({
+            query: (formData) => ({
                 url: 'skex/results',
                 method: 'POST',
-                body: {
-                    resultsFile,
-                    examType,
-                },
+                body: formData,
             }),
         }),
     }),

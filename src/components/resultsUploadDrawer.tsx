@@ -12,7 +12,7 @@ import {
 } from '@/components/ui/sheet';
 import { ExamType } from '@/types/skex/Exam';
 import { UploadIcon } from 'lucide-react';
-import { useRef, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { Controller, useForm } from 'react-hook-form';
 import { Label } from './ui/label';
 
@@ -33,6 +33,7 @@ export function ResultsUploadDrawer(props: ResultsUploadDrawerProps) {
     const {
         control,
         handleSubmit,
+        setValue,
         formState: { errors },
     } = useForm<FormValues>();
 
@@ -40,8 +41,24 @@ export function ResultsUploadDrawer(props: ResultsUploadDrawerProps) {
         props.onSubmit(data);
     };
 
+    useEffect(() => {
+        if (file == null) return;
+        setValue('file', file);
+    }, [file]);
+
     return (
-        <Sheet open={props.open} onOpenChange={(v) => props.setOpen(v)}>
+        <Sheet
+            open={props.open}
+            onOpenChange={(v) => {
+                if (!v) {
+                    setFile(null);
+                    if (fileInputRef.current) {
+                        fileInputRef.current.value = '';
+                    }
+                }
+                props.setOpen(v);
+            }}
+        >
             <SheetContent className="flex flex-col h-full sm:max-w-lg">
                 <SheetHeader className="text-left">
                     <SheetTitle>Nahrať výsledky</SheetTitle>

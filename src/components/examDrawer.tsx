@@ -51,6 +51,7 @@ export function ExamDrawer(props: ExamDrawerProps) {
     }, [selectedDate]);
 
     useEffect(() => {
+        if (props.initialValues == null) return;
         reset(props.initialValues);
         setSelectedDate(props.initialValues?.date ?? undefined);
     }, [props.initialValues]);
@@ -62,7 +63,13 @@ export function ExamDrawer(props: ExamDrawerProps) {
     };
 
     return (
-        <Sheet open={props.open} onOpenChange={(v) => props.setOpen(v)}>
+        <Sheet
+            open={props.open}
+            onOpenChange={(v) => {
+                if (!v) reset();
+                props.setOpen(v);
+            }}
+        >
             <SheetContent className="flex flex-col h-full sm:max-w-lg">
                 <SheetHeader className="text-left">
                     <SheetTitle>{props.isUpdate ? 'Aktualizovať skúšku' : 'Vytvoriť skúšku'}</SheetTitle>
@@ -121,7 +128,7 @@ export function ExamDrawer(props: ExamDrawerProps) {
                             control={control}
                             rules={{ required: 'Typ skúšky je povinný' }}
                             render={({ field }) => (
-                                <Select onValueChange={field.onChange} defaultValue={field.value}>
+                                <Select value={field.value ?? ''} onValueChange={field.onChange}>
                                     <SelectTrigger>
                                         <SelectValue placeholder="Vyberte typ skúšky" />
                                     </SelectTrigger>

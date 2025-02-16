@@ -43,7 +43,18 @@ export function StudentsUploadDrawer(props: StudentsUploadDrawerProps) {
     }, [file]);
 
     return (
-        <Sheet open={props.open} onOpenChange={(v) => props.setOpen(v)}>
+        <Sheet
+            open={props.open}
+            onOpenChange={(v) => {
+                if (!v) {
+                    setFile(null);
+                    if (fileInputRef.current) {
+                        fileInputRef.current.value = '';
+                    }
+                }
+                props.setOpen(v);
+            }}
+        >
             <SheetContent className="flex flex-col h-full sm:max-w-lg">
                 <SheetHeader className="text-left">
                     <SheetTitle>Nahrať študentov</SheetTitle>

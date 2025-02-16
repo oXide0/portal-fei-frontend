@@ -36,6 +36,7 @@ import {
 import { useLoadResultsMutation } from '@/services/skex/result';
 import { useLoadStudentsMutation } from '@/services/skex/student';
 import { Exam } from '@/types/skex/Exam';
+import { formatInTimeZone } from 'date-fns-tz';
 import Fuse, { IFuseOptions } from 'fuse.js';
 import { FileText, Plus, Search, SlidersHorizontal, Upload } from 'lucide-react';
 import { useMemo, useState } from 'react';
@@ -119,15 +120,21 @@ export function ExamsPage() {
                 open={openDrawer.create}
                 setOpen={(v) => setOpenDrawer({ ...openDrawer, create: v })}
                 onSubmit={async (data) => {
+                    const timeZone = Intl.DateTimeFormat().resolvedOptions().timeZone;
+                    const formattedDate = formatInTimeZone(data.date, timeZone, "yyyy-MM-dd'T'HH:mm:ss.SSS");
+
                     await createExamWithToast(
                         {
                             name: data.name,
                             audience: data.audience,
-                            date: data.date.toISOString(),
+                            date: formattedDate,
                             comment: data.comment,
                             examType: data.examType,
                         },
-                        { successMessage: 'Skúška bola úspešne vytvorená', errorMessage: 'Chyba pri vytváraní skúšky' },
+                        {
+                            successMessage: 'Skúška bola úspešne vytvorená',
+                            errorMessage: 'Chyba pri vytváraní skúšky',
+                        },
                     );
                     setOpenDrawer({ ...openDrawer, create: false });
                 }}
@@ -149,13 +156,16 @@ export function ExamsPage() {
                 })}
                 onSubmit={async (data) => {
                     if (examId == null) return;
+                    const timeZone = Intl.DateTimeFormat().resolvedOptions().timeZone;
+                    const formattedDate = formatInTimeZone(data.date, timeZone, "yyyy-MM-dd'T'HH:mm:ss.SSS");
+
                     await updateExamWithToast(
                         {
                             examId,
                             updateExamCommand: {
                                 name: data.name,
                                 audience: data.audience,
-                                date: data.date.toISOString(),
+                                date: formattedDate,
                                 comment: data.comment,
                                 examType: data.examType,
                             },
@@ -188,13 +198,11 @@ export function ExamsPage() {
                 onSubmit={async ({ examType, file }) => {
                     const formData = new FormData();
                     formData.append('resultsFile', file);
-                    await loadResultsWithToast(
-                        { resultsFile: formData, examType },
-                        {
-                            successMessage: 'Výsledky boli úspešne nahrané',
-                            errorMessage: 'Chyba pri nahrávaní výsledkov',
-                        },
-                    );
+                    formData.append('examType', examType);
+                    await loadResultsWithToast(formData, {
+                        successMessage: 'Výsledky boli úspešne nahrané',
+                        errorMessage: 'Chyba pri nahrávaní výsledkov',
+                    });
                     setUploadDrawer({ ...uploadDrawer, results: false });
                 }}
                 open={uploadDrawer.results}
