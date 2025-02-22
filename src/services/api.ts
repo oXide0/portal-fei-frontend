@@ -1,5 +1,5 @@
 import { createApi, fetchBaseQuery } from '@reduxjs/toolkit/query/react';
-import type { RootState } from '../../config/store';
+import type { RootState } from '../config/store';
 
 const baseQuery = fetchBaseQuery({
     baseUrl: import.meta.env.VITE_BASE_URL,
@@ -14,9 +14,9 @@ const baseQuery = fetchBaseQuery({
     },
 });
 
-export const ispApi = createApi({
-    reducerPath: 'ispApi',
+export const api = createApi({
+    reducerPath: 'api',
     baseQuery: baseQuery,
     endpoints: () => ({}),
-    tagTypes: ['Request', 'Subject', 'Table'],
+    tagTypes: ['Request', 'Subject', 'Table', 'Exam', 'Student'],
 });
